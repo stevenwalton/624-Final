@@ -40,11 +40,11 @@ tokens = [
     'ELLIPSIS',
 
     # Keywords (if, else, for, in, do, while, next, break, return, function,
-    # void, NULL, logical, integer, float, string, object, numeric)
+    # void, NULL, logical, integer, float, string, object, numeric, $)
     'IF', 'ELSE', 'FOR', 'IN', 'DO', 'WHILE', 'NEXT', 'BREAK',
     'RETURN', 'FUNCTION', 
     'TYPEVOID', 'TYPENULL', 'TYPELOGICAL', 'TYPEINTEGER', 'TYPEFLOAT', 'TYPESTRING',
-    'TYPEOBJECT', 'TYPENUMERIC'
+    'TYPEOBJECT', 'TYPENUMERIC', 'DOLLAR'
 ]
 
 # Operators
@@ -126,6 +126,7 @@ t_TYPEFLOAT        = r'float'
 t_TYPESTRING       = r'string'
 t_TYPEOBJECT       = r'object'
 t_TYPENUMERIC      = r'numeric'
+t_DOLLAR           = r'\$'
 
 # Identifiers
 t_ID = r'[A-Za-z_][A-Za-z0-9_]*'
