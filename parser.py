@@ -13,16 +13,16 @@ lexer = lex.lex()
 
 def p_interpreter_block(p):
     '''interpreter_block : EOF
-                         | block_optional EOF
-       block_optional : block_optional statement
-                     | block_optional function_decl
+                         | block_multiple EOF
+       block_multiple : block_multiple statement
+                     | block_multiple function_decl
                      | statement
                      | function_decl'''
 
 def p_compound_statement(p):
     '''compound_statement : LBRACE RBRACE
-                          | LBRACE compound_optional RBRACE
-       compound_optional : compound_optional statement
+                          | LBRACE compound_multiple RBRACE
+       compound_multiple : compound_multiple statement
                          | statement'''
 
 def p_statement(p):
@@ -65,9 +65,45 @@ def p_assignment_expr(p):
 
 def p_logical_or_expr(p):
     '''logical_or_expr : logical_or_expr
-                       | logical_or_expr or_optional
-       or_optional : or_optional OR logical_or_expr
+                       | logical_or_expr or_multiple
+       or_multiple : or_multiple OR logical_or_expr
                    | OR logical_or_expr'''
+
+def p_logical_and_expr(p):
+    '''logical_and_expr : equality_expr
+                        | equality_expr and_multiple
+       and_multiple : and_multiple AND equality_expr
+                    | AND equality_expr'''
+
+def p_relational_expr(p):
+    '''relational_expr : add_expr
+                       | add_expr relational_multiple
+       relational_multiple : relational_multiple LT add_expr
+                           | relational_expr LE add_expr
+                           | relational_expr GT add_expr
+                           | relational_expr GE add_expr
+                           | LT add_expr
+                           | LE add_expr
+                           | GT add_expr
+                           | GE add_expr'''
+
+def p_add_expr(p):
+    '''add_expr : mult_expr
+                | mult_expr add_multiple
+       add_multiple : add_multiple PLUS mult_expr
+                    | add_multiple MINUS mult_expr
+                    | PLUS mult_expr
+                    | MINUS mult_expr'''
+
+def p_mult_expr(p):
+    '''mult_expr : seq_expr
+                 | seq_expr mult_multiple
+       mult_multiple : mult_multiple TIMES seq_expr
+                     | mult_multiple DIVIDE seq_expr
+                     | mult_multiple MODULO seq_expr
+                     | TIMES seq_expr
+                     | DIVIDE seq_expr
+                     | MODULO seq_expr'''
 
 def p_eof(p):
     '''EOF :'''
