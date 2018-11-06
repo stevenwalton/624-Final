@@ -105,13 +105,47 @@ def p_mult_expr(p):
                      | DIVIDE seq_expr
                      | MODULO seq_expr'''
 
+def p_seq_expr(p):
+    '''seq_expr : exp_expr
+                | exp_expr COLON exp_expr'''
+
+def p_unary_expr(p):
+    '''unary_expr : postfix_expr
+                  | NOT unary_expr
+                  | PLUS unary_expr
+                  | MINUS unary_expr'''
+
+def p_postfix_expr(p):
+    '''postfix_expr : primary_expr
+                    | primary_expr LBRACKET RBRACKET
+                    | primary_expr LBRACKET expr RBRACKET
+                    | primary_expr LBRACKET COMMA RBRACKET
+                    | primary_expr LBRACKET COMMA expr RBRACKET
+                    | primary_expr LBRACKET expr COMMA expr RBRACKET
+                    | primary_expr LPAREN RPAREN
+                    | primary_expr LPAREN argument_expr_list RPAREN
+                    | primary_expr PERIOD IDENTIFIER'''
+
+def p_primary_expr(p):
+    '''primary_expr : IDENTIFIER
+                    | constant
+                    | LPAREN expr RPAREN'''
+
+def p_argument_expr_list(p):
+    '''argument_expr_list : argument_expr
+                          | argument_expr COMMA argument_expr_list'''
+
+def p_argument_expr(p):
+    '''argument_expr : conditional_expr
+                     | IDENTIFIER EQ conditional_expr'''
+
+def p_constant(p):
+    '''constant : NUMBER_LITERAL
+                | STRING_LITERAL'''
+
 def p_eof(p):
     '''EOF :'''
     pass
-
-
-
-
 
 parser = yacc.yacc()
 s = input("input here:\n")
