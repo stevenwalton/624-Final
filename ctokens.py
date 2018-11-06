@@ -38,6 +38,10 @@ tokens = [
 
     # Ellipsis (...)
     'ELLIPSIS',
+
+    # Keywords (if, else, for, in, do, while, next, break, return, function)
+    'IF', 'ELSE', 'FOR', 'IN', 'DO', 'WHILE', 'NEXT', 'BREAK',
+    'RETURN', 'FUNCTION',
 ]
 
 # Operators
@@ -98,6 +102,18 @@ t_PERIOD           = r'\.'
 t_SEMI             = r';'
 t_COLON            = r':'
 t_ELLIPSIS         = r'\.\.\.'
+
+# Keywords
+t_IF               = r'if'
+t_ELSE             = r'else'
+t_FOR              = r'for'
+t_IN               = r'in'
+t_DO               = r'do'
+t_WHILE            = r'while'
+t_NEXT             = r'next'
+t_BREAK            = r'break'
+t_RETURN           = r'return'
+t_FUNCTION         = r'function'
 
 # Identifiers
 t_ID = r'[A-Za-z_][A-Za-z0-9_]*'
