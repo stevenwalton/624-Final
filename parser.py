@@ -143,6 +143,44 @@ def p_constant(p):
     '''constant : NUMBER_LITERAL
                 | STRING_LITERAL'''
 
+def p_function_decl(p):
+    '''function_decl : FUNCTION return_type_spec ID param_list compound_statement'''
+
+def p_return_type_spec(p):
+    '''return_type_spec : LPAREN type_spec RPAREN'''
+
+def p_type_spec(p):
+    '''type_spec : type_spec_options | type_spec_options DOLLAR
+        type_spec_options : TYPEVOID
+        | TYPENULL
+        | TYPELOGICAL
+        | TYPEINTEGER
+        | TYPEFLOAT
+        | TYPESTRING
+        | TYPEOBJECT
+        | TYPEOBJECT object_class_spec
+        | TYPENUMERIC
+        | PLUS
+        | TIMES
+        | '''
+
+def p_object_class_spec(p):
+    '''object_class_spec : GT ID LT'''
+
+def p_param_list(p):
+    '''param_list : LPAREN param_option RPAREN
+        param_option : TYPEVOID
+        | param_spec
+        | param_spec param_spec_multiple
+        param_spec_multiple : COMMA param_spec
+        | param_spec_multiple COMMA param_spec'''
+
+def p_param_spec(p):
+    '''param_spec : type_spec ID
+        | LBRACKET type_spec ID EQ value_option RBRACKET
+        value_option : constant
+        | ID'''
+
 def p_eof(p):
     '''EOF :'''
     pass
