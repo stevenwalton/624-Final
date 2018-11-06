@@ -39,9 +39,12 @@ tokens = [
     # Ellipsis (...)
     'ELLIPSIS',
 
-    # Keywords (if, else, for, in, do, while, next, break, return, function)
+    # Keywords (if, else, for, in, do, while, next, break, return, function,
+    # void, NULL, logical, integer, float, string, object, numeric)
     'IF', 'ELSE', 'FOR', 'IN', 'DO', 'WHILE', 'NEXT', 'BREAK',
-    'RETURN', 'FUNCTION',
+    'RETURN', 'FUNCTION', 
+    'TYPEVOID', 'TYPENULL', 'TYPELOGICAL', 'TYPEINTEGER', 'TYPEFLOAT', 'TYPESTRING',
+    'TYPEOBJECT', 'TYPENUMERIC'
 ]
 
 # Operators
@@ -114,6 +117,15 @@ t_NEXT             = r'next'
 t_BREAK            = r'break'
 t_RETURN           = r'return'
 t_FUNCTION         = r'function'
+
+t_TYPEVOID         = r'void'
+t_TYPENULL         = r'NULL'
+t_TYPELOGICAL      = r'logical'
+t_TYPEINTEGER      = r'integer'
+t_TYPEFLOAT        = r'float'
+t_TYPESTRING       = r'string'
+t_TYPEOBJECT       = r'object'
+t_TYPENUMERIC      = r'numeric'
 
 # Identifiers
 t_ID = r'[A-Za-z_][A-Za-z0-9_]*'
