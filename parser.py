@@ -39,8 +39,10 @@ def p_expr_statement(p):
                       | assignment_expr SEMI'''
 
 def p_selection_statement(p):
-    '''selection_statement : IF LPAREN expr RPAREN statement
-                           | IF LPAREN expr RPAREN statement ELSE statement'''
+    # '''selection_statement : IF LPAREN expr RPAREN statement
+    #                        | IF LPAREN expr RPAREN statement ELSE statement'''
+    '''selection_statement : IF LPAREN expr RPAREN compound_statement
+                           | IF LPAREN expr RPAREN compound_statement ELSE compound_statement'''
 
 def p_for_statement(p):
     '''for_statement : FOR LPAREN ID IN expr RPAREN statement'''
@@ -52,7 +54,7 @@ def p_while_statement(p):
     '''while_statement : WHILE LPAREN expr RPAREN statement'''
 
 def p_jump_statement(p):
-    '''while_statement : NEXT SEMI
+    '''jump_statement : NEXT SEMI
                        | BREAK SEMI
                        | RETURN SEMI
                        | RETURN expr SEMI'''
@@ -63,17 +65,26 @@ def p_assignment_expr(p):
     '''assignment_expr : conditional_expr
                        | conditional_expr EQUALS conditional_expr'''
 
+def p_conditional_expr(p):
+    '''conditional_expr : logical_or_expr
+                        | logical_or_expr TERNARY conditional_expr ELSE conditional_expr'''
+
 def p_logical_or_expr(p):
-    '''logical_or_expr : logical_or_expr
-                       | logical_or_expr or_multiple
-       or_multiple : or_multiple OR logical_or_expr
-                   | OR logical_or_expr'''
+    '''logical_or_expr : logical_and_expr
+                       | logical_and_expr or_multiple
+       or_multiple : or_multiple OR logical_and_expr
+                   | OR logical_and_expr'''
 
 def p_logical_and_expr(p):
     '''logical_and_expr : equality_expr
                         | equality_expr and_multiple
        and_multiple : and_multiple AND equality_expr
                     | AND equality_expr'''
+
+def p_equality_expr(p):
+    '''equality_expr : relational_expr
+                     | relational_expr NE equality_expr
+                     | relational_expr EQ equality_expr'''
 
 def p_relational_expr(p):
     '''relational_expr : add_expr
@@ -97,17 +108,17 @@ def p_add_expr(p):
 
 def p_mult_expr(p):
     '''mult_expr : seq_expr
-                 | seq_expr mult_multiple
-       mult_multiple : mult_multiple TIMES seq_expr
-                     | mult_multiple DIVIDE seq_expr
-                     | mult_multiple MODULO seq_expr
-                     | TIMES seq_expr
-                     | DIVIDE seq_expr
-                     | MODULO seq_expr'''
+                 | seq_expr TIMES mult_expr
+                 | seq_expr DIVIDE mult_expr
+                 | seq_expr MODULO mult_expr'''
 
 def p_seq_expr(p):
     '''seq_expr : exp_expr
                 | exp_expr COLON exp_expr'''
+
+def p_exp_expr(p):
+    '''exp_expr : unary_expr
+                | unary_expr XOR exp_expr'''
 
 def p_unary_expr(p):
     '''unary_expr : postfix_expr
@@ -124,10 +135,10 @@ def p_postfix_expr(p):
                     | primary_expr LBRACKET expr COMMA expr RBRACKET
                     | primary_expr LPAREN RPAREN
                     | primary_expr LPAREN argument_expr_list RPAREN
-                    | primary_expr PERIOD IDENTIFIER'''
+                    | primary_expr PERIOD ID'''
 
 def p_primary_expr(p):
-    '''primary_expr : IDENTIFIER
+    '''primary_expr : ID
                     | constant
                     | LPAREN expr RPAREN'''
 
@@ -137,11 +148,13 @@ def p_argument_expr_list(p):
 
 def p_argument_expr(p):
     '''argument_expr : conditional_expr
-                     | IDENTIFIER EQ conditional_expr'''
+                     | ID EQUALS conditional_expr'''
 
 def p_constant(p):
-    '''constant : NUMBER_LITERAL
-                | STRING_LITERAL'''
+    '''constant : INTEGER
+                | FLOAT
+                | STRING
+                | CHARACTER'''
 
 def p_function_decl(p):
     '''function_decl : FUNCTION return_type_spec ID param_list compound_statement'''
@@ -150,8 +163,9 @@ def p_return_type_spec(p):
     '''return_type_spec : LPAREN type_spec RPAREN'''
 
 def p_type_spec(p):
-    '''type_spec : type_spec_options | type_spec_options DOLLAR
-        type_spec_options : TYPEVOID
+    '''type_spec : type_spec_options
+                 | type_spec_options DOLLAR
+       type_spec_options : TYPEVOID
         | TYPENULL
         | TYPELOGICAL
         | TYPEINTEGER
@@ -161,8 +175,7 @@ def p_type_spec(p):
         | TYPEOBJECT object_class_spec
         | TYPENUMERIC
         | PLUS
-        | TIMES
-        | '''
+        | TIMES'''
 
 def p_object_class_spec(p):
     '''object_class_spec : GT ID LT'''
@@ -177,14 +190,17 @@ def p_param_list(p):
 
 def p_param_spec(p):
     '''param_spec : type_spec ID
-        | LBRACKET type_spec ID EQ value_option RBRACKET
+        | LBRACKET type_spec ID EQUALS value_option RBRACKET
         value_option : constant
         | ID'''
 
 def p_eof(p):
-    '''EOF :'''
+    '''EOF : '''
     pass
 
+prog = "for(element in 1:20){square = element ^ 2;}"
+
 parser = yacc.yacc()
-s = input("input here:\n")
-parser.parse(s)
+# prog = input("input here:\n")
+parser.parse(prog)
+print("DONE")

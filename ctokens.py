@@ -42,7 +42,7 @@ tokens = [
     # Keywords (if, else, for, in, do, while, next, break, return, function,
     # void, NULL, logical, integer, float, string, object, numeric, $)
     'IF', 'ELSE', 'FOR', 'IN', 'DO', 'WHILE', 'NEXT', 'BREAK',
-    'RETURN', 'FUNCTION', 
+    'RETURN', 'FUNCTION',
     'TYPEVOID', 'TYPENULL', 'TYPELOGICAL', 'TYPEINTEGER', 'TYPEFLOAT', 'TYPESTRING',
     'TYPEOBJECT', 'TYPENUMERIC', 'DOLLAR'
 ]
@@ -154,3 +154,14 @@ def t_CPPCOMMENT(t):
     r'//.*\n'
     t.lexer.lineno += 1
     return t
+# t_EMPTY         = r''
+
+t_ignore = " \t"
+
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += t.value.count("\n")
+
+def t_error(t):
+    print("Illegal character '%s'" % t.value[0])
+    t.lexer.skip(1)
