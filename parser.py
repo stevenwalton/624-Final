@@ -253,11 +253,8 @@ def p_relational_expr(p):
 def p_add_expr(p):
     '''
     add_expr : mult_expr
-             | mult_expr add_multiple
-       add_multiple : add_multiple PLUS mult_expr
-                    | add_multiple MINUS mult_expr
-                    | PLUS mult_expr
-                    | MINUS mult_expr
+             | add_expr PLUS mult_expr
+             | add_expr MINUS mult_expr
     '''
     print("\nadd expr: ",end="")
     for i in range(len(p)):
@@ -471,7 +468,7 @@ def p_eof(p):
     #return p[0]
 
 #prog = "for(element in 1:20){square = element ^ 2;}"
-prog = "{x=x/5;}"
+prog = "{x=n*5;y=m+5;}"
 
 
 parser = yacc.yacc()
