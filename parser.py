@@ -34,11 +34,16 @@ def p_compound_statement(p):
     compound_statement : LBRACE RBRACE
                        | LBRACE compound_multiple RBRACE
     '''
-    #p[0] = p[2]
-    #print(p[0])
     print("\ncompound stmt: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    if p[1] == '{':
+        if p[2] == '}':
+            pass
+        else:
+            p[0] = p[2]
+    else:
+        p[0] = p[1]
 
 def p_statement(p):
     '''
@@ -55,7 +60,6 @@ def p_statement(p):
     print("\nstmt: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    # only w/ constant
     p[0] = p[1]
 
 def p_open_statement(p):
@@ -66,6 +70,17 @@ def p_open_statement(p):
     print("\nopen stmt: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # This one needs to be checked
+    if len(p) > 5:
+        if p[3]:
+            p[0] = p[5]
+        else:
+            p[0] = p[7]
+    else:
+        if p[3]:
+            p[0] = p[5]
+        else:
+            pass
 
 def p_closed_statement(p):
     '''
@@ -75,6 +90,11 @@ def p_closed_statement(p):
     print("\nclosed stmt: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    if p[3]:
+        p[0] = p[5]
+    else:
+        if len(p) > 5:
+            p[0] = p[7]
 
 def p_expr_statement(p):
     '''
@@ -84,9 +104,8 @@ def p_expr_statement(p):
     print("\nexpr stmt: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    #if len(p) > 3:
-    #    p[1] = p[3]
-    p[0] = p[1]
+    if p[1] != ';':
+        p[0] = p[1]
 
 def p_selection_statement(p):
     '''
@@ -96,10 +115,12 @@ def p_selection_statement(p):
     print("\nselection stmt: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-#    #'''
-#    #selection_statement : IF LPAREN expr RPAREN statement
-#    #                    | IF LPAREN expr RPAREN statement ELSE statement
-#    #'''
+    if p[3]:
+        p[0] = p[5]
+    else:
+        if len(p) > 5:
+            p[0] = p[7]
+
 
 def p_for_statement(p):
     '''
@@ -108,6 +129,7 @@ def p_for_statement(p):
     print("\nfor stmt: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+
 
 def p_do_while_statement(p):
     '''
@@ -143,6 +165,7 @@ def p_expr(p):
     print("\nexpr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    p[0] = p[1]
 
 def p_assignment_expr(p):
     '''
@@ -153,7 +176,10 @@ def p_assignment_expr(p):
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
     # only w/ constant
-    p[0] = p[1]
+    if len(p) <= 3 :
+        p[0] = p[1]
+    else:
+        p[0] = (p[2],p[1],p[3])
 
 def p_conditional_expr(p):
     '''
@@ -439,7 +465,7 @@ def p_eof(p):
     #return p[0]
 
 #prog = "for(element in 1:20){square = element ^ 2;}"
-prog = "5;"
+prog = "{x=5;}"
 
 
 parser = yacc.yacc()
