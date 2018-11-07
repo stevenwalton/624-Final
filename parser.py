@@ -388,11 +388,10 @@ def p_eof(p):
     pass
 
 #prog = "for(element in 1:20){square = element ^ 2;}"
-prog = "if(T|F)x=5;"
+prog = "x=5;"
 
 
 parser = yacc.yacc()
 # prog = input("input here:\n",end="")
-prog = prog.strip()
 parser.parse(prog)
-print("DONE")
+print("\n=====\nDONE\n=====")
