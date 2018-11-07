@@ -262,33 +262,39 @@ def p_add_expr(p):
     print("\nadd expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    if len(p) <= 3:
-        p[0] = p[1]
-    elif p[2] == "+":
-        p[0] = p[1] + p[3]
-    elif p[2] == "-":
-        p[0] = p[1] - p[3]
+    if len(p) < 3:
+      p[0] = p[1]
+    else:
+      p[0] = (p[2], p[1], p[3])
+    # elif p[2] == "+":
+    #     p[0] = p[1] + p[3]
+    # elif p[2] == "-":
+    #     p[0] = p[1] - p[3]
 
 def p_mult_expr(p):
     '''
     mult_expr : seq_expr
-              | seq_expr TIMES mult_expr
-              | seq_expr DIVIDE mult_expr
-              | seq_expr MODULO mult_expr
+              | mult_expr TIMES seq_expr
+              | mult_expr DIVIDE seq_expr
+              | mult_expr MODULO seq_expr
     '''
     print("\nmult expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    if len(p) <= 3 :
-        p[0] = p[1]
-    elif p[2] == "*":
-        p[0] = p[1] * p[3]
-    elif p[2] == "/":
-        p[0] = p[1] / p[3]
-    elif p[3] == "%":
-        p[0] = p[1] % p[3]
+    if len(p) < 3:
+      p[0] = p[1]
     else:
-        print("ERROR!!! Don't know symbol: ",p[2])
+      p[0] = (p[2], p[1], p[3])
+    # if len(p) <= 3 :
+    #     p[0] = p[1]
+    # elif p[2] == '*':
+    #     p[0] = p[1] * p[3]
+    # elif p[2] == '/':
+    #     p[0] = p[1] / p[3]
+    # elif p[2] == '%':
+    #     p[0] = p[1] % p[3]
+    # else:
+    #     print("ERROR!!! Don't know symbol: ",p[2])
 
 def p_seq_expr(p):
     '''
@@ -465,7 +471,7 @@ def p_eof(p):
     #return p[0]
 
 #prog = "for(element in 1:20){square = element ^ 2;}"
-prog = "{x=5;}"
+prog = "{x=x/5;}"
 
 
 parser = yacc.yacc()
