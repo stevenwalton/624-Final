@@ -187,6 +187,7 @@ def p_equality_expr(p):
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
 
+
 def p_relational_expr(p):
     '''
     relational_expr : add_expr
@@ -216,6 +217,10 @@ def p_add_expr(p):
     print("\nadd expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    if p[2] == "+":
+        p[0] = p[1] + p[3]
+    elif p[2] == "-":
+        p[0] = p[1] - p[3]
 
 def p_mult_expr(p):
     '''
@@ -227,6 +232,14 @@ def p_mult_expr(p):
     print("\nmult expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    if p[2] == "*":
+        p[0] = p[1] * p[3]
+    elif p[2] == "/":
+        p[0] = p[1] / p[3]
+    elif p[3] == "%":
+        p[0] = p[1] % p[3]
+    else:
+        print("ERROR!!! Don't know symbol: ",p[2])
 
 def p_seq_expr(p):
     '''
@@ -236,6 +249,8 @@ def p_seq_expr(p):
     print("\nseq expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 def p_exp_expr(p):
     '''
@@ -245,6 +260,8 @@ def p_exp_expr(p):
     print("\nexp expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 def p_unary_expr(p):
     '''
@@ -256,6 +273,8 @@ def p_unary_expr(p):
     print("\nunary expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 # Split this into 3!!!
 def p_postfix_expr(p):
@@ -273,6 +292,8 @@ def p_postfix_expr(p):
     print("\npostfix expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 def p_primary_expr(p):
     '''
@@ -283,6 +304,10 @@ def p_primary_expr(p):
     print("\nprimary expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only with constant
+    p[0] = p[1]
+
+
 
 def p_argument_expr_list(p):
     '''
@@ -312,6 +337,8 @@ def p_constant(p):
     print("\nconst: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    p[0] = p[1]
+
 
 def p_function_decl(p):
     '''
@@ -386,12 +413,14 @@ def p_eof(p):
     EOF : 
     '''
     pass
+    #return p[0]
 
 #prog = "for(element in 1:20){square = element ^ 2;}"
-prog = "x=5;"
+prog = "5;"
 
 
 parser = yacc.yacc()
 # prog = input("input here:\n",end="")
-parser.parse(prog)
+result = parser.parse(prog)
 print("\n=====\nDONE\n=====")
+print("Result: ",result)

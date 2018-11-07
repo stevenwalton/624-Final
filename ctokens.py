@@ -165,3 +165,13 @@ def t_newline(t):
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
+
+#def t_eof(t):
+#    print("\n")
+#    more = input('Enter more input (none to quit): ')
+#    if more == 'q' or 'Q' or 'exit':
+#        return None
+#    if more:
+#        t.lexer.input(more)
+#        return t.lexer.token()
+#    return None
