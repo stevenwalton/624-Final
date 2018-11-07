@@ -1,0 +1,6 @@
+ply/*
+*.sw?
+*.out
+__*__
+*.pyc
+parsetab.py

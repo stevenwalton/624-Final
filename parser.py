@@ -23,6 +23,8 @@ def p_interpreter_block(p):
     print("\ninterp_block: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 
 def p_compound_statement(p):
@@ -53,6 +55,8 @@ def p_statement(p):
     print("\nstmt: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 def p_open_statement(p):
     '''
@@ -80,6 +84,9 @@ def p_expr_statement(p):
     print("\nexpr stmt: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    #if len(p) > 3:
+    #    p[1] = p[3]
+    p[0] = p[1]
 
 def p_selection_statement(p):
     '''
@@ -145,6 +152,8 @@ def p_assignment_expr(p):
     print("\nassignment expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 def p_conditional_expr(p):
     '''
@@ -154,6 +163,8 @@ def p_conditional_expr(p):
     print("\ncond expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 def p_logical_or_expr(p):
     '''
@@ -165,6 +176,8 @@ def p_logical_or_expr(p):
     print("\nor expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 def p_logical_and_expr(p):
     '''
@@ -176,6 +189,8 @@ def p_logical_and_expr(p):
     print("\nand expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 def p_equality_expr(p):
     '''
@@ -186,6 +201,8 @@ def p_equality_expr(p):
     print("\nequality expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 
 def p_relational_expr(p):
@@ -204,6 +221,8 @@ def p_relational_expr(p):
     print("\nrelational expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # only w/ constant
+    p[0] = p[1]
 
 def p_add_expr(p):
     '''
@@ -217,7 +236,9 @@ def p_add_expr(p):
     print("\nadd expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    if p[2] == "+":
+    if len(p) <= 3:
+        p[0] = p[1]
+    elif p[2] == "+":
         p[0] = p[1] + p[3]
     elif p[2] == "-":
         p[0] = p[1] - p[3]
@@ -232,7 +253,9 @@ def p_mult_expr(p):
     print("\nmult expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    if p[2] == "*":
+    if len(p) <= 3 :
+        p[0] = p[1]
+    elif p[2] == "*":
         p[0] = p[1] * p[3]
     elif p[2] == "/":
         p[0] = p[1] / p[3]
