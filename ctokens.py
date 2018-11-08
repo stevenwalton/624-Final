@@ -9,7 +9,7 @@
 
 tokens = [
     # Literals (identifier, integer constant, float constant, string constant, char const)
-    'ID', 'TYPEID', 'INTEGER', 'FLOAT', 'STRING', 'CHARACTER',
+    'ID', 'TYPEID', 'INTEGER', 'FLOAT', 'STRING', 'CHARACTER', 'TRUE', 'FALSE',
 
     # Operators (+,-,*,/,%,|,&,~,^,<<,>>, ||, &&, !, <, <=, >, >=, ==, !=)
     'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'MODULO',
@@ -142,6 +142,10 @@ t_STRING = r'\"([^\\\n]|(\\.))*?\"'
 
 # Character constant 'c' or L'c'
 t_CHARACTER = r'(L)?\'([^\\\n]|(\\.))*?\''
+
+# BOOLS!!! (boo)
+t_TRUE  = r'T'
+t_FALSE = r'F'
 
 # Comment (C-Style)
 def t_COMMENT(t):

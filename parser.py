@@ -24,24 +24,28 @@ def p_interpreter_block(p):
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
     # only w/ constant
-    p[0] = p[1]
+    if len(p) > 2 and p[2] != None:
+        p[0] = (p[1],p[2])
+    else:
+        p[0] = p[1]
 
 
 def p_compound_statement(p):
     '''
-    compound_multiple : compound_multiple statement
-                      | statement
     compound_statement : LBRACE RBRACE
-                       | LBRACE compound_multiple RBRACE
+                       | LBRACE stmt RBRACE
+    stmt : statement
+         | statement stmt 
     '''
     print("\ncompound stmt: ",end="")
+    # Note: Nests the statements
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
     if p[1] == '{':
-        if p[2] == '}':
-            pass
-        else:
+        if p[2] != '}':
             p[0] = p[2]
+    elif len(p) > 2:
+        p[0] = (p[1],p[2])
     else:
         p[0] = p[1]
 
@@ -215,8 +219,40 @@ def p_logical_and_expr(p):
     print("\nand expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    # only w/ constant
-    p[0] = p[1]
+    if len(p) > 2:
+        p[0] = (p[1],p[2])
+    else:
+        p[0] = p[1]
+    ## Hacky way. Should break things up
+    #try:
+    #    if p[1] == '&':
+    #        p[0] = p[2]
+    #    else:
+    #        # Check p[1]
+    #        if p[1] == 'T':
+    #            p[1] = True
+    #        elif p[1] == 'F':
+    #            p[1] = False
+    #        else:
+    #            pass
+
+    #        # Check p[2]
+    #        if p[2] == 'T':
+    #            p[2] = True
+    #        elif p[2] == 'F':
+    #            p[2] = False
+    #        else:
+    #            pass
+
+    #        if p[1] and p[2]:
+    #            p[0] = t_TRUE
+    #        else:
+    #            p[0] = t_FALSE
+    #except:
+    #    p[0] = p[1]
+
+            
+
 
 def p_equality_expr(p):
     '''
@@ -385,6 +421,8 @@ def p_constant(p):
              | FLOAT
              | STRING
              | CHARACTER
+             | TRUE
+             | FALSE
     '''
     print("\nconst: ",end="")
     for i in range(len(p)):
@@ -462,13 +500,13 @@ def p_param_spec(p):
 
 def p_eof(p):
     '''
-    EOF : 
+    EOF :
     '''
     pass
     #return p[0]
 
 #prog = "for(element in 1:20){square = element ^ 2;}"
-prog = "{x=n*5;y=m+5;}"
+prog = "x=5+3;y=45-3;z=7;"
 
 
 parser = yacc.yacc()
