@@ -34,7 +34,7 @@ def p_compound_statement(p):
     compound_statement : LBRACE RBRACE
                        | LBRACE stmt RBRACE
     stmt : statement
-         | statement stmt 
+         | statement stmt
     '''
     print("\ncompound stmt: ",end="")
     # Note: Nests the statements
@@ -74,14 +74,18 @@ def p_open_statement(p):
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
     # This one needs to be checked
-    if len(p) > 5:
-        if p[3]:
-            p[0] = p[5]
-        else:
-            p[0] = p[7]
-    else:
-        if p[3]:
-            p[0] = p[5]
+    # if len(p) > 5:
+    #     if p[3]:
+    #         p[0] = p[5]
+    #     else:
+    #         p[0] = p[7]
+    # else:
+    #     if p[3]:
+    #         p[0] = p[5]
+    if len(p) == 6:
+        p[0] = (p[1], p[3], p[5])
+    elif len(p) == 8:
+        p[0] = ("IF_ELSE", p[3], p[5], p[7])
 
 # FIX
 def p_closed_statement(p):
@@ -200,7 +204,7 @@ def p_assignment_expr(p):
 
 def p_conditional_expr(p):
     '''
-    conditional_expr : logical_or_expr 
+    conditional_expr : logical_or_expr
                      | conditional_else_expr
     '''
     #'''
@@ -318,6 +322,7 @@ def p_relational_expr(p):
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
     l = len(p)
+    print(l)
     if l == 2:
         p[0] = p[1]
     elif l == 3:
@@ -600,8 +605,8 @@ def p_eof(p):
 
 #prog = "for(element in 1:20){square = element ^ 2;}"
 #prog = "x=5+3;y=45-3;z=7;"
-prog = "(1,2,);"
-#prog = "if(x==y)z=3;"
+# prog = "(1,2,);"
+prog = "if(x==y)3;"
 
 
 parser = yacc.yacc()
