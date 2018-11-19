@@ -309,29 +309,52 @@ def p_relational_expr(p):
     '''
     relational_expr : add_expr
                     | add_expr relational_multiple
-       relational_multiple : relational_multiple LT add_expr
-                           | relational_expr LE add_expr
-                           | relational_expr GT add_expr
-                           | relational_expr GE add_expr
-                           | LT add_expr
-                           | LE add_expr
-                           | GT add_expr
-                           | GE add_expr
     '''
+    # Split into two
+    #   relational_multiple : relational_multiple LT add_expr
+    #                       | relational_expr LE add_expr
+    #                       | relational_expr GT add_expr
+    #                       | relational_expr GE add_expr
+    #                       | LT add_expr
+    #                       | LE add_expr
+    #                       | GT add_expr
+    #                       | GE add_expr
+    #'''
     print("\nrelational expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    l = len(p)
-    print(l)
-    if l == 2:
-        p[0] = p[1]
-    elif l == 3:
+    if len(p) == 3:
         p[0] = (p[1],p[2])
-    elif l == 4:
+    else:
+        p[0] = p[1]
+    #if l == 2:
+    #    p[0] = p[1]
+    #elif l == 3:
+    #    p[0] = (p[1],p[2])
+    #elif l == 4:
+    #    p[0] = (p[2],p[1],p[3])
+    #else:
+    #    # Needs better error
+    #    print("Can not handle this relational function")
+
+def p_relational_multiple(p):
+    '''
+    relational_multiple : relational_multiple LT add_expr
+                        | relational_expr LE add_expr
+                        | relational_expr GT add_expr
+                        | relational_expr GE add_expr
+                        | LT add_expr
+                        | LE add_expr
+                        | GT add_expr
+                        | GE add_expr
+    '''
+    print("\nrelational multiple expr: ",end="")
+    for i in range(len(p)):
+        print(i," ",p[i], " ",end="")
+    if len(p) == 4:
         p[0] = (p[2],p[1],p[3])
     else:
-        # Needs better error
-        print("Can not handle this relational function")
+        p[0] = (p[1],p[2])
 
 
 def p_add_expr(p):
@@ -362,7 +385,7 @@ def p_mult_expr(p):
     print("\nmult expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    if len(p) < 3:
+    if len(p) == 2:
       p[0] = p[1]
     else:
       p[0] = (p[2], p[1], p[3])
@@ -451,17 +474,17 @@ def p_multi_expr(p):
                | expr
     '''
     l = len(p)
-    if l < 3:
-        p[0] = p[1]
+    if l == 4:
+        p[0] = (p[1],p[3])
     else:
-        p[0] = (p[2],p[1],p[3])
+        p[0] = p[1]
 
 def p_argument_array(p):
     '''
     argument_array : primary_expr LPAREN RPAREN
                    | primary_expr LPAREN argument_expr_list RPAREN
     '''
-    if len(p) > 3:
+    if len(p) == 5:
         p[0] = (p[1],p[3])
     else:
         p[0] = p[1]
@@ -481,7 +504,7 @@ def p_primary_expr(p):
     print("\nprimary expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    if p[1] == '(':
+    if len(p) == 4:
         p[0] = p[2]
     else:
         p[0] = p[1]
@@ -496,7 +519,8 @@ def p_argument_expr_list(p):
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
     if len(p) > 2:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = (p[1],p[3])
     else:
         p[0] = p[1]
 
@@ -528,6 +552,7 @@ def p_constant(p):
     p[0] = p[1]
 
 
+# FIX
 def p_function_decl(p):
     '''
     function_decl : FUNCTION return_type_spec ID param_list compound_statement
@@ -535,6 +560,8 @@ def p_function_decl(p):
     print("\nfun decl: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    # Don't think this is right
+    p[0] = (p[1], p[2], p[3], p[4], p[5])
 
 def p_return_type_spec(p):
     '''
@@ -543,27 +570,44 @@ def p_return_type_spec(p):
     print("\nreturn type spec: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    p[0] = p[2]
 
+# Split into two
+# FIX
 def p_type_spec(p):
     '''
     type_spec : type_spec_options
               | type_spec_options DOLLAR
-       type_spec_options : TYPEVOID
-                         | TYPENULL
-                         | TYPELOGICAL
-                         | TYPEINTEGER
-                         | TYPEFLOAT
-                         | TYPESTRING
-                         | TYPEOBJECT
-                         | TYPEOBJECT object_class_spec
-                         | TYPENUMERIC
-                         | PLUS
-                         | TIMES
     '''
     print("\ntype spec: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    p[0] = p[1] # Do I need $?
 
+# FIX
+def p_type_spec_option(p):
+    '''
+    type_spec_options : TYPEVOID
+                      | TYPENULL
+                      | TYPELOGICAL
+                      | TYPEINTEGER
+                      | TYPEFLOAT
+                      | TYPESTRING
+                      | TYPEOBJECT
+                      | TYPEOBJECT object_class_spec
+                      | TYPENUMERIC
+                      | PLUS
+                      | TIMES
+    '''
+    print("\ntype spec option: ",end="")
+    for i in range(len(p)):
+        print(i," ",p[i], " ",end="")
+    if len(p) == 3:
+        p[0] = (p[1],p[2]) #???
+    else:
+        p[0] = p[1]
+
+# FIX
 def p_object_class_spec(p):
     '''
     object_class_spec : GT ID LT
@@ -571,28 +615,77 @@ def p_object_class_spec(p):
     print("\nobject class spec: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    p[0] = p[2]
 
+# Split into 3
 def p_param_list(p):
     '''
     param_list : LPAREN param_option RPAREN
-    param_option : TYPEVOID
-                 | param_spec
-                 | param_spec param_spec_multiple
-    param_spec_multiple : COMMA param_spec
-                        | param_spec_multiple COMMA param_spec
     '''
+    #param_option : TYPEVOID
+    #             | param_spec
+    #             | param_spec param_spec_multiple
+    #param_spec_multiple : COMMA param_spec
+    #                    | param_spec_multiple COMMA param_spec
+    #'''
     print("\nparam list: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    p[0] = p[2]
+    #for i in range(len(p)):
+    #    print(i," ",p[i], " ",end="")
+    #if p[1] == '(' and p[3] == ')':
+    #    p[0] = p[2]
+    #elif p[1] == ',':
+    #    p[0] = p[2]
+    #elif p[2] == ',':
+    #    p[0] = (p[1],p[3])
+    #else:
+    #    p[0] = p[1]
+
+def p_param_option(p):
+    '''
+    param_option : TYPEVOID
+                 | param_spec
+                 | param_spec param_spec_multiple
+    '''
+    print("\nparam option: ",end="")
+    for i in range(len(p)):
+        print(i," ",p[i], " ",end="")
+    if len(p) == 3:
+        p[0] = (p[1],p[2])
+    else:
+        p[0] = p[1]
+
+def p_param_spec_multiple(p):
+    '''
+    param_spec_multiple : COMMA param_spec
+                        | param_spec_multiple COMMA param_spec
+    '''
+    print("\nparam spec mult: ",end="")
+    for i in range(len(p)):
+        print(i," ",p[i], " ",end="")
+    if len(p) == 4:
+        p[0] = (p[1],p[3])
+    else:
+        p[0] = p[2]
 
 def p_param_spec(p):
     '''
     param_spec : type_spec ID
                | LBRACKET type_spec ID EQUALS value_option RBRACKET
+    '''
+    print("\nparam spec: ",end="")
+    for i in range(len(p)):
+        print(i," ",p[i], " ",end="")
+    
+
+def p_value_option(p):
+    '''
     value_option : constant
                  | ID
     '''
-    print("\nparam spec: ",end="")
+    print("\nvalue option: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
 
