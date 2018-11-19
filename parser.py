@@ -207,10 +207,6 @@ def p_conditional_expr(p):
     conditional_expr : logical_or_expr
                      | conditional_else_expr
     '''
-    #'''
-    #conditional_expr : logical_or_expr
-    #                 | logical_or_expr TERNARY conditional_expr ELSE conditional_expr
-    #'''
     print("\ncond expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
@@ -228,38 +224,59 @@ def p_logical_or_expr(p):
     '''
     logical_or_expr : logical_and_expr
                     | logical_and_expr or_multiple
-       or_multiple : or_multiple OR logical_and_expr
-                   | OR logical_and_expr
     '''
     print("\nor expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
     # only w/ constant
     l = len(p)
-    if l == 2:
+    if l == 3:
+        p[0] = (p[1], p[2])
+    else:
         p[0] = p[1]
-    elif l == 3:
-        p[0] = (p[1],p[2])
-    elif l == 4:
+    #if l == 2:
+    #    p[0] = p[1]
+    #elif l == 3:
+    #    p[0] = (p[1],p[2])
+    #elif l == 4:
+    #    p[0] = (p[2],p[1],p[3])
+
+def p_or_multiple(p):
+    '''
+    or_multiple : or_multiple OR logical_and_expr
+                | OR logical_and_expr
+    '''
+    print("\nor mult expr: ",end="")
+    for i in range(len(p)):
+        print(i," ",p[i], " ",end="")
+    l = len(p)
+    if l == 4:
         p[0] = (p[2],p[1],p[3])
+    else:
+        p[0] = (p[1],p[2])
 
 def p_logical_and_expr(p):
     '''
     logical_and_expr : equality_expr
                      | equality_expr and_multiple
-       and_multiple : and_multiple AND equality_expr
-                    | AND equality_expr
     '''
+    #   and_multiple : and_multiple AND equality_expr
+    #                | AND equality_expr
+    #'''
     print("\nand expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
     l = len(p)
-    if l == 2:
-        p[0] = p[1]
-    elif l == 3:
+    if l == 3:
         p[0] = (p[1],p[2])
-    elif l == 4:
-        p[0] = (p[2],p[1],p[3])
+    else:
+        p[0] = p[1]
+    #if l == 2:
+    #    p[0] = p[1]
+    #elif l == 3:
+    #    p[0] = (p[1],p[2])
+    #elif l == 4:
+    #    p[0] = (p[2],p[1],p[3])
     ## Hacky way. Should break things up
     #try:
     #    if p[1] == '&':
@@ -287,6 +304,20 @@ def p_logical_and_expr(p):
     #            p[0] = t_FALSE
     #except:
     #    p[0] = p[1]
+def p_and_multiple(p):
+    '''
+       and_multiple : and_multiple AND equality_expr
+                    | AND equality_expr
+    '''
+    print("\nand mult expr: ",end="")
+    for i in range(len(p)):
+        print(i," ",p[i], " ",end="")
+    l = len(p)
+    if l == 4:
+        p[0] = (p[2],p[1],p[3])
+    else:
+        p[0] = (p[1],p[2])
+
 
 def p_equality_expr(p):
     '''
@@ -310,16 +341,6 @@ def p_relational_expr(p):
     relational_expr : add_expr
                     | add_expr relational_multiple
     '''
-    # Split into two
-    #   relational_multiple : relational_multiple LT add_expr
-    #                       | relational_expr LE add_expr
-    #                       | relational_expr GT add_expr
-    #                       | relational_expr GE add_expr
-    #                       | LT add_expr
-    #                       | LE add_expr
-    #                       | GT add_expr
-    #                       | GE add_expr
-    #'''
     print("\nrelational expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
@@ -327,15 +348,6 @@ def p_relational_expr(p):
         p[0] = (p[1],p[2])
     else:
         p[0] = p[1]
-    #if l == 2:
-    #    p[0] = p[1]
-    #elif l == 3:
-    #    p[0] = (p[1],p[2])
-    #elif l == 4:
-    #    p[0] = (p[2],p[1],p[3])
-    #else:
-    #    # Needs better error
-    #    print("Can not handle this relational function")
 
 def p_relational_multiple(p):
     '''
@@ -366,14 +378,14 @@ def p_add_expr(p):
     print("\nadd expr: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    if len(p) < 3:
-      p[0] = p[1]
+    if len(p) == 4:
+        p[0] = (p[2],p[1],p[3])
     else:
-      p[0] = (p[2], p[1], p[3])
-    # elif p[2] == "+":
-    #     p[0] = p[1] + p[3]
-    # elif p[2] == "-":
-    #     p[0] = p[1] - p[3]
+        p[0] = p[1]
+    #if len(p) < 3:
+    #  p[0] = p[1]
+    #else:
+    #  p[0] = (p[2], p[1], p[3])
 
 def p_mult_expr(p):
     '''
@@ -670,6 +682,7 @@ def p_param_spec_multiple(p):
     else:
         p[0] = p[2]
 
+# FIX
 def p_param_spec(p):
     '''
     param_spec : type_spec ID
@@ -678,7 +691,10 @@ def p_param_spec(p):
     print("\nparam spec: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
-    
+    if len(p) == 7:
+        p[0] = (p[2],p[3],p[5])
+    else:
+        p[0] = (p[1],p[2])
 
 def p_value_option(p):
     '''
@@ -688,6 +704,7 @@ def p_value_option(p):
     print("\nvalue option: ",end="")
     for i in range(len(p)):
         print(i," ",p[i], " ",end="")
+    p[0] = p[1]
 
 def p_eof(p):
     '''
@@ -698,12 +715,15 @@ def p_eof(p):
 
 #prog = "for(element in 1:20){square = element ^ 2;}"
 #prog = "x=5+3;y=45-3;z=7;"
-# prog = "(1,2,);"
-prog = "if(x==y)3;"
+prog = "if(x==y)z=3;"
+#prog = 'x=5+3;'
+#prog = 'do{factorial = factorial * counter;counter = counter -1;} while(counter > 0); '
 
 
 parser = yacc.yacc()
 # prog = input("input here:\n",end="")
-result = parser.parse(prog)
+result = parser.parse(prog, debug=True)
 print("\n=====\nDONE\n=====")
+print("Parsed: ", end="")
+print(prog)
 print("Result: ",result)
