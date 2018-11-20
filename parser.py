@@ -677,11 +677,7 @@ def p_constant(p):
     p[0] = p[1]
 
 
-#####################
-## Checked up to here
-#####################
 
-# FIX
 def p_function_decl(p):
     '''
     function_decl : FUNCTION return_type_spec ID param_list compound_statement
@@ -704,7 +700,6 @@ def p_return_type_spec(p):
     p[0] = p[2]
 
 # Split into two
-# FIX
 def p_type_spec(p):
     '''
     type_spec : type_spec_options
@@ -714,9 +709,10 @@ def p_type_spec(p):
         print("\ntype spec: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    p[0] = p[1] # Do I need $?
+    p[0] = p[1] # Do I need $? No
 
-# FIX
+
+#Do we want to include the singleton types?
 def p_type_spec_option(p):
     '''
     type_spec_options : TYPEVOID
@@ -740,7 +736,6 @@ def p_type_spec_option(p):
     else:
         p[0] = p[1]
 
-# FIX
 def p_object_class_spec(p):
     '''
     object_class_spec : GT ID LT
@@ -750,6 +745,7 @@ def p_object_class_spec(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     p[0] = p[2]
+
 
 # Split into 3
 def p_param_list(p):
@@ -803,11 +799,16 @@ def p_param_spec_multiple(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[1],p[3])
+        p[0] = (p[1],p[3]) 
     else:
         p[0] = p[2]
 
+
+#####################
+## Checked up to here
+#####################
 # FIX
+# Needs type checking eventually
 def p_param_spec(p):
     '''
     param_spec : type_spec ID
@@ -818,7 +819,7 @@ def p_param_spec(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 7:
-        p[0] = (p[2],p[3],p[5])
+        p[0] = (p[4],p[2],p[3],p[5])
     else:
         p[0] = (p[1],p[2])
 
@@ -842,8 +843,8 @@ def p_eof(p):
 
 # prog = input("input here:\n",end="")
 
-#prog = 'c(1,2,3);'
-prog = 'if (F) break;'
+prog = 'c(1,2,3);'
+#prog = 'if (F) break;'
 #prog = 'if (F) x=12;'
 #prog = 'if (F) break; else 42'
 #prog = 'cmColors(0);'
