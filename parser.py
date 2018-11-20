@@ -150,6 +150,10 @@ def p_expr_statement(p):
     if p[1] != ';':
         p[0] = p[1]
 
+
+#####
+# Requires a ";" after the ")" of the "if" expression and after the "else" to work
+#####
 def p_selection_statement(p):
     #'''
     #selection_statement : IF LPAREN expr RPAREN statement
@@ -619,8 +623,8 @@ def p_object_call(p):
 
 def p_primary_expr(p):
     '''
-    primary_expr : ID
-                 | constant
+    primary_expr : constant
+                 | ID
                  | LPAREN expr RPAREN
     '''
     if DEBUG:
@@ -843,15 +847,17 @@ def p_eof(p):
 
 # prog = input("input here:\n",end="")
 
-prog = 'c(1,2,3);'
-#prog = 'if (F) break;'
+#prog = 'c(1,2,3);'
+#prog = 'if (F); break;'
 #prog = 'if (F) x=12;'
-#prog = 'if (F) break; else 42'
+#prog = 'if (F); break; else; 42;'
 #prog = 'cmColors(0);'
 #prog = 'integerDiv(6, y=3);'
 #prog = 'T==F;'
 #prog = 'T | F;'
 #prog = 'T & F;'
+
+prog = 'while(x==5); break;'
 
 
 parser = yacc.yacc()
