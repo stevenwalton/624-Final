@@ -14,16 +14,26 @@ lexer = lex.lex()
 def p_interpreter_block(p):
     '''
     interpreter_block : EOF
-                      | block_multiple EOF
-       block_multiple : block_multiple statement
-                      | block_multiple function_decl
-                      | statement
-                      | function_decl
+                      | interpreter_multiple_block EOF
     '''
-    print("\ninterp_block: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
-    if len(p) > 2 and p[2] != None:
+    if DEBUG:
+        print("\ninterp_block: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = p[1]
+
+def p_interpreter_multiple_block(p):
+    '''
+    interpreter_multiple_block : statement
+                               | function_decl
+                               | statement interpreter_multiple_block
+                               | function_decl interpreter_multiple_block
+    '''
+    if DEBUG:
+        print("\ninterp_mult_block: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    if len(p) == 3:
         p[0] = (p[1],p[2])
     else:
         p[0] = p[1]
@@ -36,10 +46,11 @@ def p_compound_statement(p):
     stmt : statement
          | statement stmt
     '''
-    print("\ncompound stmt: ",end="")
-    # Note: Nests the statements
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\ncompound stmt: ",end="")
+        # Note: Nests the statements
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if p[1] == '{':
         if p[2] != '}':
             p[0] = p[2]
@@ -60,9 +71,10 @@ def p_statement(p):
               | open_statement
               | closed_statement
     '''
-    print("\nstmt: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nstatement: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = p[1]
 
 def p_open_statement(p):
@@ -70,9 +82,10 @@ def p_open_statement(p):
     open_statement : IF LPAREN expr RPAREN statement
                    | IF LPAREN expr RPAREN closed_statement ELSE open_statement
     '''
-    print("\nopen stmt: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nopen stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     # This one needs to be checked
     # if len(p) > 5:
     #     if p[3]:
@@ -93,9 +106,10 @@ def p_closed_statement(p):
     closed_statement : statement
                      | IF LPAREN expr RPAREN closed_statement ELSE closed_statement
     '''
-    print("\nclosed stmt: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nclosed stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 2:
         p[0] = p[1]
     else:
@@ -111,9 +125,10 @@ def p_expr_statement(p):
     expr_statement : SEMI
                    | assignment_expr SEMI
     '''
-    print("\nexpr stmt: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nexpr stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if p[1] != ';':
         p[0] = p[1]
 
@@ -122,9 +137,10 @@ def p_selection_statement(p):
     selection_statement : IF LPAREN expr RPAREN statement
                         | IF LPAREN expr RPAREN closed_statement ELSE statement
     '''
-    print("\nselection stmt: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nselection statement: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 6:
         p[0] = (p[1],p[3],p[5])
     else:
@@ -140,9 +156,10 @@ def p_for_statement(p):
     '''
     for_statement : FOR LPAREN ID IN expr RPAREN statement
     '''
-    print("\nfor stmt: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nfor stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = (p[1],p[3],p[5],p[7])
 
 
@@ -150,18 +167,20 @@ def p_do_while_statement(p):
     '''
     do_while_statement : DO statement WHILE LPAREN expr RPAREN SEMI
     '''
-    print("\ndo while stmt: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\ndo while stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = ("DO_WHILE", p[2],p[5])
 
 def p_while_statement(p):
     '''
     while_statement : WHILE LPAREN expr RPAREN statement
     '''
-    print("\nwhile stmt: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nwhile stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = (p[1],p[3],p[5])
 
 def p_jump_statement(p):
@@ -171,9 +190,10 @@ def p_jump_statement(p):
                    | RETURN SEMI
                    | RETURN expr SEMI
     '''
-    print("\njmp stmt: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\njmp stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 4:
         p[0] = p[2]
     else:
@@ -183,9 +203,10 @@ def p_expr(p):
     '''
     expr : conditional_expr
     '''
-    print("\nexpr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nexpr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = p[1]
 
 def p_assignment_expr(p):
@@ -193,9 +214,10 @@ def p_assignment_expr(p):
     assignment_expr : conditional_expr
                     | conditional_expr EQUALS conditional_expr
     '''
-    print("\nassignment expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nassignment expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     # only w/ constant
     if len(p) <= 3 :
         p[0] = p[1]
@@ -207,59 +229,81 @@ def p_conditional_expr(p):
     conditional_expr : logical_or_expr
                      | conditional_else_expr
     '''
-    #'''
-    #conditional_expr : logical_or_expr
-    #                 | logical_or_expr TERNARY conditional_expr ELSE conditional_expr
-    #'''
-    print("\ncond expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\ncond expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = p[1]
 
 def p_conditional_else_expr(p):
     '''
     conditional_else_expr : logical_or_expr TERNARY conditional_expr ELSE conditional_expr
     '''
-    print("\nConditional Else: ",end="")
-    # Note: doesn't have "ELSE"
-    p[0] = ("IF_ELSE", p[1], p[3],p[5])
+    if DEBUG:
+        print("\nConditional Else: ",end="")
+        # Note: doesn't have "ELSE"
+        p[0] = ("IF_ELSE", p[1], p[3],p[5])
 
 def p_logical_or_expr(p):
     '''
     logical_or_expr : logical_and_expr
                     | logical_and_expr or_multiple
-       or_multiple : or_multiple OR logical_and_expr
-                   | OR logical_and_expr
     '''
-    print("\nor expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nor expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     # only w/ constant
     l = len(p)
-    if l == 2:
+    if l == 3:
+        p[0] = (p[1], p[2])
+    else:
         p[0] = p[1]
-    elif l == 3:
-        p[0] = (p[1],p[2])
-    elif l == 4:
+    #if l == 2:
+    #    p[0] = p[1]
+    #elif l == 3:
+    #    p[0] = (p[1],p[2])
+    #elif l == 4:
+    #    p[0] = (p[2],p[1],p[3])
+
+def p_or_multiple(p):
+    '''
+    or_multiple : or_multiple OR logical_and_expr
+                | OR logical_and_expr
+    '''
+    if DEBUG:
+        print("\nor mult expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    l = len(p)
+    if l == 4:
         p[0] = (p[2],p[1],p[3])
+    else:
+        p[0] = (p[1],p[2])
 
 def p_logical_and_expr(p):
     '''
     logical_and_expr : equality_expr
                      | equality_expr and_multiple
-       and_multiple : and_multiple AND equality_expr
-                    | AND equality_expr
     '''
-    print("\nand expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    #   and_multiple : and_multiple AND equality_expr
+    #                | AND equality_expr
+    #'''
+    if DEBUG:
+        print("\nand expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     l = len(p)
-    if l == 2:
-        p[0] = p[1]
-    elif l == 3:
+    if l == 3:
         p[0] = (p[1],p[2])
-    elif l == 4:
-        p[0] = (p[2],p[1],p[3])
+    else:
+        p[0] = p[1]
+    #if l == 2:
+    #    p[0] = p[1]
+    #elif l == 3:
+    #    p[0] = (p[1],p[2])
+    #elif l == 4:
+    #    p[0] = (p[2],p[1],p[3])
     ## Hacky way. Should break things up
     #try:
     #    if p[1] == '&':
@@ -287,6 +331,21 @@ def p_logical_and_expr(p):
     #            p[0] = t_FALSE
     #except:
     #    p[0] = p[1]
+def p_and_multiple(p):
+    '''
+       and_multiple : and_multiple AND equality_expr
+                    | AND equality_expr
+    '''
+    if DEBUG:
+        print("\nand mult expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    l = len(p)
+    if l == 4:
+        p[0] = (p[2],p[1],p[3])
+    else:
+        p[0] = (p[1],p[2])
+
 
 def p_equality_expr(p):
     '''
@@ -294,9 +353,10 @@ def p_equality_expr(p):
                   | relational_expr NE equality_expr
                   | relational_expr EQ equality_expr
     '''
-    print("\nequality expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nequality expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 2:
         p[0] = p[1]
     elif len(p) == 4:
@@ -310,51 +370,45 @@ def p_relational_expr(p):
     relational_expr : add_expr
                     | add_expr relational_multiple
     '''
-    # Split into two
-    #   relational_multiple : relational_multiple LT add_expr
-    #                       | relational_expr LE add_expr
-    #                       | relational_expr GT add_expr
-    #                       | relational_expr GE add_expr
-    #                       | LT add_expr
-    #                       | LE add_expr
-    #                       | GT add_expr
-    #                       | GE add_expr
-    #'''
-    print("\nrelational expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nrelational expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 3:
         p[0] = (p[1],p[2])
     else:
         p[0] = p[1]
-    #if l == 2:
-    #    p[0] = p[1]
-    #elif l == 3:
-    #    p[0] = (p[1],p[2])
-    #elif l == 4:
-    #    p[0] = (p[2],p[1],p[3])
-    #else:
-    #    # Needs better error
-    #    print("Can not handle this relational function")
 
 def p_relational_multiple(p):
     '''
-    relational_multiple : relational_multiple LT add_expr
-                        | relational_expr LE add_expr
-                        | relational_expr GT add_expr
-                        | relational_expr GE add_expr
+    relational_multiple : LT relational_multiple
+                        | LE relational_multiple
+                        | GT relational_multiple
+                        | GE relational_multiple
                         | LT add_expr
                         | LE add_expr
                         | GT add_expr
                         | GE add_expr
     '''
-    print("\nrelational multiple expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
-    if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
-    else:
-        p[0] = (p[1],p[2])
+    #'''
+    #relational_multiple : relational_multiple LT add_expr
+    #                    | relational_expr LE add_expr
+    #                    | relational_expr GT add_expr
+    #                    | relational_expr GE add_expr
+    #                    | LT add_expr
+    #                    | LE add_expr
+    #                    | GT add_expr
+    #                    | GE add_expr
+    #'''
+    if DEBUG:
+        print("\nrelational multiple expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = (p[1],p[2])
+    #if len(p) == 4:
+    #    p[0] = (p[2],p[1],p[3])
+    #else:
+    #    p[0] = (p[1],p[2])
 
 
 def p_add_expr(p):
@@ -363,17 +417,18 @@ def p_add_expr(p):
              | add_expr PLUS mult_expr
              | add_expr MINUS mult_expr
     '''
-    print("\nadd expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
-    if len(p) < 3:
-      p[0] = p[1]
+    if DEBUG:
+        print("\nadd expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    if len(p) == 4:
+        p[0] = (p[2],p[1],p[3])
     else:
-      p[0] = (p[2], p[1], p[3])
-    # elif p[2] == "+":
-    #     p[0] = p[1] + p[3]
-    # elif p[2] == "-":
-    #     p[0] = p[1] - p[3]
+        p[0] = p[1]
+    #if len(p) < 3:
+    #  p[0] = p[1]
+    #else:
+    #  p[0] = (p[2], p[1], p[3])
 
 def p_mult_expr(p):
     '''
@@ -382,9 +437,10 @@ def p_mult_expr(p):
               | mult_expr DIVIDE seq_expr
               | mult_expr MODULO seq_expr
     '''
-    print("\nmult expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nmult expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 2:
       p[0] = p[1]
     else:
@@ -405,9 +461,10 @@ def p_seq_expr(p):
     seq_expr : exp_expr
              | exp_expr COLON exp_expr
     '''
-    print("\nseq expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nseq expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 4:
         p[0] = (p[2],p[1],p[3])
     else:
@@ -418,9 +475,10 @@ def p_exp_expr(p):
     exp_expr : unary_expr
              | unary_expr XOR exp_expr
     '''
-    print("\nexp expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nexp expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 4:
         p[0] = (p[2],p[1],p[3])
     else:
@@ -433,9 +491,10 @@ def p_unary_expr(p):
                | PLUS unary_expr
                | MINUS unary_expr
     '''
-    print("\nunary expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nunary expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 3:
         p[0] = (p[1],p[2])
     else:
@@ -449,9 +508,10 @@ def p_postfix_expr(p):
                  | argument_array
                  | object_call
     '''
-    print("\npostfix expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\npostfix expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = p[1]
 
 # We left out leading comma case (,exp,exp) and (,) because they are dumb
@@ -461,9 +521,10 @@ def p_expr_array(p):
     expr_array : primary_expr LBRACKET RBRACKET
                | primary_expr LBRACKET multi_expr RBRACKET
     '''
-    print("\nexpr_array: ",end="")
-    if len(p) == 4:
-        p[0] = p[1]
+    if DEBUG:
+        print("\nexpr_array: ",end="")
+        if len(p) == 4:
+            p[0] = p[1]
     else:
         p[0] = (p[1],p[3])
 
@@ -500,10 +561,13 @@ def p_primary_expr(p):
     primary_expr : ID
                  | constant
                  | LPAREN expr RPAREN
+                 | LPAREN FALSE RPAREN
+                 | LPAREN TRUE RPAREN
     '''
-    print("\nprimary expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nprimary expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 4:
         p[0] = p[2]
     else:
@@ -515,12 +579,14 @@ def p_argument_expr_list(p):
     argument_expr_list : argument_expr
                        | argument_expr COMMA argument_expr_list
     '''
-    print("\nargument expr lst: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
-    if len(p) > 2:
+    if DEBUG:
+        print("\nargument expr lst: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    #if len(p) > 2:
+    if len(p) == 4:
         #p[0] = (p[2],p[1],p[3])
-        p[0] = (p[1],p[3])
+        p[0] = (p[2],p[1],p[3])
     else:
         p[0] = p[1]
 
@@ -529,9 +595,10 @@ def p_argument_expr(p):
     argument_expr : conditional_expr
                   | ID EQUALS conditional_expr
     '''
-    print("\nargument expr: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nargument expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 4:
         p[0] = (p[2],p[1],p[3])
     else:
@@ -546,9 +613,10 @@ def p_constant(p):
              | TRUE
              | FALSE
     '''
-    print("\nconst: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nconst: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = p[1]
 
 
@@ -557,9 +625,10 @@ def p_function_decl(p):
     '''
     function_decl : FUNCTION return_type_spec ID param_list compound_statement
     '''
-    print("\nfun decl: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nfun decl: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     # Don't think this is right
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
@@ -567,9 +636,10 @@ def p_return_type_spec(p):
     '''
     return_type_spec : LPAREN type_spec RPAREN
     '''
-    print("\nreturn type spec: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nreturn type spec: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = p[2]
 
 # Split into two
@@ -579,9 +649,10 @@ def p_type_spec(p):
     type_spec : type_spec_options
               | type_spec_options DOLLAR
     '''
-    print("\ntype spec: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\ntype spec: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = p[1] # Do I need $?
 
 # FIX
@@ -599,9 +670,10 @@ def p_type_spec_option(p):
                       | PLUS
                       | TIMES
     '''
-    print("\ntype spec option: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\ntype spec option: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 3:
         p[0] = (p[1],p[2]) #???
     else:
@@ -612,9 +684,10 @@ def p_object_class_spec(p):
     '''
     object_class_spec : GT ID LT
     '''
-    print("\nobject class spec: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nobject class spec: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = p[2]
 
 # Split into 3
@@ -628,9 +701,10 @@ def p_param_list(p):
     #param_spec_multiple : COMMA param_spec
     #                    | param_spec_multiple COMMA param_spec
     #'''
-    print("\nparam list: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nparam list: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     p[0] = p[2]
     #for i in range(len(p)):
     #    print(i," ",p[i], " ",end="")
@@ -649,9 +723,10 @@ def p_param_option(p):
                  | param_spec
                  | param_spec param_spec_multiple
     '''
-    print("\nparam option: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nparam option: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 3:
         p[0] = (p[1],p[2])
     else:
@@ -662,32 +737,40 @@ def p_param_spec_multiple(p):
     param_spec_multiple : COMMA param_spec
                         | param_spec_multiple COMMA param_spec
     '''
-    print("\nparam spec mult: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nparam spec mult: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
     if len(p) == 4:
         p[0] = (p[1],p[3])
     else:
         p[0] = p[2]
 
+# FIX
 def p_param_spec(p):
     '''
     param_spec : type_spec ID
                | LBRACKET type_spec ID EQUALS value_option RBRACKET
     '''
-    print("\nparam spec: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
-    
+    if DEBUG:
+        print("\nparam spec: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    if len(p) == 7:
+        p[0] = (p[2],p[3],p[5])
+    else:
+        p[0] = (p[1],p[2])
 
 def p_value_option(p):
     '''
     value_option : constant
                  | ID
     '''
-    print("\nvalue option: ",end="")
-    for i in range(len(p)):
-        print(i," ",p[i], " ",end="")
+    if DEBUG:
+        print("\nvalue option: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = p[1]
 
 def p_eof(p):
     '''
@@ -696,14 +779,23 @@ def p_eof(p):
     pass
     #return p[0]
 
-#prog = "for(element in 1:20){square = element ^ 2;}"
-#prog = "x=5+3;y=45-3;z=7;"
-# prog = "(1,2,);"
-prog = "if(x==y)3;"
+prog = 'c(1,2,3);'
+#prog = 'if (F) break;'
+#prog = 'if (F) x=12;'
+#prog = 'if (F) break; else 42'
+#prog = 'cmColors(0);'
+#prog = 'integerDiv(6, y=3);'
+#prog = 'T==F;'
 
 
+DEBUG=True
 parser = yacc.yacc()
 # prog = input("input here:\n",end="")
-result = parser.parse(prog)
-print("\n=====\nDONE\n=====")
-print("Result: ",result)
+result = parser.parse(prog, debug=False)
+if DEBUG:
+    print("\n=====\nDONE\n=====")
+    print("Parsed: ", end="")
+    print(prog)
+    print("Result: ",result)
+else:
+    print(result)
