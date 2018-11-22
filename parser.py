@@ -82,7 +82,7 @@ def p_statement(p):
               | do_while_statement
               | while_statement
               | jump_statement
-    '''
+              '''
     #          | open_statement
     #          | closed_statement
     #'''
@@ -95,48 +95,48 @@ def p_statement(p):
 ######
 # Commented for debugging
 ######
-#   def p_open_statement(p):
-#       '''
-#       open_statement : IF LPAREN expr RPAREN statement
-#                      | IF LPAREN expr RPAREN closed_statement ELSE open_statement
-#       '''
-#       if DEBUG:
-#           print("\nopen stmt: ",end="")
-#           for i in range(len(p)):
-#               print(i," ",p[i], " ",end="")
-#       # This one needs to be checked
-#       # if len(p) > 5:
-#       #     if p[3]:
-#       #         p[0] = p[5]
-#       #     else:
-#       #         p[0] = p[7]
-#       # else:
-#       #     if p[3]:
-#       #         p[0] = p[5]
-#       if len(p) == 6:
-#           p[0] = (p[1], p[3], p[5])
-#       elif len(p) == 8:
-#           p[0] = ("IF_ELSE", p[3], p[5], p[7])
+def p_open_statement(p):
+    '''
+    open_statement : IF LPAREN expr RPAREN statement
+                   | IF LPAREN expr RPAREN closed_statement ELSE open_statement
+    '''
+    if DEBUG:
+        print("\nopen stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    # This one needs to be checked
+    # if len(p) > 5:
+    #     if p[3]:
+    #         p[0] = p[5]
+    #     else:
+    #         p[0] = p[7]
+    # else:
+    #     if p[3]:
+    #         p[0] = p[5]
+    if len(p) == 6:
+        p[0] = (p[1], p[3], p[5])
+    elif len(p) == 8:
+        p[0] = ("IF_ELSE", p[3], p[5], p[7])
 #   
-#   # FIX
-#   def p_closed_statement(p):
-#       '''
-#       closed_statement : statement
-#                        | IF LPAREN expr RPAREN closed_statement ELSE closed_statement
-#       '''
-#       if DEBUG:
-#           print("\nclosed stmt: ",end="")
-#           for i in range(len(p)):
-#               print(i," ",p[i], " ",end="")
-#       if len(p) == 2:
-#           p[0] = p[1]
-#       else:
-#           p[0] = ("If_ELSE", p[3],p[5],p[7])
-#       #if p[3]:
-#       #    p[0] = p[5]
-#       #else:
-#       #    if len(p) > 5:
-#       #        p[0] = p[7]
+# FIX
+def p_closed_statement(p):
+    '''
+    closed_statement : statement
+                     | IF LPAREN expr RPAREN closed_statement ELSE closed_statement
+    '''
+    if DEBUG:
+        print("\nclosed stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = ("If_ELSE", p[3],p[5],p[7])
+    #if p[3]:
+    #    p[0] = p[5]
+    #else:
+    #    if len(p) > 5:
+    #        p[0] = p[7]
 
 def p_expr_statement(p):
     '''
@@ -155,14 +155,14 @@ def p_expr_statement(p):
 # Requires a ";" after the ")" of the "if" expression and after the "else" to work
 #####
 def p_selection_statement(p):
+    '''
+    selection_statement : IF LPAREN expr RPAREN compound_statement
+                        | IF LPAREN expr RPAREN closed_statement ELSE statement
+    '''
     #'''
     #selection_statement : IF LPAREN expr RPAREN statement
-    #                    | IF LPAREN expr RPAREN closed_statement ELSE statement
+    #                    | IF LPAREN expr RPAREN statement ELSE statement
     #'''
-    '''
-    selection_statement : IF LPAREN expr RPAREN statement
-                        | IF LPAREN expr RPAREN statement ELSE statement
-    '''
     if DEBUG:
         print("\nselection statement: ",end="")
         for i in range(len(p)):
@@ -848,9 +848,12 @@ def p_eof(p):
 # prog = input("input here:\n",end="")
 
 #prog = 'c(1,2,3);'
-#prog = 'if (F); break;'
+#prog = 'if (if(F)); break;'
+# This works, but not else if
+#prog = 'if (if(F));something; else; break;'
 #prog = 'if (F) x=12;'
-#prog = 'if (F); break; else; 42;'
+#prog = 'if (F); break;'
+#prog = 'if (F); break; else; x=42;'
 #prog = 'cmColors(0);'
 #prog = 'integerDiv(6, y=3);'
 #prog = 'T==F;'
