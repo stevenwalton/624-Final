@@ -47,6 +47,17 @@ tokens = [
     'TYPEOBJECT', 'TYPENUMERIC', 'DOLLAR'
 ]
 
+# Keywords that are specifically reserved: ones which do special lookups
+reserved = {
+        "if"    : "IF",
+        "then"  : "THEN",
+        "else"  : "ELSE",
+        "while" : "WHILE",
+        "break" : "BREAK"
+        }
+
+tokens += list(reserved.values())
+
 # Operators
 t_PLUS             = r'\+'
 t_MINUS            = r'-'
@@ -129,7 +140,11 @@ t_TYPENUMERIC      = r'numeric'
 t_DOLLAR           = r'\$'
 
 # Identifiers
-t_ID = r'[A-Za-z_][A-Za-z0-9_]*'
+#t_ID = r'[A-Za-z_][A-Za-z0-9_]*'
+def t_ID(t):
+    r'[A-Za-z_][A-Za-z0-9_]*'
+    t.type = reserved.get(t.value, 'ID')
+    return t
 
 # Integer literal
 t_INTEGER = r'\d+([uU]|[lL]|[uU][lL]|[lL][uU])?'

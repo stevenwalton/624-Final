@@ -155,14 +155,14 @@ def p_expr_statement(p):
 # Requires a ";" after the ")" of the "if" expression and after the "else" to work
 #####
 def p_selection_statement(p):
-    '''
-    selection_statement : IF LPAREN expr RPAREN compound_statement
-                        | IF LPAREN expr RPAREN closed_statement ELSE statement
-    '''
     #'''
-    #selection_statement : IF LPAREN expr RPAREN statement
-    #                    | IF LPAREN expr RPAREN statement ELSE statement
+    #selection_statement : IF LPAREN expr RPAREN compound_statement
+    #                    | IF LPAREN expr RPAREN closed_statement ELSE statement
     #'''
+    '''
+    selection_statement : IF LPAREN expr RPAREN statement
+                        | IF LPAREN expr RPAREN statement ELSE statement
+    '''
     if DEBUG:
         print("\nselection statement: ",end="")
         for i in range(len(p)):
@@ -851,7 +851,8 @@ def p_eof(p):
 #prog = 'if (if(F)); break;'
 # This works, but not else if
 #prog = 'if (if(F));something; else; break;'
-#prog = 'if (F) x=12;'
+prog = 'if (F) x=12;'
+#prog = 'if (F); break;'
 #prog = 'if (F); break;'
 #prog = 'if (F); break; else; x=42;'
 #prog = 'cmColors(0);'
@@ -860,7 +861,7 @@ def p_eof(p):
 #prog = 'T | F;'
 #prog = 'T & F;'
 
-prog = 'while(x==5); break;'
+#prog = 'while(x==5) break;'
 
 
 parser = yacc.yacc()
