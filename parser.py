@@ -1,13 +1,15 @@
 import ply.lex as lex
 import ply.yacc as yacc
+import ast
 from ctokens import *
 
 # Print out tree and contents of p at each step
 #DEBUG=True
 DEBUG=False
-OPTIMIZE=1
+OPTIMIZE=0
 
 lexer = lex.lex(optimize=OPTIMIZE)
+
 
 def p_interpreter_block(p):
     '''
@@ -171,9 +173,11 @@ def p_selection_statement(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 6:
-        p[0] = (p[1],p[3],p[5])
+        #p[0] = ast.If(p[1],p[3],p[5])
+        p[0] = ast.If(p[3],p[5],None)
     else:
-        p[0] = ("IF_ELSE",p[3],p[5],p[7])
+        #p[0] = ast.If("IF_ELSE",p[3],p[5],p[7])
+        p[0] = ast.If(p[3],p[5],p[7])
     #if p[3]:
     #    p[0] = p[5]
     #else:
@@ -189,7 +193,7 @@ def p_for_statement(p):
         print("\nfor stmt: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    p[0] = (p[1],p[3],p[5],p[7])
+    p[0] = ast.For(p[3],p[5],p[7])
 
 
 def p_do_while_statement(p):
@@ -200,7 +204,7 @@ def p_do_while_statement(p):
         print("\ndo while stmt: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    p[0] = ("DO_WHILE", p[2],p[5])
+    p[0] = ast.Do(p[5],p[2])
 
 def p_while_statement(p):
     '''
@@ -210,23 +214,52 @@ def p_while_statement(p):
         print("\nwhile stmt: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    p[0] = (p[1],p[3],p[5])
+    p[0] = ast.While(p[3],p[5])
 
-def p_jump_statement(p):
+def p_jump_statement_0(p):
     '''
     jump_statement : NEXT SEMI
-                   | BREAK SEMI
-                   | RETURN SEMI
-                   | RETURN expr SEMI
     '''
     if DEBUG:
         print("\njmp stmt: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    if len(p) == 4:
-        p[0] = (p[1],p[2])
-    else:
-        p[0] = p[1]
+    p[0] = ast.Next()
+    #if len(p) == 4:
+    #    p[0] = (p[1],p[2])
+    #else:
+    #    p[0] = p[1]
+
+def p_jump_statement_1(p):
+    '''
+    jump_statement : BREAK SEMI
+    '''
+    if DEBUG:
+        print("\njmp stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = ast.Break()
+
+def p_jump_statement_2(p):
+    '''
+    jump_statement : RETURN SEMI
+    '''
+    if DEBUG:
+        print("\njmp stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = ast.Return(None)
+
+def p_jump_statement_3(p):
+    '''
+    jump_statement : RETURN expr SEMI
+    '''
+    if DEBUG:
+        print("\njmp stmt: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = ast.Return(p[2])
+
 
 def p_expr(p):
     '''
@@ -249,7 +282,7 @@ def p_assignment_expr(p):
             print(i," ",p[i], " ",end="")
     # only w/ constant
     if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
+        p[0] = ast.Assignment(p[2],p[1],p[3])
     else:
         p[0] = p[1]
 
@@ -627,7 +660,6 @@ def p_object_call(p):
 def p_primary_expr(p):
     '''
     primary_expr : constant
-                 | ID
                  | LPAREN expr RPAREN
     '''
     if DEBUG:
@@ -638,6 +670,16 @@ def p_primary_expr(p):
         p[0] = p[2]
     else:
         p[0] = p[1]
+
+def p_primary_expr_ID(p):
+    '''
+    primary_expr : ID
+    '''
+    if DEBUG:
+        print("\nprimary expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = ast.ID(p[1])
 
 
 def p_argument_expr_list(p):
@@ -668,20 +710,67 @@ def p_argument_expr(p):
     else:
         p[0] = p[1]
 
-def p_constant(p):
+def p_constant_0(p):
     '''
     constant : INTEGER
-             | FLOAT
-             | STRING
-             | CHARACTER
-             | TRUE
+    '''
+    #         | FLOAT
+    #         | STRING
+    #         | CHARACTER
+    #         | TRUE
+    #         | FALSE
+    #'''
+    if DEBUG:
+        print("\nconst: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    t = "int"
+    p[0] = ast.Constant(t,p[1])
+
+def p_constant_1(p):
+    '''
+    constant : FLOAT
+    '''
+    if DEBUG:
+        print("\nconst: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    t = "float"
+    p[0] = ast.Constant(t,p[1])
+
+def p_constant_2(p):
+    '''
+    constant : STRING
+    '''
+    if DEBUG:
+        print("\nconst: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    t = "string"
+    p[0] = ast.Constant(t,p[1])
+
+def p_constant_3(p):
+    '''
+    constant : CHARACTER
+    '''
+    if DEBUG:
+        print("\nconst: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    t = "char"
+    p[0] = ast.Constant(t,p[1])
+
+def p_constant_4(p):
+    '''
+    constant : TRUE
              | FALSE
     '''
     if DEBUG:
         print("\nconst: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    p[0] = p[1]
+    t = "bool"
+    p[0] = ast.Constant(t,p[1])
 
 
 
@@ -855,19 +944,20 @@ def p_eof(p):
 # This works, but not else if
 #prog = 'if (if(F));something; else; break;'
 #prog = 'if (F) x=12;'
-#prog = 'if (F); break;'
-#prog = 'if (F); break;'
-#prog = 'if (F); break; else; x=42;'
+#prog = 'if (F) x=12; else x=5;'
 #prog = 'cmColors(0);'
 #prog = 'integerDiv(6, y=3);'
 #prog = 'T==F;'
 #prog = 'T | F;'
 #prog = 'T & F;'
+#prog = "for (myvar in 1:10) x=5;"
+
 
 #prog = 'while(x==5) break;'
-#prog = 'while(x==5) break; else x=5;'
-#prog = 'while(T|F) break; else x=5;'
-prog = 'if (F){ if(F) break; }else x=42;'
+#prog = 'do x=x+2; while (x<5);'
+#prog = 'for (i in 1:20) return;'
+prog = 'x=5;'
+#prog = 'if (F){ if(F) break; }else x=42;'
 
 
 parser = yacc.yacc()
