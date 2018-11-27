@@ -41,11 +41,39 @@ tokens = [
 
     # Keywords (if, else, for, in, do, while, next, break, return, function,
     # void, NULL, logical, integer, float, string, object, numeric, $)
-    'IF', 'ELSE', 'FOR', 'IN', 'DO', 'WHILE', 'NEXT', 'BREAK',
+    'IF', 'ELSE', 'FOR', 'IN', 'DO', 'WHILE', 'NEXT', 'BREAK', 'THEN', 'CONTINUE',
     'RETURN', 'FUNCTION',
     'TYPEVOID', 'TYPENULL', 'TYPELOGICAL', 'TYPEINTEGER', 'TYPEFLOAT', 'TYPESTRING',
     'TYPEOBJECT', 'TYPENUMERIC', 'DOLLAR'
 ]
+
+# Keywords that are specifically reserved: ones which do special lookups
+reserved = {
+        "if"       : "IF",
+        "else"     : "ELSE",
+        "for"      : "FOR",
+        "in"       : "IN",
+        "do"       : "DO",
+        "while"    : "WHILE",
+        "next"     : "NEXT",
+        "break"    : "BREAK",
+        "return"   : "RETURN",
+        "function" : "FUNCTION",
+        "then"     : "THEN",
+        "continue" : "CONTINUE",
+        "void"     : "TYPEVOID",
+        "NULL"     : "TYPENULL",
+        "integer"  : "TYPEINTEGER",
+        "float"    : "TYPEFLOAT",
+        "string"   : "TYPESTRING",
+        "logical"  : "TYPELOGICAL",
+        "object"   : "TYPEOBJECT",
+        "numeric"  : "TYPENUMERIC",
+        "T"        : "TRUE",
+        "F"        : "FALSE"
+        }
+
+tokens += list(reserved.values())
 
 # Operators
 t_PLUS             = r'\+'
@@ -107,29 +135,33 @@ t_COLON            = r':'
 t_ELLIPSIS         = r'\.\.\.'
 
 # Keywords
-t_IF               = r'if'
-t_ELSE             = r'else'
-t_FOR              = r'for'
-t_IN               = r'in'
-t_DO               = r'do'
-t_WHILE            = r'while'
-t_NEXT             = r'next'
-t_BREAK            = r'break'
-t_RETURN           = r'return'
-t_FUNCTION         = r'function'
+#t_IF               = r'if'
+#t_ELSE             = r'else'
+#t_FOR              = r'for'
+#t_IN               = r'in'
+#t_DO               = r'do'
+#t_WHILE            = r'while'
+#t_NEXT             = r'next'
+#t_BREAK            = r'break'
+#t_RETURN           = r'return'
+#t_FUNCTION         = r'function'
 
-t_TYPEVOID         = r'void'
-t_TYPENULL         = r'NULL'
-t_TYPELOGICAL      = r'logical'
-t_TYPEINTEGER      = r'integer'
-t_TYPEFLOAT        = r'float'
-t_TYPESTRING       = r'string'
-t_TYPEOBJECT       = r'object'
-t_TYPENUMERIC      = r'numeric'
+#t_TYPEVOID         = r'void'
+#t_TYPENULL         = r'NULL'
+#t_TYPELOGICAL      = r'logical'
+#t_TYPEINTEGER      = r'integer'
+#t_TYPEFLOAT        = r'float'
+#t_TYPESTRING       = r'string'
+#t_TYPEOBJECT       = r'object'
+#t_TYPENUMERIC      = r'numeric'
 t_DOLLAR           = r'\$'
 
 # Identifiers
-t_ID = r'[A-Za-z_][A-Za-z0-9_]*'
+#t_ID = r'[A-Za-z_][A-Za-z0-9_]*'
+def t_ID(t):
+    r'[A-Za-z_][A-Za-z0-9_]*'
+    t.type = reserved.get(t.value, 'ID')
+    return t
 
 # Integer literal
 t_INTEGER = r'\d+([uU]|[lL]|[uU][lL]|[lL][uU])?'
@@ -144,8 +176,8 @@ t_STRING = r'\"([^\\\n]|(\\.))*?\"'
 t_CHARACTER = r'(L)?\'([^\\\n]|(\\.))*?\''
 
 # BOOLS!!! (boo)
-t_TRUE  = r'T'
-t_FALSE = r'F'
+#t_TRUE  = r'T'
+#t_FALSE = r'F'
 
 # Comment (C-Style)
 def t_COMMENT(t):

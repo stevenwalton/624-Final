@@ -3,8 +3,8 @@ import ply.yacc as yacc
 from ctokens import *
 
 # Print out tree and contents of p at each step
-DEBUG=True
-#DEBUG=False
+#DEBUG=True
+DEBUG=False
 
 lexer = lex.lex()
 
@@ -82,7 +82,7 @@ def p_statement(p):
               | do_while_statement
               | while_statement
               | jump_statement
-              '''
+    '''
     #          | open_statement
     #          | closed_statement
     #'''
@@ -123,6 +123,7 @@ def p_closed_statement(p):
     '''
     closed_statement : statement
                      | IF LPAREN expr RPAREN closed_statement ELSE closed_statement
+                     | IF LPAREN expr RPAREN closed_statement
     '''
     if DEBUG:
         print("\nclosed stmt: ",end="")
@@ -130,8 +131,10 @@ def p_closed_statement(p):
             print(i," ",p[i], " ",end="")
     if len(p) == 2:
         p[0] = p[1]
-    else:
+    elif len(p) == 8:
         p[0] = ("If_ELSE", p[3],p[5],p[7])
+    else:
+        p[0] = (p[1],p[3],p[5])
     #if p[3]:
     #    p[0] = p[5]
     #else:
@@ -151,18 +154,17 @@ def p_expr_statement(p):
         p[0] = p[1]
 
 
-#####
-# Requires a ";" after the ")" of the "if" expression and after the "else" to work
-#####
 def p_selection_statement(p):
-    '''
-    selection_statement : IF LPAREN expr RPAREN compound_statement
-                        | IF LPAREN expr RPAREN closed_statement ELSE statement
-    '''
     #'''
     #selection_statement : IF LPAREN expr RPAREN statement
-    #                    | IF LPAREN expr RPAREN statement ELSE statement
+    #                    | IF LPAREN expr RPAREN open_statement ELSE open_statement
+    #                    | IF LPAREN expr RPAREN closed_statement ELSE open_statement
+    #                    | IF LPAREN expr RPAREN closed_statement
     #'''
+    '''
+    selection_statement : IF LPAREN expr RPAREN statement
+                        | IF LPAREN expr RPAREN statement ELSE statement
+    '''
     if DEBUG:
         print("\nselection statement: ",end="")
         for i in range(len(p)):
@@ -853,6 +855,7 @@ def p_eof(p):
 #prog = 'if (if(F));something; else; break;'
 #prog = 'if (F) x=12;'
 #prog = 'if (F); break;'
+#prog = 'if (F); break;'
 #prog = 'if (F); break; else; x=42;'
 #prog = 'cmColors(0);'
 #prog = 'integerDiv(6, y=3);'
@@ -860,7 +863,10 @@ def p_eof(p):
 #prog = 'T | F;'
 #prog = 'T & F;'
 
-prog = 'while(x==5); break;'
+#prog = 'while(x==5) break;'
+#prog = 'while(x==5) break; else x=5;'
+#prog = 'while(T|F) break; else x=5;'
+prog = 'if (F){ if(F) break; }else x=42;'
 
 
 parser = yacc.yacc()
