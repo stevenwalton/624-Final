@@ -253,3 +253,48 @@ class Do(Node):
             yield self.stmt
 
     attr_names = ()
+
+class Break(Node):
+    __slots__ = ('coord', '__weakref__')
+    def __init__(self, coord=None):
+        self.coord = coord
+
+    def children(self):
+        return ()
+
+    def __iter__(self):
+        return
+        yield
+
+    attr_names = ()
+
+class Return(Node):
+    __slots__ = ('expr', 'coord', '__weakref__')
+    def __init__(self, expr, coord=None):
+        self.expr = expr
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.expr is not None: nodelist.append(("expr", self.expr))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.expr is not None:
+            yield self.expr
+
+    attr_names = ()
+
+class Next(Node):
+    __slots__ = ('coord', '__weakref__')
+    def __init__(self, coord=None):
+        self.coord = coord
+
+    def children(self):
+        return ()
+
+    def __iter__(self):
+        return
+        yield
+
+    attr_names = ()
