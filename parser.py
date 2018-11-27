@@ -5,8 +5,9 @@ from ctokens import *
 # Print out tree and contents of p at each step
 #DEBUG=True
 DEBUG=False
+OPTIMIZE=1
 
-lexer = lex.lex()
+lexer = lex.lex(optimize=OPTIMIZE)
 
 def p_interpreter_block(p):
     '''
