@@ -188,7 +188,7 @@ class If(Node):
     attr_names = ()
 
 class For(Node):
-    __slots__ = ('init', 'id', 'cond', 'stmt', 'coord', '__weakref__')
+    __slots__ = ('id', 'cond', 'stmt', 'coord', '__weakref__')
     def __init__(self, id, cond, stmt, coord=None):
         self.id = id
         self.cond = cond
