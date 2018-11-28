@@ -43,7 +43,7 @@ tokens = [
     # void, NULL, logical, integer, float, string, object, numeric, $)
     'IF', 'ELSE', 'FOR', 'IN', 'DO', 'WHILE', 'NEXT', 'BREAK', 'THEN', 'CONTINUE',
     'RETURN', 'FUNCTION',
-    'TYPEVOID', 'TYPENULL', 'TYPELOGICAL', 'TYPEINTEGER', 'TYPEFLOAT', 'TYPESTRING',
+    'TYPEVOID', 'TYPENULL', 'TYPELOGICAL', 'TYPEINTEGER', 'TYPEFLOAT', 'TYPESTRING', 'TYPECHARACTER', 'TYPEBOOL',
     'TYPEOBJECT', 'TYPENUMERIC', 'DOLLAR'
 ]
 
@@ -63,14 +63,16 @@ reserved = {
         "continue" : "CONTINUE",
         "void"     : "TYPEVOID",
         "NULL"     : "TYPENULL",
-        "integer"  : "TYPEINTEGER",
+        "int"      : "TYPEINTEGER",
         "float"    : "TYPEFLOAT",
         "string"   : "TYPESTRING",
+        "char"     : "TYPECHARACTER",
         "logical"  : "TYPELOGICAL",
         "object"   : "TYPEOBJECT",
         "numeric"  : "TYPENUMERIC",
         "T"        : "TRUE",
-        "F"        : "FALSE"
+        "F"        : "FALSE",
+        "bool"     : "TYPEBOOL"
         }
 
 tokens += list(reserved.values())

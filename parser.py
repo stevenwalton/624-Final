@@ -21,6 +21,7 @@ def p_interpreter_block(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 3:
+        #p[0] = ast.InterpreterBlock(None,p[1])
         p[0] = p[1]
     # Do we need to do EOF?
 
@@ -36,8 +37,10 @@ def p_interpreter_multiple_block(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 3:
+        #p[0] = ast.InterpreterBlock(p[1],p[2])
         p[0] = (p[1],p[2])
     else:
+        #p[0] = ast.InterpreterBlock(p[1],None)
         p[0] = p[1]
 
 
@@ -98,51 +101,51 @@ def p_statement(p):
 ######
 # Commented for debugging
 ######
-def p_open_statement(p):
-    '''
-    open_statement : IF LPAREN expr RPAREN statement
-                   | IF LPAREN expr RPAREN closed_statement ELSE open_statement
-    '''
-    if DEBUG:
-        print("\nopen stmt: ",end="")
-        for i in range(len(p)):
-            print(i," ",p[i], " ",end="")
-    # This one needs to be checked
-    # if len(p) > 5:
-    #     if p[3]:
-    #         p[0] = p[5]
-    #     else:
-    #         p[0] = p[7]
-    # else:
-    #     if p[3]:
-    #         p[0] = p[5]
-    if len(p) == 6:
-        p[0] = (p[1], p[3], p[5])
-    elif len(p) == 8:
-        p[0] = ("IF_ELSE", p[3], p[5], p[7])
-#   
-# FIX
-def p_closed_statement(p):
-    '''
-    closed_statement : statement
-                     | IF LPAREN expr RPAREN closed_statement ELSE closed_statement
-                     | IF LPAREN expr RPAREN closed_statement
-    '''
-    if DEBUG:
-        print("\nclosed stmt: ",end="")
-        for i in range(len(p)):
-            print(i," ",p[i], " ",end="")
-    if len(p) == 2:
-        p[0] = p[1]
-    elif len(p) == 8:
-        p[0] = ("If_ELSE", p[3],p[5],p[7])
-    else:
-        p[0] = (p[1],p[3],p[5])
-    #if p[3]:
-    #    p[0] = p[5]
-    #else:
-    #    if len(p) > 5:
-    #        p[0] = p[7]
+#   def p_open_statement(p):
+#       '''
+#       open_statement : IF LPAREN expr RPAREN statement
+#                      | IF LPAREN expr RPAREN closed_statement ELSE open_statement
+#       '''
+#       if DEBUG:
+#           print("\nopen stmt: ",end="")
+#           for i in range(len(p)):
+#               print(i," ",p[i], " ",end="")
+#       # This one needs to be checked
+#       # if len(p) > 5:
+#       #     if p[3]:
+#       #         p[0] = p[5]
+#       #     else:
+#       #         p[0] = p[7]
+#       # else:
+#       #     if p[3]:
+#       #         p[0] = p[5]
+#       if len(p) == 6:
+#           p[0] = (p[1], p[3], p[5])
+#       elif len(p) == 8:
+#           p[0] = ("IF_ELSE", p[3], p[5], p[7])
+#   #   
+#   # FIX
+#   def p_closed_statement(p):
+#       '''
+#       closed_statement : statement
+#                        | IF LPAREN expr RPAREN closed_statement ELSE closed_statement
+#                        | IF LPAREN expr RPAREN closed_statement
+#       '''
+#       if DEBUG:
+#           print("\nclosed stmt: ",end="")
+#           for i in range(len(p)):
+#               print(i," ",p[i], " ",end="")
+#       if len(p) == 2:
+#           p[0] = p[1]
+#       elif len(p) == 8:
+#           p[0] = ("If_ELSE", p[3],p[5],p[7])
+#       else:
+#           p[0] = (p[1],p[3],p[5])
+#       #if p[3]:
+#       #    p[0] = p[5]
+#       #else:
+#       #    if len(p) > 5:
+#       #        p[0] = p[7]
 
 def p_expr_statement(p):
     '''
@@ -295,7 +298,7 @@ def p_conditional_expr(p):
         print("\ncond expr: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    p[0] = p[1]
+    p[0] = ast.Conditional(p[1],None, None)
 
 def p_conditional_else_expr(p):
     '''
@@ -304,7 +307,9 @@ def p_conditional_else_expr(p):
     if DEBUG:
         print("\nConditional Else: ",end="")
         # Note: doesn't have "ELSE"
-        p[0] = ("?", p[1], p[3],p[5])
+        #p[0] = ("?", p[1], p[3],p[5])
+        #### NEED TO FIX
+        p[0] = ast.Conditional(p[1],p[3],p[5])
         #p[0] = ("IF_ELSE", p[1], p[3],p[5])
 
 def p_logical_or_expr(p):
@@ -319,9 +324,10 @@ def p_logical_or_expr(p):
     # only w/ constant
     l = len(p)
     if l == 4:
-        p[0] = (p[2],p[1], p[3])
+        #p[0] = (p[2],p[1], p[3])
+        p[0] = ast.LogicalOR(p[1],p[3])
     else:
-        p[0] = p[1]
+        p[0] = ast.LogicalOR(p[1],None)
     #if l == 2:
     #    p[0] = p[1]
     #elif l == 3:
@@ -341,9 +347,11 @@ def p_or_multiple(p):
             print(i," ",p[i], " ",end="")
     l = len(p)
     if l == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.LogicalOR(p[1],p[3])
     else:
-        p[0] = p[1]
+        #p[0] = p[1]
+        p[0] = ast.LogicalOR(p[1], None)
     #if l == 4:
     #    p[0] = (p[2],p[1],p[3])
     #else:
@@ -363,9 +371,11 @@ def p_logical_and_expr(p):
             print(i," ",p[i], " ",end="")
     l = len(p)
     if l == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.LogicalAND(p[1],p[3])
     else:
-        p[0] = p[1]
+        #p[0] = p[1]
+        p[0] = ast.LogicalAND(p[1], None)
     #if l == 2:
     #    p[0] = p[1]
     #elif l == 3:
@@ -410,9 +420,11 @@ def p_and_multiple(p):
             print(i," ",p[i], " ",end="")
     l = len(p)
     if l == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.LogicalAND(p[1],p[3])
     else:
-        p[0] = p[1]
+        #p[0] = p[1]
+        p[0] = ast.LogicalAND(p[1],None)
 
 
 def p_equality_expr(p):
@@ -426,9 +438,11 @@ def p_equality_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.Equality(p[2],p[1],p[3])
     else:
-        p[0] = p[1]
+        #p[0] = p[1]
+        p[0] = ast.Equality(None,p[1],None)
 
 def p_equality_multiple(p):
     '''
@@ -441,9 +455,11 @@ def p_equality_multiple(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.Equality(p[2],p[1],p[3])
     else:
-        p[0] = p[1]
+        #p[0] = p[1]
+        p[0] = ast.Equality(None,p[1],None)
 
 
 def p_relational_expr(p):
@@ -570,9 +586,9 @@ def p_unary_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 3:
-        p[0] = (p[1],p[2])
+        p[0] = ast.UnaryOp(p[1],p[2])
     else:
-        p[0] = p[1]
+        p[0] = ast.UnaryOp(p[1],None)
 
 # Split this into 3!!!
 def p_postfix_expr(p):
@@ -953,10 +969,10 @@ def p_eof(p):
 #prog = "for (myvar in 1:10) x=5;"
 
 
-#prog = 'while(x==5) break;'
+prog = 'while(x<5) break;'
 #prog = 'do x=x+2; while (x<5);'
 #prog = 'for (i in 1:20) return;'
-prog = 'x=5;'
+#prog = 'a = ( x==y ? f1() else f2());' # Treats lvalue
 #prog = 'if (F){ if(F) break; }else x=42;'
 
 
