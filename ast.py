@@ -336,3 +336,191 @@ class ID(Node):
         yield
 
     attr_names = ('name', )
+
+class Conditional(Node):
+    __slots__ = ('cond', 'iftrue', 'iffalse', 'coord', '__weakref__')
+    def __init__(self, cond, iftrue, iffalse, coord=None):
+        self.cond= cond
+        self.iftrue = iftrue
+        self.iffalse = iffalse
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.cond is not None: nodelist.append(("cond", self.cond))
+        if self.iftrue is not None: nodelist.append(("iftrue", self.iftrue))
+        if self.iffalse is not None: nodelist.append(("iffalse", self.iffalse))
+        return tuple(nodelist)
+    
+    def __iter__(self):
+        if self.cond is None:
+            yield self.cond
+        if self.iftrue is not None:
+            yield self.iftrue
+        if self.iffalse is not None:
+            yield self.iffalse
+    
+    attr_names = ()
+
+class TypeDecl(Node):
+    __slots__ = ('declname', 'quals', 'type', 'coord', '__weakref__')
+    def __init__(self, declname, quals, type, coord=None):
+        self.declname = declname
+        self.quals = quals
+        self.type = type
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.type is not None: nodelist.append(("type", self.type))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.type is not None:
+            yield self.type
+
+    attr_names = ('declname', 'quals', )
+
+class Typedef(Node):
+    __slots__ = ('name', 'quals', 'storage', 'type', 'coord', '__weakref__')
+    def __init__(self, name, quals, storage, type, coord=None):
+        self.name = name
+        self.quals = quals
+        self.storage = storage
+        self.type = type
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.type is not None: nodelist.append(("type", self.type))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.type is not None:
+            yield self.type
+
+    attr_names = ('name', 'quals', 'storage', )
+
+class Typename(Node):
+    __slots__ = ('name', 'quals', 'type', 'coord', '__weakref__')
+    def __init__(self, name, quals, type, coord=None):
+        self.name = name
+        self.quals = quals
+        self.type = type
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.type is not None: nodelist.append(("type", self.type))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.type is not None:
+            yield self.type
+
+    attr_names = ('name', 'quals', )
+
+class UnaryOp(Node):
+    __slots__ = ('op', 'expr', 'coord', '__weakref__')
+    def __init__(self, op, expr, coord=None):
+        self.op = op
+        self.expr = expr
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.expr is not None: nodelist.append(("expr", self.expr))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.expr is not None:
+            yield self.expr
+
+    attr_names = ('op', )
+
+class InterpreterBlock(Node):
+    __slots__ = ('statement', 'block', 'coord', '__weakref__')
+    def __init__(self, statement, block, coord=None):
+        self.statement = statement
+        self.block = block
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.statement is not None: nodelist.append(("statement", self.statement))
+        if self.block is not None: nodelist.append(("block", self.block))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.statement is not None:
+            yield self.statement
+        if self.block is not None:
+            yield self.block
+
+    attr_names('Interpreter', )
+
+class LogicalOR(Node):
+    __slots__ = ('first', 'second', 'coord', '__weakref__')
+    def __init__(self, first, second, coord=None):
+        self.first = first
+        self.second = second
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.first is not None: nodelist.append(("first", self.first))
+        if self.second is not None: nodelist.append(("second", self.second))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.first is not None:
+            yield self.first
+        if self.second is not None:
+            yield self.second
+        
+    attr_names("OR", )
+
+class LogicalAND(Node):
+    __slots__ = ('first', 'second', 'coord', '__weakref__')
+    def __init__(self, first, second, coord=None):
+        self.first = first
+        self.second = second
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.first is not None: nodelist.append(("first", self.first))
+        if self.second is not None: nodelist.append(("second", self.second))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.first is not None:
+            yield self.first
+        if self.second is not None:
+            yield self.second
+        
+    attr_names("AND", )
+
+class Equality(Node):
+    __slots__ = ('operator', 'left', 'right', 'coord', '__weakref__')
+    def __init__(self, operator, left, right, coord=None):
+        self.operator = operator
+        self.left = left
+        self.right = right
+
+    def children(self):
+        nodelist = []
+        if self.operator is not None: nodelist.append(("operator", self.operator))
+        if self.left is not None: nodelist.append(("left", self.left))
+        if self.right is not None: nodelist.append(("right", self.right))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.operator is not None:
+            yield self.operator
+        if self.left is not None:
+            yield self.left
+        if self.right is not None:
+            yield self.right
+
+    attr_names("Equality",)
