@@ -327,7 +327,8 @@ def p_logical_or_expr(p):
         #p[0] = (p[2],p[1], p[3])
         p[0] = ast.LogicalOR(p[1],p[3])
     else:
-        p[0] = ast.LogicalOR(p[1],None)
+        #p[0] = ast.LogicalOR(p[1],None)
+        p[0] = p[1]
     #if l == 2:
     #    p[0] = p[1]
     #elif l == 3:
@@ -350,8 +351,8 @@ def p_or_multiple(p):
         #p[0] = (p[2],p[1],p[3])
         p[0] = ast.LogicalOR(p[1],p[3])
     else:
-        #p[0] = p[1]
-        p[0] = ast.LogicalOR(p[1], None)
+        p[0] = p[1]
+        #p[0] = ast.LogicalOR(p[1], None)
     #if l == 4:
     #    p[0] = (p[2],p[1],p[3])
     #else:
@@ -374,8 +375,8 @@ def p_logical_and_expr(p):
         #p[0] = (p[2],p[1],p[3])
         p[0] = ast.LogicalAND(p[1],p[3])
     else:
-        #p[0] = p[1]
-        p[0] = ast.LogicalAND(p[1], None)
+        p[0] = p[1]
+        #p[0] = ast.LogicalAND(p[1], None)
     #if l == 2:
     #    p[0] = p[1]
     #elif l == 3:
@@ -423,8 +424,8 @@ def p_and_multiple(p):
         #p[0] = (p[2],p[1],p[3])
         p[0] = ast.LogicalAND(p[1],p[3])
     else:
-        #p[0] = p[1]
-        p[0] = ast.LogicalAND(p[1],None)
+        p[0] = p[1]
+        #p[0] = ast.LogicalAND(p[1],None)
 
 
 def p_equality_expr(p):
@@ -441,8 +442,8 @@ def p_equality_expr(p):
         #p[0] = (p[2],p[1],p[3])
         p[0] = ast.Equality(p[2],p[1],p[3])
     else:
-        #p[0] = p[1]
-        p[0] = ast.Equality(None,p[1],None)
+        p[0] = p[1]
+        #p[0] = ast.Equality(None,p[1],None)
 
 def p_equality_multiple(p):
     '''
@@ -458,8 +459,8 @@ def p_equality_multiple(p):
         #p[0] = (p[2],p[1],p[3])
         p[0] = ast.Equality(p[2],p[1],p[3])
     else:
-        #p[0] = p[1]
-        p[0] = ast.Equality(None,p[1],None)
+        p[0] = p[1]
+        #p[0] = ast.Equality(None,p[1],None)
 
 
 def p_relational_expr(p):
@@ -474,8 +475,9 @@ def p_relational_expr(p):
         print("\nrelational expr: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    if len(p) == 3:
-        p[0] = (p[1],p[2])
+    if len(p) == 4:
+        #p[0] = (p[1],p[2])
+        p[0] = ast.Relational(p[2],p[1],p[3])
     else:
         p[0] = p[1]
 
@@ -492,7 +494,8 @@ def p_relational_multiple(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.Relational(p[2],p[1],p[3])
     else:
         p[0] = p[1]
     #if len(p) == 4:
@@ -512,7 +515,8 @@ def p_add_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.BasicOperators(p[2],p[1],p[3])
     else:
         p[0] = p[1]
     #if len(p) < 3:
@@ -532,7 +536,8 @@ def p_mult_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-      p[0] = (p[2], p[1], p[3])
+      #p[0] = (p[2], p[1], p[3])
+      p[0] = ast.BasicOperators(p[2],p[1],p[3])
     else:
       p[0] = p[1]
     # if len(p) <= 3 :
@@ -556,7 +561,8 @@ def p_seq_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.Sequence(p[1],p[3])
     else:
         p[0] = p[1]
 
@@ -570,7 +576,8 @@ def p_exp_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.Exp(p[1],p[3])
     else:
         p[0] = p[1]
 
@@ -621,13 +628,17 @@ def p_expr_array(p):
     if DEBUG:
         print("\nexpr_array: ",end="")
     if len(p) == 6: # LBRACKET expr COMMA expr RBRACKET
-        p[0] = (p[3],p[2],p[4])
+        #p[0] = (p[3],p[2],p[4])
+        p[0] = ast.Array(p[2],p[4])
     elif len(p) == 5 and p[2] == ',': # LBRACKET COMMA multi_expr RBRACKET
-        p[0] = (p[2],p[3])
+        #p[0] = (p[2],p[3])
+        p[0] = ast.Array(p[3],None) # Do we want to force this ordering?
     elif len(p) == 5 and p[3] == ',': # LBRACKET expr COMMA RBRACKET
-        p[0] = (p[3],p[2])
+        #p[0] = (p[3],p[2])
+        p[0] = ast.Array(p[3],None)
     elif len(p) == 4: # LBRACKET expr RBRACKET
-        p[0] = p[3]
+        #p[0] = p[3]
+        p[0] = ast.Array(p[3]，None)
     else:
         pass
         
@@ -643,11 +654,14 @@ def p_multi_expr(p):
             print(i," ",p[i], " ",end="")
     l = len(p)
     if l == 4:
-        p[0] = (p[2],p[1],p[3])
+        #p[0] = (p[2],p[1],p[3])
+        p[0] = ast.Array(p[1],p[3])
     elif l == 3:
-        p[0] = (p[2],p[1])
+        #p[0] = (p[2],p[1])
+        p[0] = ast.Array(p[1],None)
     else:
-        p[0] = p[1]
+        #p[0] = p[1]
+        p[0] = ast.Array(p[1]，None)
 
 def p_argument_array(p):
     '''
@@ -671,7 +685,8 @@ def p_object_call(p):
         print("\nobject call: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    p[0] = (p[1],p[2])
+    #p[0] = (p[1],p[2])
+    p[0] = ast.ObjectCall(p[2])
 
 def p_primary_expr(p):
     '''
@@ -799,7 +814,8 @@ def p_function_decl(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     # Don't think this is right
-    p[0] = (p[1], p[2], p[3], p[4], p[5])
+    #p[0] = (p[1], p[2], p[3], p[4], p[5])
+    p[0] = ast.Function(p[1], p[2], p[3], p[4], p[5])
 
 def p_return_type_spec(p):
     '''
@@ -856,7 +872,8 @@ def p_object_class_spec(p):
         print("\nobject class spec: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    p[0] = p[2]
+    #p[0] = p[2]
+    p[0] = ast.ObjectClassSpec(p[2])
 
 
 # Split into 3
