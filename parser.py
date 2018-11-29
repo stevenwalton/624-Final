@@ -123,7 +123,7 @@ def p_statement(p):
 #           p[0] = (p[1], p[3], p[5])
 #       elif len(p) == 8:
 #           p[0] = ("IF_ELSE", p[3], p[5], p[7])
-#   #   
+#   #
 #   # FIX
 #   def p_closed_statement(p):
 #       '''
@@ -641,7 +641,7 @@ def p_expr_array(p):
         p[0] = ast.Array(p[3],None)
     else:
         pass
-        
+
 def p_multi_expr(p):
     '''
     multi_expr : expr COMMA multi_expr
@@ -930,7 +930,7 @@ def p_param_spec_multiple(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        #p[0] = (p[1],p[3]) 
+        #p[0] = (p[1],p[3])
         p[0] = ast.ParamOption(p[1],p[3])
     else:
         #p[0] = p[2]
@@ -1006,15 +1006,18 @@ def p_eof(p):
 #prog = 'for (i in 1:20) return;'
 #prog = 'a = ( x==y ? f1() else f2());' # Treats lvalue
 #prog = 'if (F){ if(F) break; }else x=42;'
-prog = 'if (2^2^2^2 > 10 ) "Hello";'
+
+def tree():
+    prog = '1 == 5;'
 
 
-parser = yacc.yacc()
-result = parser.parse(prog, debug=False)
-if DEBUG:
-    print("\n=====\nDONE\n=====")
-    print("Parsed: ", end="")
-    print(prog)
-    print("Result: ",result)
-else:
-    print(result)
+    parser = yacc.yacc()
+    result = parser.parse(prog, debug=False)
+    if DEBUG:
+        print("\n=====\nDONE\n=====")
+        print("Parsed: ", end="")
+        print(prog)
+        print("Result: ",result)
+    else:
+        print(result)
+    return result
