@@ -457,7 +457,7 @@ class InterpreterBlock(Node):
         if self.block is not None:
             yield self.block
 
-    attr_names('Interpreter', )
+    attr_names = ('Interpreter', )
 
 class LogicalOR(Node):
     __slots__ = ('first', 'second', 'coord', '__weakref__')
@@ -478,7 +478,7 @@ class LogicalOR(Node):
         if self.second is not None:
             yield self.second
         
-    attr_names("OR", )
+    attr_names = ("OR", )
 
 class LogicalAND(Node):
     __slots__ = ('first', 'second', 'coord', '__weakref__')
@@ -499,7 +499,7 @@ class LogicalAND(Node):
         if self.second is not None:
             yield self.second
         
-    attr_names("AND", )
+    attr_names = ("AND", )
 
 class Equality(Node):
     __slots__ = ('operator', 'left', 'right', 'coord', '__weakref__')
@@ -523,4 +523,236 @@ class Equality(Node):
         if self.right is not None:
             yield self.right
 
-    attr_names("Equality",)
+    attr_names = ("Equality",)
+
+class Relational(Node):
+    __slots__ = ('operator', 'left', 'right', 'coord', '__weakref__')
+    def __init__(self, operator, left, right, coord=None):
+        self.operator = operator
+        self.left = left
+        self.right = right
+
+    def children(self):
+        nodelist = []
+        if self.operator is not None: nodelist.append(("operator", self.operator))
+        if self.left is not None: nodelist.append(("left", self.left))
+        if self.right is not None: nodelist.append(("right", self.right))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.operator is not None:
+            yield self.operator
+        if self.left is not None:
+            yield self.left
+        if self.right is not None:
+            yield self.right
+
+    attr_names = ("Relational",)
+
+class BasicOperators(Node):
+    __slots__ = ('operator', 'left', 'right', 'coord', '__weakref__')
+    def __init__(self, operator, left, right, coord=None):
+        self.operator = operator
+        self.left = left
+        self.right = right
+
+    def children(self):
+        nodelist = []
+        if self.operator is not None: nodelist.append(("operator", self.operator))
+        if self.left is not None: nodelist.append(("left", self.left))
+        if self.right is not None: nodelist.append(("right", self.right))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.operator is not None:
+            yield self.operator
+        if self.left is not None:
+            yield self.left
+        if self.right is not None:
+            yield self.right
+
+    attr_names = ("BasicOperators",)
+
+class Sequence(Node):
+    __slots__ = ('beginning', 'end', 'coord', '__weakref__')
+    def __init__(self, operator, beginning, end, coord=None):
+        self.beginning = beginning
+        self.end = end
+
+    def children(self):
+        nodelist = []
+        if self.beginning is not None: nodelist.append(("beginning", self.beginning))
+        if self.end is not None: nodelist.append(("end", self.end))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.beginning is not None:
+            yield self.beginning
+        if self.end is not None:
+            yield self.end
+
+    attr_names = ("Sequence",)
+
+class Exp(Node):
+    __slots__ = ('left', 'right', 'coord', '__weakref__')
+    def __init__(self, operator, left, right, coord=None):
+        self.left = left
+        self.right = right
+
+    def children(self):
+        nodelist = []
+        if self.left is not None: nodelist.append(("left", self.left))
+        if self.right is not None: nodelist.append(("right", self.right))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.left is not None:
+            yield self.left
+        if self.right is not None:
+            yield self.right
+
+    attr_names = ("Exp",)
+
+class Array(Node):
+    __slots__ = ('one', 'second', 'coord', '__weakref__')
+    def __init__(self, operator, one, second, coord=None):
+        self.one = one
+        self.second = second
+
+    def children(self):
+        nodelist = []
+        if self.one is not None: nodelist.append(("one", self.one))
+        if self.second is not None: nodelist.append(("second", self.second))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.one is not None:
+            yield self.one
+        if self.second is not None:
+            yield self.second
+
+    attr_names = ("Array",)
+
+class ObjectCall(Node):
+    __slots__ = ('identifier', 'coord', '__weakref__')
+    def __init__(self, identifier, coord=None):
+        self.identifier = identifier
+
+    def children(self):
+        nodelist = []
+        if self.identifier is not None: nodelist.append(("identifier", self.identifier))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.identifier is not None:
+            yield self.identifier
+    
+    attr_names = ("ObjectCall",)
+
+class Function(Node):
+    __slots__ = ('function', 'returnType', 'fId', 'paramLst', 'stmt', 'coord', '__weakref__')
+    def __init__(self, function, returnType, fId, paramLst, stmt, coord=None):
+        self.function = function
+        self.returnType = returnType
+        self.fId = fId
+        self.paramLst = paramLst
+        self.stmt = stmt
+
+    def children(self):
+        nodelist = []
+        if self.function is not None: nodelist.append(('function', self.function))
+        if self.returnType is not None: nodelist.append(('returnType', self.returnType))
+        if self.fId is not None: nodelist.append(('fId', self.fId))
+        if self.paramLst is not None: nodelist.append(('paramLst', self.paramLst))
+        if self.stmt is not None: nodelist.append(('stmt', self.stmt))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.function is not None:
+            yield self.function
+        if self.returnType is not None:
+            yield self.returnType
+        if self.fId is not None:
+            yield self.fId
+        if self.paramLst is not None:
+            yield self.paramLst
+        if self.stmt is not None:
+            yield self.stmt
+
+    attr_names = ("Function", )
+
+class ObjectClassSpec(Node):
+    __slots__ = ('identifier', 'coord', '__weakref__')
+    def __init__(self, identifier, coord=None):
+        self.identifier = identifier
+
+    def children(self):
+        nodelist = []
+        if self.identifier is not None: nodelist.append(("identifier", self.identifier))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.identifier is not None:
+            yield self.identifier
+    
+    attr_names = ("ObjectClassSpec",)
+
+class ParamList(Node):
+    __slots__ = ('identifier', 'coord', '__weakref__')
+    def __init__(self, identifier, coord=None):
+        self.identifier = identifier
+
+    def children(self):
+        nodelist = []
+        if self.identifier is not None: nodelist.append(("identifier", self.identifier))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.identifier is not None:
+            yield self.identifier
+    
+    attr_names = ("ParamList",)
+
+class ParamOption(Node):
+    __slots__ = ('one', 'second', 'coord', '__weakref__')
+    def __init__(self, operator, one, second, coord=None):
+        self.one = one
+        self.second = second
+
+    def children(self):
+        nodelist = []
+        if self.one is not None: nodelist.append(("one", self.one))
+        if self.second is not None: nodelist.append(("second", self.second))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.one is not None:
+            yield self.one
+        if self.second is not None:
+            yield self.second
+
+    attr_names = ("ParamOption",)
+
+class ParamSpec(Node):
+    __slots__ = ('tspec', 'fID', 'valueOption', 'coord', '__weakref__')
+    def __init__(self, tspec, fID, valueOption, coord=None):
+        self.tspec = tspec
+        self.fID = fID
+        self.valueOption = valueOption
+
+    def children(self):
+        nodelist = []
+        if self.tspec is not None: nodelist.append(("tspec", self.tspec))
+        if self.fID is not None: nodelist.append(("fID", self.fID))
+        if self.valueOption is not None: nodelist.append(("valueOption", self.valueOption))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.tspec is not None:
+            yield self.tspec
+        if self.fID is not None:
+            yield self.fID
+        if self.valueOption is not None:
+            yield self.valueOption
+
+    attr_names = ("ParamSpec", )
