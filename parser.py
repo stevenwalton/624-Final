@@ -961,13 +961,22 @@ def p_param_spec(p):
 def p_value_option(p):
     '''
     value_option : constant
-                 | ID
     '''
     if DEBUG:
         print("\nvalue option: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     p[0] = p[1]
+
+def p_value_option(p):
+    '''
+    value_option : ID
+    '''
+    if DEBUG:
+        print("\nvalue option: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = ast.ID(p[1])
 
 def p_eof(p):
     '''
