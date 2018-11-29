@@ -914,9 +914,11 @@ def p_param_option(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 3:
-        p[0] = (p[1],p[2])
+        #p[0] = (p[1],p[2])
+        p[0] = ast.ParamOption(p[1],p[2])
     else:
-        p[0] = p[1]
+        #p[0] = p[1]
+        p[0] = ast.ParamOption(p[1],None)
 
 def p_param_spec_multiple(p):
     '''
@@ -928,9 +930,11 @@ def p_param_spec_multiple(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[1],p[3]) 
+        #p[0] = (p[1],p[3]) 
+        p[0] = ast.ParamOption(p[1],p[3])
     else:
-        p[0] = p[2]
+        #p[0] = p[2]
+        p[0] = ast.ParamOption(p[2],None) # Should reverse?
 
 
 #####################
@@ -948,9 +952,11 @@ def p_param_spec(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 7:
-        p[0] = (p[4],p[2],p[3],p[5])
+        #p[0] = (p[4],p[2],p[3],p[5])
+        p[0] = ast.ParamSpec(p[2],p[3],p[5])
     else:
-        p[0] = (p[1],p[2])
+        #p[0] = (p[1],p[2])
+        p[0] = ast.ParamSpec(p[1],p[2],None)
 
 def p_value_option(p):
     '''

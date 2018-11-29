@@ -696,3 +696,63 @@ class ObjectClassSpec(Node):
             yield self.identifier
     
     attr_names = ("ObjectClassSpec",)
+
+class ParamList(Node):
+    __slots__ = ('identifier', 'coord', '__weakref__')
+    def __init__(self, identifier, coord=None):
+        self.identifier = identifier
+
+    def children(self):
+        nodelist = []
+        if self.identifier is not None: nodelist.append(("identifier", self.identifier))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.identifier is not None:
+            yield self.identifier
+    
+    attr_names = ("ParamList",)
+
+class ParamOption(Node):
+    __slots__ = ('one', 'second', 'coord', '__weakref__')
+    def __init__(self, operator, one, second, coord=None):
+        self.one = one
+        self.second = second
+
+    def children(self):
+        nodelist = []
+        if self.one is not None: nodelist.append(("one", self.one))
+        if self.second is not None: nodelist.append(("second", self.second))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.one is not None:
+            yield self.one
+        if self.second is not None:
+            yield self.second
+
+    attr_names = ("ParamOption",)
+
+class ParamSpec(Node):
+    __slots__ = ('tspec', 'fID', 'valueOption', 'coord', '__weakref__')
+    def __init__(self, tspec, fID, valueOption, coord=None):
+        self.tspec = tspec
+        self.fID = fID
+        self.valueOption = valueOption
+
+    def children(self):
+        nodelist = []
+        if self.tspec is not None: nodelist.append(("tspec", self.tspec))
+        if self.fID is not None: nodelist.append(("fID", self.fID))
+        if self.valueOption is not None: nodelist.append(("valueOption", self.valueOption))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.tspec is not None:
+            yield self.tspec
+        if self.fID is not None:
+            yield self.fID
+        if self.valueOption is not None:
+            yield self.valueOption
+
+    attr_names = ("ParamSpec", )
