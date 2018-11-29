@@ -154,6 +154,8 @@ class Constant(Node):
 
     def children(self):
         nodelist = []
+        if self.type is not None: nodelist.append(("type", self.type))
+        if self.value is not None: nodelist.append(("value", self.value))
         return tuple(nodelist)
 
     def __iter__(self):

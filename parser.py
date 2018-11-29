@@ -595,7 +595,7 @@ def p_unary_expr(p):
     if len(p) == 3:
         p[0] = ast.UnaryOp(p[1],p[2])
     else:
-        p[0] = ast.UnaryOp(p[1],None)
+        p[0] = ast.UnaryOp(None,p[1])
 
 # Split this into 3!!!
 def p_postfix_expr(p):
@@ -1008,7 +1008,7 @@ def p_eof(p):
 #prog = 'if (F){ if(F) break; }else x=42;'
 
 def tree():
-    prog = '1 == 5;'
+    prog = '1 == 1;'
 
 
     parser = yacc.yacc()
