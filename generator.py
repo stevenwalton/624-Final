@@ -1,15 +1,19 @@
 import ast
 import parser
+from functools import singledispatch
 
 class EidosGenerator():
     '''
     '''
     def __init__(self):
-        pass;
+        self.visit = singledispatch(self.visit)
+        self.visit.register(ast.Conditional, self.visit_conditional)
+        self.visit.register(ast.Equality, self.visit_equality)
+        self.visit.register(ast.Constant, self.visit_Constant)
+        self.visit.register(ast.ID, self.visit_ID)
 
     def visit(self, node: ast.InterpreterBlock):
         for name, child in node.children():
-            print("!!!")
             print(child.__type__)
             self.visit(child)
 
@@ -19,41 +23,40 @@ class EidosGenerator():
         iftrue = None
         iffalse = None
         for name, child in node.children():
-            if name is "cond":
+            if name == "cond":
                 cond = child
-            elif name is "iftrue":
+            elif name == "iftrue":
                 iftrue = child
-            elif name is "iffalse":
+            elif name == "iffalse":
                 iffalse = child
         try:
-            if self.visit(cond) is True:
+            if self.visit(cond) == True:
                 self.visit(iftrue)
             else:
                 self.visit(iffalse)
         except:
             pass
 
-    def visit(self, node: ast.Conditional):
+    def visit_conditional(self, node: ast.Conditional):
         cond = None
         iftrue = None
         iffalse = None
-        print("!!!")
         for name, child in node.children():
-            if name is "cond":
+            if name == "cond":
                 cond = child
-            elif name is "iftrue":
+            elif name == "iftrue":
                 iftrue = child
-            elif name is "iffalse":
+            elif name == "iffalse":
                 iffalse = child
         try:
-            if self.visit(cond) is True:
+            if self.visit(cond) == True:
                 self.visit(iftrue)
             else:
                 self.visit(iffalse)
         except:
             pass
 
-    def visit(self, node: ast.Equality):
+    def visit_equality(self, node: ast.Equality):
         op = None
         left = None
         right = None
@@ -64,17 +67,16 @@ class EidosGenerator():
             # print(name)
             # print("======================================")
             # print(child)
-            if name is "operator":
+            if name == "operator":
                 op = child
-            elif name is "left":
+            elif name == "left":
                 left = child
-            elif name is "right":
+            elif name == "right":
                 right = child
         try:
-            # print(op)
-            if op is "==":
+            if op == "==":
                 return self.visit(left) == self.visit(right)
-            elif op is "!=":
+            elif op == "!=":
                 return self.visit(left) != self.visit(right)
             else:
                 # print(op)
@@ -83,12 +85,17 @@ class EidosGenerator():
             print("caught an exception")
             pass
 
+    def visit_Constant(self, node):
+        return self.value
+    def visit_ID(self, node):
+        return self.name
+
 def main():
     result = parser.tree()
-    print(isinstance(result, ast.Conditional))
+    # print(isinstance(result, ast.Conditional))
     gen = EidosGenerator()
     r = gen.visit(result)
-    # print(r)
+    print(r)
 
 if __name__ == '__main__':
     main()
