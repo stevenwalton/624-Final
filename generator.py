@@ -9,8 +9,6 @@ class EidosGenerator():
         self.visit = singledispatch(self.visit)
         self.visit.register(ast.Conditional, self.visit_conditional)
         self.visit.register(ast.Equality, self.visit_equality)
-        self.visit.register(ast.Constant, self.visit_Constant)
-        self.visit.register(ast.ID, self.visit_ID)
 
     def visit(self, node: ast.InterpreterBlock):
         for name, child in node.children():
@@ -84,12 +82,7 @@ class EidosGenerator():
         except:
             print("caught an exception")
             pass
-
-    def visit_Constant(self, node):
-        return self.value
-    def visit_ID(self, node):
-        return self.name
-
+            
 def main():
     result = parser.tree()
     # print(isinstance(result, ast.Conditional))
