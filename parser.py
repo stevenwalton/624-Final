@@ -577,7 +577,7 @@ def p_exp_expr(p):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
         #p[0] = (p[2],p[1],p[3])
-        p[0] = ast.Exp(p[1],p[3])
+        p[0] = ast.Exp(p[1],p[3], None)
     else:
         p[0] = p[1]
 
@@ -638,7 +638,7 @@ def p_expr_array(p):
         p[0] = ast.Array(p[3],None)
     elif len(p) == 4: # LBRACKET expr RBRACKET
         #p[0] = p[3]
-        p[0] = ast.Array(p[3]，None)
+        p[0] = ast.Array(p[3],None)
     else:
         pass
         
@@ -661,7 +661,7 @@ def p_multi_expr(p):
         p[0] = ast.Array(p[1],None)
     else:
         #p[0] = p[1]
-        p[0] = ast.Array(p[1]，None)
+        p[0] = ast.Array(p[1],None)
 
 def p_argument_array(p):
     '''
@@ -992,11 +992,12 @@ def p_eof(p):
 #prog = "for (myvar in 1:10) x=5;"
 
 
-prog = 'while(x<5) break;'
+#prog = 'while(x<5) break;'
 #prog = 'do x=x+2; while (x<5);'
 #prog = 'for (i in 1:20) return;'
 #prog = 'a = ( x==y ? f1() else f2());' # Treats lvalue
 #prog = 'if (F){ if(F) break; }else x=42;'
+prog = 'if (2^2^2^2 > 10 ) "Hello";'
 
 
 parser = yacc.yacc()
