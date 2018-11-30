@@ -462,6 +462,31 @@ class InterpreterBlock(Node):
 
     attr_names = ('Interpreter', )
 
+class InterpreterMultipleBlock(Node):
+    __slots__ = ('statement', 'function_decl', 'block', 'coord', '__weakref__')
+    def __init__(self, statement, function_decl, block, coord=None):
+        self.statement = statement
+        self.function_decl = function_decl
+        self.block = block
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.statement is not None: nodelist.append(("statement", self.statement))
+        if self.function_decl is not None: nodelist.append(("function_decl", self.function_decl))
+        if self.block is not None: nodelist.append(("block", self.block))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.statement is not None:
+            yield self.statement
+        if self.function_decl is not None:
+            yield self.function_decl
+        if self.block is not None:
+            yield self.block
+
+    attr_names = ('InterpreterMultipleBlock', )
+
 class LogicalOR(Node):
     __slots__ = ('first', 'second', 'coord', '__weakref__')
     def __init__(self, first, second, coord=None):
@@ -759,3 +784,23 @@ class ParamSpec(Node):
             yield self.valueOption
 
     attr_names = ("ParamSpec", )
+
+class MultipleStmt(Node):
+    __slots__ = ('statement', 'multi_stmt', 'coord', '__weakref__')
+    def __init__(self, statement, multi_stmt, coord=None):
+        self.statement = statement
+        self.multi_stmt = multi_stmt
+
+    def children(self):
+        nodelist = []
+        if self.statement is not None: nodelist.append(("statement", self.statement))
+        if self.multi_stmt is not None: nodelist.append(("multi_stmt", self.multi_stmt))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.statement is not None:
+            yield self.statement
+        if self.multi_stmt is not None:
+            yield self.multi_stmt
+            
+    attr_names = ("MultipleStmt")
