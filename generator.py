@@ -148,7 +148,7 @@ class EidosGenerator():
                 lvalue = child
             if name == "rvalue":
                 rvalue = child
-        # self.symbolTable[lvalue] = rvalue
+        self.symbolTable[lvalue] = rvalue
         try:
             if lvalue is not None:
                 left = self.visit(lvalue)
