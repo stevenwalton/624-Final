@@ -200,7 +200,7 @@ def p_for_statement(p):
         print("\nfor stmt: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    p[0] = ast.For(p[3],p[5],p[7])
+    p[0] = ast.For(ast.ID(p[3]), p[5], p[7])
 
 
 def p_do_while_statement(p):
@@ -690,7 +690,7 @@ def p_object_call(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     #p[0] = (p[1],p[2])
-    p[0] = ast.ObjectCall(p[2])
+    p[0] = ast.ObjectCall(ast.ID(p[2]))
 
 def p_primary_expr(p):
     '''
@@ -741,7 +741,7 @@ def p_argument_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
+        p[0] = (p[2], ast.ID(p[1]), p[3])
     else:
         p[0] = p[1]
 
@@ -819,7 +819,7 @@ def p_function_decl(p):
             print(i," ",p[i], " ",end="")
     # Don't think this is right
     #p[0] = (p[1], p[2], p[3], p[4], p[5])
-    p[0] = ast.Function(p[1], p[2], p[3], p[4], p[5])
+    p[0] = ast.Function(p[1], p[2], ast.ID(p[3]), p[4], p[5])
 
 def p_return_type_spec(p):
     '''
@@ -1012,7 +1012,11 @@ def p_eof(p):
 #prog = 'if (F){ if(F) break; }else x=42;'
 
 def tree():
-    prog = 'x = 5; y = 3; x = y+1;'
+    # prog = 'x = 5; if (x == 5) y = 6;'
+    # prog = 'x = 1; while (x != 5) x = x + 1;'
+    # prog = 'x = 1; do x = x + 1; while (x != 5);'
+    prog = 'x = 0; z = 0; for (i in 1 : 5) {x = x + 1; y = x; if (i == 3) x = 0; z = z + 1;}'
+
 
 
     parser = yacc.yacc()
