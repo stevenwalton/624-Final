@@ -7,6 +7,7 @@ class EidosGenerator():
     '''
     def __init__(self):
         self.visit = singledispatch(self.visit)
+        self.visit.register(ast.If, self.visit_if)
         self.visit.register(ast.Conditional, self.visit_conditional)
         self.visit.register(ast.Equality, self.visit_equality)
         self.visit.register(ast.UnaryOp, self.visit_unary)
@@ -14,13 +15,12 @@ class EidosGenerator():
         self.visit.register(ast.ID, self.visit_id)
         self.visit.register(ast.Assignment, self.visit_assignment)
 
-    def visit(self, node: ast.InterpreterBlock):
+    def visit(self, node):
         for name, child in node.children():
             print(child.__type__)
             self.visit(child)
 
-    def visit(self, node: ast.If):
-        print("if")
+    def visit_if(self, node: ast.If):
         cond = None
         iftrue = None
         iffalse = None
@@ -139,7 +139,7 @@ class EidosGenerator():
             if id_name:
                 return id_name
         except:
-            pass   
+            pass
 
     def visit_assignment(self, node: ast.Assignment):
         print("assign")

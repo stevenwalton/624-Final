@@ -137,14 +137,14 @@ while_stmt = for_stmt.stmt.block_items[1]
 # The condition:
 
 while_cond = while_stmt.cond
-#while_cond.show()
+# while_cond.show()
 
 # Note that it's a BinaryOp node - the basic constituent of
 # expressions in our AST. BinaryOp is the expression tree, with
 # left and right nodes as children. It also has the op attribute,
 # which is just the string representation of the operator.
 
-#print(while_cond.op)
+# print(while_cond.op)
 #while_cond.left.show()
 #while_cond.right.show()
 
