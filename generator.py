@@ -11,6 +11,8 @@ class EidosGenerator():
         self.visit.register(ast.Equality, self.visit_equality)
         self.visit.register(ast.UnaryOp, self.visit_unary)
         self.visit.register(ast.Constant, self.visit_constant)
+        self.visit.register(ast.ID, self.visit_id)
+        self.visit.register(ast.Assignment, self.visit_assignment)
 
     def visit(self, node: ast.InterpreterBlock):
         for name, child in node.children():
@@ -124,6 +126,35 @@ class EidosGenerator():
         except:
             pass
 
+    def visit_id(self, node: ast.ID):
+        id_name = None
+        for name, child in node.children():
+            if name == "name":
+                id_name = name
+        try:
+            if id_name == "name":
+                return id_name
+        except:
+            pass   
+
+    def visit_assignment(self, node: ast.Assignment):
+        op = None
+        lvalue = None
+        rvalue = None
+        for name, child in node.children():
+            if name == "op":
+                op = child
+            elif name == "lvalue":
+                lvalue = child
+            if name == "rvalue":
+                rvalue = child
+        try:
+            if lvalue is not None:
+                return self.visit(lvalue)
+            elif rvalue is not None:
+                return self.visit(rvalue)
+        except:
+            pass
 
 
 def main():

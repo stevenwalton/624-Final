@@ -331,6 +331,7 @@ class ID(Node):
 
     def children(self):
         nodelist = []
+        if self.lvalue is not None: nodelist.append(("name", self.name))
         return tuple(nodelist)
 
     def __iter__(self):

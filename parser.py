@@ -1008,7 +1008,7 @@ def p_eof(p):
 #prog = 'if (F){ if(F) break; }else x=42;'
 
 def tree():
-    prog = '1 == 1;'
+    prog = 'x = 5;'
 
 
     parser = yacc.yacc()
