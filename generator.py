@@ -92,24 +92,16 @@ class EidosGenerator():
             elif name == "right":
                 right = child
         try:
+            nodel = self.visit(left)
+            noder = self.visit(right)
+            if nodel in self.symbolTable:
+                nodel = self.symbolTable[nodel]
+            if noder in self.symbolTable:
+                noder = self.symbolTable[noder]
             if op == "==":
-                nodel = self.visit(left)
-                noder = self.visit(right)
-                if isinstance(nodel, tuple):
-                    nodel = nodel[1]
-                if isinstance(noder, tuple):
-                    noder = noder[1]
-                tf = (nodel == noder)
-                return tf
+                return (nodel == noder)
             elif op == "!=":
-                nodel = self.visit(left)
-                noder = self.visit(right)
-                if isinstance(nodel, tuple):
-                    nodel = nodel[1]
-                if isinstance(noder, tuple):
-                    noder = noder[1]
-                tf = (nodel != noder)
-                return tf
+                return (nodel != noder)
             else:
                 print("error in visiting equality node")
         except:
@@ -163,10 +155,7 @@ class EidosGenerator():
                 id_name = child
         try:
             if id_name:
-                if id_name in self.symbolTable:
-                    return (id_name, self.symbolTable[id_name])
-                else:
-                    return (id_name, None)
+                return id_name
         except:
             pass
 
@@ -185,12 +174,11 @@ class EidosGenerator():
         try:
             left = self.visit(lvalue)
             right = self.visit(rvalue)
-            if isinstance(left, tuple):
-                left = left[0]
-            if isinstance(right, tuple):
-                right = right[1]
+            # no connecting
+            if right in self.symbolTable:
+                right = self.symbolTable[right]
             self.symbolTable[left] = right
-            return left[0],right
+            return left,right
         except:
             pass
 
@@ -259,10 +247,10 @@ class EidosGenerator():
             # values of left and right
             leftV = self.visit(left)
             rightV = self.visit(right)
-            if isinstance(leftV, tuple):
-                leftV = leftV[1]
-            if isinstance(rightV, tuple):
-                rightV = rightV[1]
+            if leftV in self.symbolTable:
+                leftV = self.symbolTable[leftV]
+            if rightV in self.symbolTable:
+                rightV = self.symbolTable[rightV]
             if operator == "+":
                 return leftV + rightV
             elif operator == "-":
@@ -304,10 +292,10 @@ class EidosGenerator():
         try:
             b = self.visit(beginning)
             e = self.visit(end)
-            if isinstance(b, tuple):
-                b = b[1]
-            if isinstance(e, tuple):
-                e = e[1]
+            if b in self.symbolTable:
+                b = self.symbolTable[b]
+            if e in self.symbolTable:
+                e = self.symbolTable[e]
             # returns python range, not eidos range
             return range(b,e+1)
         except:
@@ -327,7 +315,7 @@ class EidosGenerator():
         try:
             ran = self.visit(cond)
             for i in ran:
-                x = self.visit(ID)[0]
+                x = self.visit(ID)
                 self.symbolTable[x] = i
                 r = self.visit(stmt)
                 # print(r)
