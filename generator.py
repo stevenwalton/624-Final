@@ -8,6 +8,7 @@ class EidosGenerator():
     def __init__(self):
         # no scoping version, only one symbolTable
         self.symbolTable = {}
+        # self.ifBreak = False
         self.visit = singledispatch(self.visit)
         self.visit.register(ast.If, self.visit_if)
         self.visit.register(ast.Conditional, self.visit_conditional)
@@ -19,13 +20,21 @@ class EidosGenerator():
         self.visit.register(ast.InterpreterMultipleBlock, self.visit_interpreter_multiple_block)
         self.visit.register(ast.MultipleStmt, self.visit_multiple_statement)
         self.visit.register(ast.BasicOperators, self.visit_basic_operators)
+        self.visit.register(ast.While, self.visit_while)
+        self.visit.register(ast.Do, self.visit_do)
+        self.visit.register(ast.Sequence, self.visit_sequence)
+        self.visit.register(ast.For, self.visit_for)
+        # self.visit.register(ast.Break, self.visit_break)
+
+    def getSymbolTable(self):
+        return self.symbolTable
 
     def visit(self, node: ast.InterpreterBlock):
         for name, child in node.children():
             self.visit(child)
 
     def visit_if(self, node: ast.If):
-        print("visiting if")
+        # print("visiting if")
         cond = None
         iftrue = None
         iffalse = None
@@ -45,7 +54,7 @@ class EidosGenerator():
             pass
 
     def visit_conditional(self, node: ast.Conditional):
-        print("visiting conditional")
+        # print("visiting conditional")
         cond = None
         iftrue = None
         iffalse = None
@@ -59,23 +68,19 @@ class EidosGenerator():
         try:
 
             # Where it is "breaking". Returns None, because there are no iftrue/iffalse nodes
+            c = None
             if iftrue == None and iffalse == None:
                 c = self.visit(cond)
-            elif self.visit(cond) == True:
-                t = self.visit(iftrue)
-            elif self.visit(cond) == False:
-                f = self.visit(iffalse)
-            print("*****************")
-            print(c)
-            print(t)
-            print(f)
-            print("*****************")
-            return (c, t, f)
+            elif c == True:
+                return self.visit(iftrue)
+            elif c == False:
+                return self.visit(iffalse)
+            return c
         except:
             pass
 
     def visit_equality(self, node: ast.Equality):
-        print("visiting equality")
+        # print("visiting equality")
         op = None
         left = None
         right = None
@@ -87,13 +92,16 @@ class EidosGenerator():
             elif name == "right":
                 right = child
         try:
+            nodel = self.visit(left)
+            noder = self.visit(right)
+            if nodel in self.symbolTable:
+                nodel = self.symbolTable[nodel]
+            if noder in self.symbolTable:
+                noder = self.symbolTable[noder]
             if op == "==":
-                nodel = self.visit(left)
-                noder = self.visit(right)
-                tf = (nodel == noder)
-                return tf
+                return (nodel == noder)
             elif op == "!=":
-                return self.visit(left) != self.visit(right)
+                return (nodel != noder)
             else:
                 print("error in visiting equality node")
         except:
@@ -101,7 +109,7 @@ class EidosGenerator():
             pass
 
     def visit_unary(self, node: ast.UnaryOp):
-        print("visiting unary")
+        # print("visiting unary")
         op = None
         expr = None
         for name, child in node.children():
@@ -114,14 +122,12 @@ class EidosGenerator():
                 pass
             else:
                 # return print(self.visit(expr))
-                r = self.visit(expr)
-                print("unary result: ", r)
-                return r
+                return self.visit(expr)
         except:
             pass
 
     def visit_constant(self, node: ast.Constant):
-        print("visiting constant")
+        # print("visiting constant")
         ctype = None
         value = None
         for name, child in node.children():
@@ -142,23 +148,19 @@ class EidosGenerator():
             pass
 
     def visit_id(self, node: ast.ID):
-        print("visiting id")
+        # print("visiting id")
         id_name = None
         for name, child in node.children():
             if name == "name":
                 id_name = child
         try:
             if id_name:
-                if id_name in self.symbolTable:
-                    print("value: ", self.symbolTable[id_name])
-                    return (id_name, self.symbolTable[id_name])
-                else:
-                    return (id_name, None)
+                return id_name
         except:
             pass
 
     def visit_assignment(self, node: ast.Assignment):
-        print("visiting assignment")
+        # print("visiting assignment")
         op = None
         lvalue = None
         rvalue = None
@@ -169,21 +171,19 @@ class EidosGenerator():
                 lvalue = child
             elif name == "rvalue":
                 rvalue = child
-        # self.symbolTable[lvalue] = rvalue
-        # print("symbol table: ", self.symbolTable)
         try:
-            if lvalue is not None:
-                left = self.visit(lvalue)
-            if rvalue is not None:
-                right = self.visit(rvalue)
-            self.symbolTable[lvalue] = rvalue
-            print("symbol table: ", self.symbolTable)
+            left = self.visit(lvalue)
+            right = self.visit(rvalue)
+            # no connecting
+            if right in self.symbolTable:
+                right = self.symbolTable[right]
+            self.symbolTable[left] = right
             return left,right
         except:
             pass
 
     def visit_interpreter_multiple_block(self, node):
-        print("visiting interp mult")
+        # print("visiting interp mult")
         statement = None
         function_decl = None
         block = None
@@ -206,11 +206,14 @@ class EidosGenerator():
             pass
 
     def visit_multiple_statement(self, node):
-        print("visiting mult stmt")
+        # if self.ifBreak:
+        #     print("!")
+        #     self.ifBreak = False
+        #     return
         statement = None
         multi_stmt = None
         for name, child in node.children():
-            if name == "statemetn":
+            if name == "statement":
                 statement = child
             elif name == "multi_stmt":
                 multi_stmt = child
@@ -219,12 +222,17 @@ class EidosGenerator():
                 s = self.visit(statement)
             if multi_stmt:
                 m = self.visit(multi_stmt)
-            return (s,m)
+            # if not isinstance(s, tuple):
+            #     s = (s,)
+            # if not isinstance(m, tuple):
+            #     m = (m,)
+            # return s+m
+            return s,m
         except:
             pass
 
     def visit_basic_operators(self, node):
-        print("visiting basic")
+        # print("visiting basic")
         operator = None
         left = None
         right = None
@@ -237,21 +245,13 @@ class EidosGenerator():
                 right = child
         try:
             # values of left and right
-            print("===========================")
-            print("left: ", left)
             leftV = self.visit(left)
             rightV = self.visit(right)
-            print("leftV", leftV)
-            print("rightV", rightV)
-            print("---------------------------")
-            if isinstance(left, tuple):
-                leftV = left[1]
-            if isinstance(right, tuple):
-                rightV = right[1]
-            print("leftV", leftV)
-            print("rightV", rightV)
+            if leftV in self.symbolTable:
+                leftV = self.symbolTable[leftV]
+            if rightV in self.symbolTable:
+                rightV = self.symbolTable[rightV]
             if operator == "+":
-                print("why???")
                 return leftV + rightV
             elif operator == "-":
                 return leftV + rightV
@@ -264,38 +264,80 @@ class EidosGenerator():
         except:
             print("error in basic operator")
 
-    # def visit_basic_operators(self, node):
-    #     op = None
-    #     lexpr = None
-    #     rexpr = None
-    #     for name, child in node.children():
-    #         if name == "operator":
-    #             op = child
-    #         elif name == "left":
-    #             lexpr = child
-    #         elif name == "right":
-    #             rexpr = child
-    #     try:
-    #         l = self.visit(lexpr)
-    #         r = self.visit(rexpr)
-    #         if op == "+":
-    #             return l + r
-    #         elif op == "-":
-    #             return l - r
-    #         elif op == "*":
-    #             return l * r
-    #         elif op == "/":
-    #             return l / r
-    #         elif op == "%":
-    #             return l % r
-    #     except:
-    #         pass
+    def visit_while(self, node):
+        cond = None
+        stmt = None
+        for name, child in node.children():
+            if name == "cond":
+                cond = child
+            elif name == "stmt":
+                stmt = child
+        try:
+            while(self.visit(cond)):
+                self.visit(stmt)
+        except:
+            print("error in while")
+
+    def visit_do(self, node):
+        self.visit_while(node)
+
+    def visit_sequence(self, node):
+        beginning = None
+        end = None
+        for name, child in node.children():
+            if name == "beginning":
+                beginning = child
+            elif name == "end":
+                end = child
+        try:
+            b = self.visit(beginning)
+            e = self.visit(end)
+            if b in self.symbolTable:
+                b = self.symbolTable[b]
+            if e in self.symbolTable:
+                e = self.symbolTable[e]
+            # returns python range, not eidos range
+            return range(b,e+1)
+        except:
+            print("error in visiting seq")
+
+    def visit_for(self, node):
+        ID = None;
+        cond = None;
+        stmt = None;
+        for name, child in node.children():
+            if name == "id":
+                ID = child
+            elif name == "cond":
+                cond = child;
+            elif name == "stmt":
+                stmt = child;
+        try:
+            ran = self.visit(cond)
+            for i in ran:
+                x = self.visit(ID)
+                self.symbolTable[x] = i
+                r = self.visit(stmt)
+                # print(r)
+                # if "break" in r:
+                #     self.ifBreak = false
+                #     break;
+                # print(isinstance(r, ast.Break))
+        except Exception as e:
+            raise
+
+    # def visit_break(self, node):
+    #     self.ifBreak = True
+    #     return "break"
+
+
 
 def main():
     result = parser.tree()
     gen = EidosGenerator()
     r = gen.visit(result)
     print(r)
+    print(gen.getSymbolTable())
 
 if __name__ == '__main__':
     main()

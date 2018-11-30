@@ -199,7 +199,7 @@ class For(Node):
 
     def children(self):
         nodelist = []
-        if self.id is not None: nodelist.append(("init", self.init))
+        if self.id is not None: nodelist.append(("id", self.id))
         if self.cond is not None: nodelist.append(("cond", self.cond))
         if self.stmt is not None: nodelist.append(("stmt", self.stmt))
         return tuple(nodelist)
@@ -603,7 +603,7 @@ class BasicOperators(Node):
 
 class Sequence(Node):
     __slots__ = ('beginning', 'end', 'coord', '__weakref__')
-    def __init__(self, operator, beginning, end, coord=None):
+    def __init__(self, beginning, end, coord=None):
         self.beginning = beginning
         self.end = end
 
@@ -623,7 +623,7 @@ class Sequence(Node):
 
 class Exp(Node):
     __slots__ = ('left', 'right', 'coord', '__weakref__')
-    def __init__(self, operator, left, right, coord=None):
+    def __init__(self, left, right, coord=None):
         self.left = left
         self.right = right
 
@@ -802,7 +802,7 @@ class MultipleStmt(Node):
             yield self.statement
         if self.multi_stmt is not None:
             yield self.multi_stmt
-            
+
     attr_names = ("MultipleStmt")
 
 class ArgumentExpr(Node):
