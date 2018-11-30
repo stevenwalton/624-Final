@@ -1,0 +1,65 @@
+
+primary expr: 0 :  None  1 :  if  
+primary expr: 0 :  None  1 :  a  
+postfix expr: 0 :  None  1 :  a  
+unary expr: 0 :  None  1 :  a  
+exp expr: 0 :  None  1 :  a  
+seq expr: 0 :  None  1 :  a  
+mult expr: 0 :  None  1 :  a  
+add expr: 0 :  None  1 :  a  
+relational expr: 0 :  None  1 :  a  2
+
+primary expr: 0 :  None  1 :  b  
+postfix expr: 0 :  None  1 :  b  
+unary expr: 0 :  None  1 :  b  
+exp expr: 0 :  None  1 :  b  
+seq expr: 0 :  None  1 :  b  
+mult expr: 0 :  None  1 :  b  
+add expr: 0 :  None  1 :  b  
+relational expr: 0 :  None  1 :  b  2
+
+equality expr: 0 :  None  1 :  b  
+equality expr: 0 :  None  1 :  a  2 :  ==  3 :  b  
+and expr: 0 :  None  1 :  ('==', 'a', 'b')  
+or expr: 0 :  None  1 :  ('==', 'a', 'b')  
+cond expr: 0 :  None  1 :  ('==', 'a', 'b')  
+argument expr: 0 :  None  1 :  ('==', 'a', 'b')  
+argument expr lst: 0 :  None  1 :  ('==', 'a', 'b')  
+postfix expr: 0 :  None  1 :  ('if', ('==', 'a', 'b'))  
+unary expr: 0 :  None  1 :  ('if', ('==', 'a', 'b'))  
+exp expr: 0 :  None  1 :  ('if', ('==', 'a', 'b'))  
+seq expr: 0 :  None  1 :  ('if', ('==', 'a', 'b'))  
+mult expr: 0 :  None  1 :  ('if', ('==', 'a', 'b'))  
+add expr: 0 :  None  1 :  ('if', ('==', 'a', 'b'))  
+primary expr: 0 :  None  1 :  x  
+postfix expr: 0 :  None  1 :  x  
+unary expr: 0 :  None  1 :  x  
+exp expr: 0 :  None  1 :  x  
+seq expr: 0 :  None  1 :  x  
+mult expr: 0 :  None  1 :  x  
+add expr: 0 :  None  1 :  x  
+relational expr: 0 :  None  1 :  x  2
+
+const: 0 :  None  1 :  3  
+primary expr: 0 :  None  1 :  3  
+postfix expr: 0 :  None  1 :  3  
+unary expr: 0 :  None  1 :  3  
+exp expr: 0 :  None  1 :  3  
+seq expr: 0 :  None  1 :  3  
+mult expr: 0 :  None  1 :  3  
+add expr: 0 :  None  1 :  3  
+relational expr: 0 :  None  1 :  3  2
+
+equality expr: 0 :  None  1 :  3  
+and expr: 0 :  None  1 :  3  
+or expr: 0 :  None  1 :  3  
+cond expr: 0 :  None  1 :  3  
+assignment expr: 0 :  None  1 :  3  
+expr stmt: 0 :  None  1 :  3  2 :  ;  
+stmt: 0 :  None  1 :  3  
+interp_block: 0 :  None  1 :  3  
+interp_block: 0 :  None  1 :  3  2 :  None  
+=====
+DONE
+=====
+Result:  3

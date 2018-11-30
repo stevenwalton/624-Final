@@ -6,7 +6,10 @@ class EidosGenerator():
     '''
     '''
     def __init__(self):
+        # no scoping version, only one symbolTable
+        self.symbolTable = {}
         self.visit = singledispatch(self.visit)
+        self.visit.register(ast.If, self.visit_if)
         self.visit.register(ast.Conditional, self.visit_conditional)
         self.visit.register(ast.Equality, self.visit_equality)
         self.visit.register(ast.UnaryOp, self.visit_unary)
@@ -19,7 +22,7 @@ class EidosGenerator():
             print(child.__type__)
             self.visit(child)
 
-    def visit(self, node: ast.If):
+    def visit_if(self, node: ast.If):
         cond = None
         iftrue = None
         iffalse = None
@@ -145,11 +148,13 @@ class EidosGenerator():
                 lvalue = child
             if name == "rvalue":
                 rvalue = child
+        self.symbolTable[lvalue] = rvalue
         try:
             if lvalue is not None:
-                return self.visit(lvalue)
-            elif rvalue is not None:
-                return self.visit(rvalue)
+                left = self.visit(lvalue)
+            if rvalue is not None:
+                right = self.visit(rvalue)
+            return left,right
         except:
             pass
 
