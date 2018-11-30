@@ -249,6 +249,33 @@ class EidosGenerator():
         except:
             print("error in basic operator")
 
+    # def visit_basic_operators(self, node):
+    #     op = None
+    #     lexpr = None
+    #     rexpr = None
+    #     for name, child in node.children():
+    #         if name == "operator":
+    #             op = child
+    #         elif name == "left":
+    #             lexpr = child
+    #         elif name == "right":
+    #             rexpr = child
+    #     try:
+    #         l = self.visit(lexpr)
+    #         r = self.visit(rexpr)
+    #         if op == "+":
+    #             return l + r
+    #         elif op == "-":
+    #             return l - r
+    #         elif op == "*":
+    #             return l * r
+    #         elif op == "/":
+    #             return l / r
+    #         elif op == "%":
+    #             return l % r
+    #     except:
+    #         pass
+
 def main():
     result = parser.tree()
     gen = EidosGenerator()

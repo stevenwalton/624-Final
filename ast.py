@@ -804,3 +804,43 @@ class MultipleStmt(Node):
             yield self.multi_stmt
             
     attr_names = ("MultipleStmt")
+
+class ArgumentExpr(Node):
+    __slots__ = ('op', 'name', 'cond', 'coord', '__weakref__')
+    def __init__(self, op, name, cond, coord=None):
+        self.name = name
+        self.cond = cond
+
+    def children(self):
+        nodelist = []
+        if self.name is not None: nodelist.append(("name", self.name))
+        if self.cond is not None: nodelist.append(("cond", self.cond))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.name is not None:
+            yield self.name
+        if self.cond is not None:
+            yield self.cond
+
+    attr_names = ("ArgumentExpr",)
+
+class ArgumentExprList(Node):
+    __slots__ = ('argument', 'multi_arg', 'coord', '__weakref__')
+    def __init__(self, argument, multi_arg, coord=None):
+        self.argument = argument
+        self.multi_arg = multi_arg
+
+    def children(self):
+        nodelist = []
+        if self.argument is not None: nodelist.append(("argument", self.argument))
+        if self.multi_arg is not None: nodelist.append(("multi_arg", self.multi_arg))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.argument is not None:
+            yield self.argument
+        if self.multi_arg is not None:
+            yield self.multi_arg
+
+    attr_names = ("ArgumentExprList",)
