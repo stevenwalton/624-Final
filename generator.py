@@ -95,7 +95,6 @@ class EidosGenerator():
                 op = child
             elif name == "expr":
                 expr = child
-
         try:
             if op is not None:
                 pass
@@ -121,8 +120,6 @@ class EidosGenerator():
                 return value
             elif ctype == "character":
                 return value
-            elif ctype == "ID":
-                return value
         except:
             pass
 
@@ -130,12 +127,12 @@ class EidosGenerator():
         id_name = None
         for name, child in node.children():
             if name == "name":
-                id_name = name
+                id_name = child
         try:
-            if id_name == "name":
+            if id_name:
                 return id_name
         except:
-            pass   
+            pass
 
     def visit_assignment(self, node: ast.Assignment):
         op = None
@@ -155,7 +152,6 @@ class EidosGenerator():
                 return self.visit(rvalue)
         except:
             pass
-
 
 def main():
     result = parser.tree()
