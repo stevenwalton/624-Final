@@ -147,9 +147,10 @@ class EidosGenerator():
                 rvalue = child
         try:
             if lvalue is not None:
-                return self.visit(lvalue)
-            elif rvalue is not None:
-                return self.visit(rvalue)
+                left = self.visit(lvalue)
+            if rvalue is not None:
+                right = self.visit(rvalue)
+            return left,right
         except:
             pass
 
