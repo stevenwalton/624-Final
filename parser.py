@@ -1012,16 +1012,16 @@ def p_eof(p):
 #prog = 'if (F){ if(F) break; }else x=42;'
 
 def tree():
-    prog = 'x = 5; x = x+1;'
+    prog = 'x = 5; x+1;'
 
 
     parser = yacc.yacc()
     result = parser.parse(prog, debug=False)
-    if DEBUG:
-        print("\n=====\nDONE\n=====")
-        print("Parsed: ", end="")
-        print(prog)
-        print("Result: ",result)
-    else:
-        print(result)
+    # if DEBUG:
+    #     print("\n=====\nDONE\n=====")
+    #     print("Parsed: ", end="")
+    #     print(prog)
+    #     print("Result: ",result)
+    # else:
+    #     print(result)
     return result
