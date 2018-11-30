@@ -16,10 +16,11 @@ class EidosGenerator():
         self.visit.register(ast.Constant, self.visit_constant)
         self.visit.register(ast.ID, self.visit_id)
         self.visit.register(ast.Assignment, self.visit_assignment)
+        self.visit.register(ast.InterpreterMultipleBlock, self.visit_interpreter_multiple_block)
+        self.visit.register(ast.MultipleStmt, self.visit_multiple_statement)
 
     def visit(self, node: ast.InterpreterBlock):
         for name, child in node.children():
-            print(child.__type__)
             self.visit(child)
 
     def visit_if(self, node: ast.If):
@@ -34,6 +35,7 @@ class EidosGenerator():
             elif name == "iffalse":
                 iffalse = child
         try:
+            # not returning here
             if self.visit(cond) == True:
                 self.visit(iftrue)
             else:
@@ -146,7 +148,7 @@ class EidosGenerator():
                 op = child
             elif name == "lvalue":
                 lvalue = child
-            if name == "rvalue":
+            elif name == "rvalue":
                 rvalue = child
         self.symbolTable[lvalue] = rvalue
         try:
@@ -155,6 +157,45 @@ class EidosGenerator():
             if rvalue is not None:
                 right = self.visit(rvalue)
             return left,right
+        except:
+            pass
+
+    def visit_interpreter_multiple_block(self, node):
+        statement = None
+        function_decl = None
+        block = None
+        for name, child in node.children():
+            if name == "statement":
+                statement = child
+            elif name == "function_decl":
+                function_decl = child
+            elif name == "block":
+                block = child
+        try:
+            # not returning here
+            if name:
+                self.visit(name)
+            if statement:
+                self.visit(statement)
+            if block:
+                self.visit(block)
+        except:
+            pass
+
+    def visit_multiple_statement(self, node):
+        statement = None
+        multi_stmt = None
+        for name, child in node.children():
+            if name == "statemetn":
+                statement = child
+            elif name == "multi_stmt":
+                multi_stmt = child
+        try:
+            # not returning
+            if statement:
+                self.visit(statement)
+            if multi_stmt:
+                self.visit(multi_stmt)
         except:
             pass
 

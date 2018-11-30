@@ -23,24 +23,35 @@ def p_interpreter_block(p):
     if len(p) == 3:
         #p[0] = ast.InterpreterBlock(None,p[1])
         p[0] = p[1]
-    # Do we need to do EOF?
 
-def p_interpreter_multiple_block(p):
+def p_interpreter_multiple_block1(p):
     '''
     interpreter_multiple_block : statement
-                               | function_decl
                                | statement interpreter_multiple_block
-                               | function_decl interpreter_multiple_block
     '''
     if DEBUG:
-        print("\ninterp_mult_block: ",end="")
+        print("\ninterp_mult_block1: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 3:
-        #p[0] = ast.InterpreterBlock(p[1],p[2])
-        p[0] = (p[1],p[2])
+        p[0] = ast.InterpreterMultipleBlock(p[1], None, p[2])
     else:
-        #p[0] = ast.InterpreterBlock(p[1],None)
+        # p[0] = ast.InterpreterMultipleBlock(p[1], None, None)
+        p[0] = p[1]
+
+def p_interpreter_multiple_block2(p):
+    '''
+    interpreter_multiple_block : function_decl
+                               | function_decl interpreter_multiple_block
+    '''
+    if DEBUG:
+        print("\ninterp_mult_block2: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    if len(p) == 3:
+        p[0] = ast.InterpreterMultipleBlock(None, p[1], p[2])
+    else:
+        # p[0] = ast.InterpreterMultipleBlock(None, p[1], None)
         p[0] = p[1]
 
 
@@ -56,13 +67,6 @@ def p_compound_statement(p):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
         p[0] = p[2]
-    #if p[1] == '{':
-    #    if p[2] != '}':
-    #        p[0] = p[2]
-    #elif len(p) > 2:
-    #    p[0] = (p[1],p[2])
-    #else:
-    #    p[0] = p[1]
 
 def p_multiple_statement(p):
     '''
@@ -75,7 +79,7 @@ def p_multiple_statement(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 3:
-        p[0] = (p[1],p[2])
+        p[0] = ast.MultipleStmt(p[1], p[2])
     else:
         p[0] = p[1]
 
@@ -1008,7 +1012,7 @@ def p_eof(p):
 #prog = 'if (F){ if(F) break; }else x=42;'
 
 def tree():
-    prog = 'x = 5;'
+    prog = 'x = 5; x = x+1;'
 
 
     parser = yacc.yacc()
