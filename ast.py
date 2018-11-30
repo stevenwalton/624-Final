@@ -331,7 +331,7 @@ class ID(Node):
 
     def children(self):
         nodelist = []
-        if self.lvalue is not None: nodelist.append(("name", self.name))
+        if self.name is not None: nodelist.append(("name", self.name))
         return tuple(nodelist)
 
     def __iter__(self):
@@ -354,7 +354,7 @@ class Conditional(Node):
         if self.iftrue is not None: nodelist.append(("iftrue", self.iftrue))
         if self.iffalse is not None: nodelist.append(("iffalse", self.iffalse))
         return tuple(nodelist)
-    
+
     def __iter__(self):
         if self.cond is None:
             yield self.cond
@@ -362,7 +362,7 @@ class Conditional(Node):
             yield self.iftrue
         if self.iffalse is not None:
             yield self.iffalse
-    
+
     attr_names = ()
 
 class TypeDecl(Node):
@@ -480,7 +480,7 @@ class LogicalOR(Node):
             yield self.first
         if self.second is not None:
             yield self.second
-        
+
     attr_names = ("OR", )
 
 class LogicalAND(Node):
@@ -501,7 +501,7 @@ class LogicalAND(Node):
             yield self.first
         if self.second is not None:
             yield self.second
-        
+
     attr_names = ("AND", )
 
 class Equality(Node):
@@ -649,7 +649,7 @@ class ObjectCall(Node):
     def __iter__(self):
         if self.identifier is not None:
             yield self.identifier
-    
+
     attr_names = ("ObjectCall",)
 
 class Function(Node):
@@ -697,7 +697,7 @@ class ObjectClassSpec(Node):
     def __iter__(self):
         if self.identifier is not None:
             yield self.identifier
-    
+
     attr_names = ("ObjectClassSpec",)
 
 class ParamList(Node):
@@ -713,7 +713,7 @@ class ParamList(Node):
     def __iter__(self):
         if self.identifier is not None:
             yield self.identifier
-    
+
     attr_names = ("ParamList",)
 
 class ParamOption(Node):
