@@ -166,10 +166,8 @@ class EidosGenerator():
             elif name == "rvalue":
                 rvalue = child
         try:
-            if lvalue is not None:
-                left = self.visit(lvalue)
-            if rvalue is not None:
-                right = self.visit(rvalue)
+            left = self.visit(lvalue)
+            right = self.visit(rvalue)
             self.symbolTable[left[0]] = right
             return left,right
         except:
