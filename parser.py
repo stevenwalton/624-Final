@@ -1016,7 +1016,8 @@ def tree():
     # prog = 'x = 1; while (x != 5) x = x + 1;'
     # prog = 'x = 1; do x = x + 1; while (x != 5);'
     # prog = 'x = 0; z = 0; for (i in 1 : 5) {x = x + 1; y = x; if (i == 3) x = 0; z = z + 1;}'
-    prog = 'x = 3; if (x%2 != 0) x = x + 1;'
+    # prog = 'x = 3; if (x%2 != 0) x = x + 1;'
+    prog = '3==4 | 4==4;'
 
 
 

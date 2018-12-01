@@ -24,6 +24,8 @@ class EidosGenerator():
         self.visit.register(ast.Do, self.visit_do)
         self.visit.register(ast.Sequence, self.visit_sequence)
         self.visit.register(ast.For, self.visit_for)
+        self.visit.register(ast.LogicalOR, self.visit_logical_or)
+        self.visit.register(ast.LogicalAND, self.visit_logical_and)
         # self.visit.register(ast.Break, self.visit_break)
 
     def getSymbolTable(self):
@@ -326,11 +328,41 @@ class EidosGenerator():
         except Exception as e:
             raise
 
-    # def visit_break(self, node):
-    #     self.ifBreak = True
-    #     return "break"
+    def visit_logical_or(self, node):
+        first = None
+        second = None
+        for name, child in node.children():
+            if name == "first":
+                first = child
+            elif name == "second":
+                second = child
+        try:
+            fst = self.visit(first)
+            snd = self.visit(second)
+            if fst or snd:
+                return True
+            else:
+                return False
+        except Exception as e:
+            raise
 
-
+    def visit_logical_and(self, node):
+        first = None
+        second = None
+        for name, child in node.children():
+            if name == "first":
+                first = child
+            elif name == "second":
+                second = child
+        try:
+            fst = self.visit(first)
+            snd = self.visit(second)
+            if fst and snd:
+                return True
+            else:
+                return False
+        except Exception as e:
+            raise
 
 def main():
     result = parser.tree()
