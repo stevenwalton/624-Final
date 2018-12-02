@@ -52,8 +52,8 @@ class EidosGenerator():
                 return self.visit(iftrue)
             else:
                 return self.visit(iffalse)
-        except:
-            pass
+        except Exception as e:
+            raise Exception(e)
 
     def visit_conditional(self, node: ast.Conditional):
         # print("visiting conditional")
@@ -78,10 +78,16 @@ class EidosGenerator():
             elif c == False:
                 return self.visit(iffalse)
             return c
-        except:
-            pass
+        except TypeError as e:
+            raise Exception("TypeError: Cannot compare these types")
+        except Exception as e:
+            raise Exception(e)
 
     def visit_equality(self, node: ast.Equality):
+        '''
+        Performs == and != actions
+        Will type error if the types cannot be compared
+        '''
         # print("visiting equality")
         op = None
         left = None
@@ -106,9 +112,12 @@ class EidosGenerator():
                 return (nodel != noder)
             else:
                 print("error in visiting equality node")
-        except:
-            print("caught an exception")
-            pass
+        except TypeError:
+            lt = type(left)
+            rt = type(right)
+            raise Exception("Cannot compare types",lt,"and",rt)
+        except Exception as e:
+            raise Exception(e)
 
     def visit_unary(self, node: ast.UnaryOp):
         # print("visiting unary")
@@ -125,8 +134,8 @@ class EidosGenerator():
             else:
                 # return print(self.visit(expr))
                 return self.visit(expr)
-        except:
-            pass
+        except Exception as e:
+            raise Exception(e)
 
     def visit_constant(self, node: ast.Constant):
         # print("visiting constant")
@@ -146,8 +155,8 @@ class EidosGenerator():
                 return value
             elif ctype == "character":
                 return value
-        except:
-            pass
+        except Exception as e:
+            raise Exception(e)
 
     def visit_id(self, node: ast.ID):
         # print("visiting id")
@@ -158,10 +167,14 @@ class EidosGenerator():
         try:
             if id_name:
                 return id_name
-        except:
-            pass
+        except Exception as e:
+            raise Exception(e)
 
     def visit_assignment(self, node: ast.Assignment):
+        '''
+        Sets rvalue to lvale
+        Will return type if error in rvalue
+        '''
         # print("visiting assignment")
         op = None
         lvalue = None
@@ -181,8 +194,11 @@ class EidosGenerator():
                 right = self.symbolTable[right]
             self.symbolTable[left] = right
             return left,right
-        except:
-            pass
+        except TypeError:
+            rt = type(rvalue)
+            raise Exception("Cannot set rvalue of type",rt)
+        except Exception as e:
+            raise Exception(e)
 
     def visit_interpreter_multiple_block(self, node):
         # print("visiting interp mult")
@@ -204,8 +220,8 @@ class EidosGenerator():
             if block:
                 b = self.visit(block)
             return (n, s, b)
-        except:
-            pass
+        except Exception as e:
+            raise Exception(e)
 
     def visit_multiple_statement(self, node):
         # if self.ifBreak:
@@ -230,10 +246,15 @@ class EidosGenerator():
             #     m = (m,)
             # return s+m
             return s,m
-        except:
-            pass
+        except Exception as e:
+            raise Exception(e)
 
     def visit_basic_operators(self, node):
+        '''
+        Performs basic arithmetic operations
+        Performs error checking for type errors and
+        division or modulo by zero
+        '''
         # print("visiting basic")
         operator = None
         left = None
@@ -263,8 +284,30 @@ class EidosGenerator():
                 return leftV / rightV
             elif operator == "%":
                 return leftV % rightV
-        except:
-            print("error in basic operator")
+
+        except ZeroDivisionError: # For /0 or %0
+            if operator == "/":
+                raise Exception("ERROR: Division by Zero!")
+            elif operator == "%":
+                raise Exception("ERROR: Module by Zero!")
+        
+        except TypeError: # If lvalue and rvalue have incompatible types
+            if operator == "+":
+                op = "ADDITION"
+            elif operator == "-":
+                op = "SUBTRACTION"
+            elif operator == "*":
+                op = "MULTIPLICATION"
+            elif operator == "/":
+                op = "DIVISION"
+            elif operator == "%":
+                op = "MODULE"
+            else:
+                op = "UNKNOWN OPERATON"
+            raise Exception("Cannot perform",op,"between lvalue",type(leftV),"and rvalue",type(rightV))
+
+        except Exception as e:
+            raise Exception(e)
 
     def visit_while(self, node):
         cond = None
@@ -277,13 +320,21 @@ class EidosGenerator():
         try:
             while(self.visit(cond)):
                 self.visit(stmt)
-        except:
-            print("error in while")
+        except Exception as e:
+            raise Exception(e)
 
     def visit_do(self, node):
         self.visit_while(node)
 
     def visit_sequence(self, node):
+        '''
+        Generates a range of values: beginning:end
+        if beginning or end can safely be converted to an int we will try to 
+        do that. If they cannot then we will raise an error telling the user
+        both types.
+        Error will try to tell user if it is the beginning or end value with error
+        Will display warnings if autocasting from float to int, but will continue
+        '''
         beginning = None
         end = None
         for name, child in node.children():
@@ -294,14 +345,46 @@ class EidosGenerator():
         try:
             b = self.visit(beginning)
             e = self.visit(end)
+
+            # Check if b or e is a float and if so downcast to int
+            if type(b) is not int and type(b) is not float and type(e) is not int and type(e) is not float:
+                raise TypeError("Cannot convert EITHER values to int. Sequence contains types",type(b),type(e))
+            elif type(b) is int and type(e) is int:
+                pass
+            elif type(b) is float and type(e) is float and b == round(b) and e == round(e):
+                print("WARNING: Downcasting",b,"and",e,"to integers")
+                #return range(round(b),round(e)+1)
+                b = round(b)
+                e = round(e)
+
+            elif type(b) is float and type(e) is int and b == round(b):
+                print("WARNING: Downcasting", b, "to integer")
+                #return range(round(b),e+1)
+                b = round(b)
+
+            elif type(b) is int and type(e) is float and e == round(e):
+                print("WARNING: Downcasting",e,"to integer")
+                #return range(b,round(e)+1)
+                e = round(e)
+
+            elif type(b) is float and type(e) is float and b != round(b) and e != round(e):
+                raise TypeError("Cannot safely convert EITHER value from float to int without loss of precision")
+            elif type(b) is float and b != round(b):
+                raise TypeError("Cannot safely convert BEGINNING value to int without loss of precision")
+            elif type(e) is float and e != round(e):
+                raise TypeError("Cannot safely convert END value to int without loss of precision")
+
             if b in self.symbolTable:
                 b = self.symbolTable[b]
             if e in self.symbolTable:
                 e = self.symbolTable[e]
             # returns python range, not eidos range
             return range(b,e+1)
-        except:
-            print("error in visiting seq")
+
+        except TypeError as e: # beginning or end cannot safely be converted to ints
+            raise Exception(e)
+        except Exception as e:
+            raise Exception(e)
 
     def visit_for(self, node):
         ID = None;
@@ -326,7 +409,7 @@ class EidosGenerator():
                 #     break;
                 # print(isinstance(r, ast.Break))
         except Exception as e:
-            raise
+            raise Exception(e)
 
     def visit_logical_or(self, node):
         first = None
@@ -344,7 +427,7 @@ class EidosGenerator():
             else:
                 return False
         except Exception as e:
-            raise
+            raise Exception(e)
 
     def visit_logical_and(self, node):
         first = None
@@ -362,7 +445,7 @@ class EidosGenerator():
             else:
                 return False
         except Exception as e:
-            raise
+            raise Exception(e)
 
 def run(prog,dbg=False):
     '''
@@ -373,7 +456,7 @@ def run(prog,dbg=False):
     result = parser.runProgram(prog,dbg=False)
     gen = EidosGenerator()
     r = gen.visit(result)
-    print(r)
+    #print(r)
     print(gen.getSymbolTable())
 
 def main():

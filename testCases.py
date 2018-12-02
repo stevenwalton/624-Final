@@ -1,7 +1,14 @@
 import numpy as np
 import os
 import generator as gen
+import time
+import signal # For timeouts
 
+testDir = "../eidos-test/unit/no_error_expected/"
+timeout = 5
+
+def timeoutHandler(signum, frame):
+    raise Exception("WARNING: Program has timed out")
 
 def cat(f,dbg=False):
     '''
@@ -32,20 +39,42 @@ def main():
     Main program. Hard code set the test directory for a set of Eidos programs
     that are located in a directory
     '''
-    testDir = "../eidos-test/unit/no_error_expected/"
     testFiles = np.asarray(os.listdir(testDir))
+    nPass = 0
+    notRun = 0
     failed = 0
     for test in testFiles:
         try:
+            signal.signal(signal.SIGALRM, timeoutHandler)
+            signal.alarm(timeout)
             runATest(testDir + test,dbg=True)
             print()
-        except:
+            nPass += 1
+        except FileNotFoundError as e:
+            print(e)
+            notRun += 1
+        except Exception as e:
             failed += 1
-            print("\nWARNING:")
+            print("WARNING: ",e)
             print("Could not run program: ",test)
             print()
-    passRate = round(1-(failed/len(testFiles)),3) *100
-    print("Test complete: ",failed,"/",len(testFiles)," failed (", passRate, "% pass)")
+            input()
+    passRate = round(nPass/len(testFiles),3)*100
+    print("Test complete: ",nPass,"/",len(testFiles),"passed (", passRate, "% pass )")
+    print("Failed: ",failed)
+    print("Files not found: ",notRun)
+
+def singluarProgram(testString):
+    '''
+    run a single program
+    '''
+    try:
+        signal.signal(signal.SIGALRM, timeoutHandler)
+        signal.alarm(timeout)
+        gen.run(testString)
+    except Exception as e:
+        print(e)
 
 if __name__ == '__main__':
     main()
+    #singluarProgram("x = 5.0:10.1;")
