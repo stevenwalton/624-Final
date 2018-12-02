@@ -44,7 +44,8 @@ def main():
             print("\nWARNING:")
             print("Could not run program: ",test)
             print()
-    print("Test complete: ",failed,"/",len(testFiles)," failed")
+    passRate = round(1-(failed/len(testFiles)),3) *100
+    print("Test complete: ",failed,"/",len(testFiles)," failed (", passRate, "% pass)")
 
 if __name__ == '__main__':
     main()
