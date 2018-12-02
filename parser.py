@@ -6,7 +6,7 @@ from ctokens import *
 # Print out tree and contents of p at each step
 #DEBUG=True
 DEBUG=False
-OPTIMIZE=0
+OPTIMIZE=1
 
 lexer = lex.lex(optimize=OPTIMIZE)
 
@@ -1015,9 +1015,9 @@ def tree():
     # prog = 'x = 5; if (x == 5) y = 6;'
     # prog = 'x = 1; while (x != 5) x = x + 1;'
     # prog = 'x = 1; do x = x + 1; while (x != 5);'
-    # prog = 'x = 0; z = 0; for (i in 1 : 5) {x = x + 1; y = x; if (i == 3) x = 0; z = z + 1;}'
+    prog = 'x = 0; z = 0; for (i in 1 : 5) {x = x + 1; y = x; if (i == 3) x = 0; z = z + 1;}'
     # prog = 'x = 3; if (x%2 != 0) x = x + 1;'
-    prog = '3==4 | 4==4;'
+    #prog = '3==4 | 4==4;'
 
 
 
@@ -1030,4 +1030,13 @@ def tree():
     #     print("Result: ",result)
     # else:
     #     print(result)
+    return result
+
+def runProgram(prog,dbg=False):
+    '''
+    Runs an Eidos program that is passed in as a string.
+    Dbg option calls yacc's debugger
+    '''
+    parser = yacc.yacc()
+    result = parser.parse(prog, debug=dbg)
     return result

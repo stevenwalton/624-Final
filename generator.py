@@ -364,6 +364,18 @@ class EidosGenerator():
         except Exception as e:
             raise
 
+def run(prog,dbg=False):
+    '''
+    Runs an Eidos program that is passed in as a string
+    Calls yacc from parser.py
+    dbg will call the debug option in yacc
+    '''
+    result = parser.runProgram(prog,dbg=False)
+    gen = EidosGenerator()
+    r = gen.visit(result)
+    print(r)
+    print(gen.getSymbolTable())
+
 def main():
     result = parser.tree()
     gen = EidosGenerator()
