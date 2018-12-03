@@ -4,8 +4,8 @@ import generator as gen
 import time
 import signal # For timeouts
 
-#testDir = "../eidos-test/unit/no_error_expected/"
-testDir = "../eidos-test/sandbox/thunderHamsters/"
+testDir = "../eidos-test/unit/no_error_expected/"
+#testDir = "../eidos-test/sandbox/thunderHamsters/"
 timeout = 5
 
 def timeoutHandler(signum, frame):
@@ -77,9 +77,9 @@ def singularProgram(testString):
         print(e)
 
 if __name__ == '__main__':
-    #main()
+    main()
     #singularProgram("x = 5.0:10.1;")
     #singularProgram("x = 5 + 10.2; y = (x*2)%2; z = (5 + 2/3 *7 + 6 -1)%7; a = 5:12;")
     #singularProgram("if (1==1) break; else x=2; x;")
-    singularProgram("x = 5.0:10.1;")
+    #singularProgram("x = 5.0:10.1;")
 
