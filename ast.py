@@ -778,24 +778,24 @@ class ParamOption(Node):
     attr_names = ("ParamOption",)
 
 class ParamSpec(Node):
-    __slots__ = ('tspec', 'fID', 'valueOption', 'coord', '__weakref__')
-    def __init__(self, tspec, fID, valueOption, coord=None):
+    __slots__ = ('tspec', 'paramID', 'valueOption', 'coord', '__weakref__')
+    def __init__(self, tspec, paramID, valueOption, coord=None):
         self.tspec = tspec
-        self.fID = fID
+        self.paramID = paramID
         self.valueOption = valueOption
 
     def children(self):
         nodelist = []
         if self.tspec is not None: nodelist.append(("tspec", self.tspec))
-        if self.fID is not None: nodelist.append(("fID", self.fID))
+        if self.paramID is not None: nodelist.append(("paramID", self.paramID))
         if self.valueOption is not None: nodelist.append(("valueOption", self.valueOption))
         return tuple(nodelist)
 
     def __iter__(self):
         if self.tspec is not None:
             yield self.tspec
-        if self.fID is not None:
-            yield self.fID
+        if self.paramID is not None:
+            yield self.paramID
         if self.valueOption is not None:
             yield self.valueOption
 

@@ -34,12 +34,26 @@ class EidosGenerator():
         self.visit.register(ast.FunctionDecl, self.visit_function_decl)
         self.visit.register(ast.CompoundStmt, self.visit_compound)
         self.visit.register(ast.FunctionCall, self.visit_function_call)
+        self.visit.register(ast.ParamSpec, self.visit_param_spec)
+        self.visit.register(ast.Return, self.visit_return)
 
     def getCurSymTable(self):
         return self.curSymTable
 
     def getFuncTable(self):
         return self.funcTable
+
+    def listExtract(self, ls):
+        # if len(ls) == 1:
+        #     return ls
+        # return ls[:1] + self.listExtract(ls[1])
+        result = []
+        for item in ls:
+            if isinstance(item, list):
+                result = result + self.listExtract(item)
+            else:
+                result.append(item)
+        return result
 
     def lookupSymTables(self, s):
         if s in self.curSymTable:
@@ -522,31 +536,52 @@ class EidosGenerator():
                     paramLst = child;
                 elif name == 'stmt':
                     stmt = child;
-            print(len(self.listExtract(paramLst)))
-            # self.stack.append(self.curSymTable)
-            # self.curSymTable = {}
+            paramLst = self.listExtract(paramLst)
+            arguments = self.listExtract(arguments)
 
+            # setting up symbol table
+            # not doing parameter list type and size checking
+            self.stack.append(self.curSymTable)
+            self.curSymTable = {}
+            for i in range(len(paramLst)):
+                tspec, paramID, valueOption = self.visit(paramLst[i])
+                value = self.visit(arguments[i])
+                self.curSymTable[paramID.getName()] = value
+
+            result = self.visit(stmt)
+            if isinstance(result, ast.ID):
+                result = self.lookupSymTables(result.getName())
+            self.curSymTable = self.stack.pop()
+            return result
+
+        except Exception as e:
+            self.curSymTable = self.stack.pop()
+            raise Exception(e)
+
+    def visit_param_spec(self, node):
+        tspec = None;
+        paramID = None;
+        valueOption = None;
+        for name, child in node.children():
+            if name == "tspec":
+                tspec = child
+            elif name == "paramID":
+                paramID = child;
+            elif name == "valueOption":
+                valueOption = child;
+        return (tspec, paramID, valueOption)
+
+    def visit_return(self, node):
+        expr = None
+        for name, child in node.children():
+            if name == "expr":
+                expr = child
+        try:
+            return self.visit(expr)
         except Exception as e:
             raise Exception(e)
 
-    # def visit_param_option(self, node):
-    #     one = None;
-    #     second = None;
-    #     for name, child in node.children():
-    #         if name == "one":
-    #             one = child
-    #         elif name == "second":
-    #             second = child
-    #     try:
-    #         if one == 'void'
-    #     except Exception as e:
-    #         raise
 
-
-    def listExtract(self, ls):
-        if len(ls) == 1:
-            return ls
-        return ls[:1] + listExtract(ls[1])
 
 def run(prog,dbg=False):
     '''
@@ -559,20 +594,6 @@ def run(prog,dbg=False):
     r = gen.visit(result)
     #print(r)
     print(gen.getCurSymTable())
-
-def runReturn(prog,dbg=False):
-    '''
-    Runs an Eidos program that is passed in as a string
-    Calls yacc from parser.py
-    dbg will call the debug option in yacc
-    '''
-    result = parser.runProgram(prog,dbg=False)
-    gen = EidosGenerator()
-    r = gen.visit(result)
-    #print(r)
-    print(gen.getCurSymTable())
-    return(gen.getCurSymTable())
-
 
 def main():
     result = parser.tree()
