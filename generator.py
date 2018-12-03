@@ -6,8 +6,8 @@ class EidosGenerator():
     '''
     '''
     def __init__(self):
-        # no scoping version, only one symbolTable
-        self.symbolTable = {}
+        # no scoping version, only one curSymTable
+        self.curSymTable = {}
         # self.ifBreak = False
         self.visit = singledispatch(self.visit)
         self.visit.register(ast.If, self.visit_if)
@@ -28,8 +28,8 @@ class EidosGenerator():
         self.visit.register(ast.LogicalAND, self.visit_logical_and)
         # self.visit.register(ast.Break, self.visit_break)
 
-    def getSymbolTable(self):
-        return self.symbolTable
+    def getcurSymTable(self):
+        return self.curSymTable
 
     def visit(self, node: ast.InterpreterBlock):
         for name, child in node.children():
@@ -102,10 +102,10 @@ class EidosGenerator():
         try:
             nodel = self.visit(left)
             noder = self.visit(right)
-            if nodel in self.symbolTable:
-                nodel = self.symbolTable[nodel]
-            if noder in self.symbolTable:
-                noder = self.symbolTable[noder]
+            if nodel in self.curSymTable:
+                nodel = self.curSymTable[nodel]
+            if noder in self.curSymTable:
+                noder = self.curSymTable[noder]
             if op == "==":
                 return (nodel == noder)
             elif op == "!=":
@@ -190,9 +190,9 @@ class EidosGenerator():
             left = self.visit(lvalue)
             right = self.visit(rvalue)
             # no connecting
-            if right in self.symbolTable:
-                right = self.symbolTable[right]
-            self.symbolTable[left] = right
+            if right in self.curSymTable:
+                right = self.curSymTable[right]
+            self.curSymTable[left] = right
             return left,right
         except TypeError:
             rt = type(rvalue)
@@ -213,13 +213,16 @@ class EidosGenerator():
             elif name == "block":
                 block = child
         try:
+            s = None;
+            f = None;
+            b = None;
             if statement:
-                n = self.visit(statement)
+                s = self.visit(statement)
             if function_decl:
-                s = self.visit(function_decl)
+                f = self.visit(function_decl)
             if block:
                 b = self.visit(block)
-            return (n, s, b)
+            return (s, f, b)
         except Exception as e:
             raise Exception(e)
 
@@ -270,10 +273,10 @@ class EidosGenerator():
             # values of left and right
             leftV = self.visit(left)
             rightV = self.visit(right)
-            if leftV in self.symbolTable:
-                leftV = self.symbolTable[leftV]
-            if rightV in self.symbolTable:
-                rightV = self.symbolTable[rightV]
+            if leftV in self.curSymTable:
+                leftV = self.curSymTable[leftV]
+            if rightV in self.curSymTable:
+                rightV = self.curSymTable[rightV]
             if operator == "+":
                 return leftV + rightV
             elif operator == "-":
@@ -290,7 +293,7 @@ class EidosGenerator():
                 raise Exception("ERROR: Division by Zero!")
             elif operator == "%":
                 raise Exception("ERROR: Module by Zero!")
-        
+
         except TypeError: # If lvalue and rvalue have incompatible types
             if operator == "+":
                 op = "ADDITION"
@@ -329,7 +332,7 @@ class EidosGenerator():
     def visit_sequence(self, node):
         '''
         Generates a range of values: beginning:end
-        if beginning or end can safely be converted to an int we will try to 
+        if beginning or end can safely be converted to an int we will try to
         do that. If they cannot then we will raise an error telling the user
         both types.
         Error will try to tell user if it is the beginning or end value with error
@@ -374,10 +377,10 @@ class EidosGenerator():
             elif type(e) is float and e != round(e):
                 raise TypeError("Cannot safely convert END value to int without loss of precision")
 
-            if b in self.symbolTable:
-                b = self.symbolTable[b]
-            if e in self.symbolTable:
-                e = self.symbolTable[e]
+            if b in self.curSymTable:
+                b = self.curSymTable[b]
+            if e in self.curSymTable:
+                e = self.curSymTable[e]
             # returns python range, not eidos range
             return range(b,e+1)
 
@@ -401,7 +404,7 @@ class EidosGenerator():
             ran = self.visit(cond)
             for i in ran:
                 x = self.visit(ID)
-                self.symbolTable[x] = i
+                self.curSymTable[x] = i
                 r = self.visit(stmt)
                 # print(r)
                 # if "break" in r:
@@ -457,14 +460,14 @@ def run(prog,dbg=False):
     gen = EidosGenerator()
     r = gen.visit(result)
     #print(r)
-    print(gen.getSymbolTable())
+    print(gen.getcurSymTable())
 
 def main():
     result = parser.tree()
     gen = EidosGenerator()
     r = gen.visit(result)
     print(r)
-    print(gen.getSymbolTable())
+    print(gen.getcurSymTable())
 
 if __name__ == '__main__':
     main()
