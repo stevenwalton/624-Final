@@ -291,29 +291,10 @@ class EidosGenerator():
             if operator == "/":
                 raise Exception("ZeroDivisionError: rvalue has a value of 0!")
             elif operator == "%":
-<<<<<<< HEAD
-                raise Exception("ERROR: Module by Zero!")
-
-        except TypeError: # If lvalue and rvalue have incompatible types
-            if operator == "+":
-                op = "ADDITION"
-            elif operator == "-":
-                op = "SUBTRACTION"
-            elif operator == "*":
-                op = "MULTIPLICATION"
-            elif operator == "/":
-                op = "DIVISION"
-            elif operator == "%":
-                op = "MODULE"
-            else:
-                op = "UNKNOWN OPERATON"
-            raise Exception("Cannot perform",op,"between lvalue",type(leftV),"and rvalue",type(rightV))
-=======
                 raise Exception("ZeroModuleError: rvalue has a value of 0!")
         
         except TypeError as e: # If lvalue and rvalue have incompatible types
             raise Exception("TypeError: Cannot perform {} between lvalue {} and rvalue {}".format(operator,type(leftV),type(rightV)))
->>>>>>> 7904677b4f8ef17c547af4e0a80727bc1850df2e
 
         except Exception as e:
             raise Exception(e)
