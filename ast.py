@@ -490,6 +490,23 @@ class InterpreterMultipleBlock(Node):
 
     attr_names = ('InterpreterMultipleBlock', )
 
+class CompoundStmt(Node):
+    __slots__ = ('statement', 'coord', '__weakref__')
+    def __init__(self, statement, coord=None):
+        self.statement = statement
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.statement is not None: nodelist.append(("statement", self.statement))
+        return tuple(nodelist)
+
+    def __iter(self):
+        if self.statement is not None:
+            yield self.statement
+
+    attr_names = ('Compound statement')
+
 class LogicalOR(Node):
     __slots__ = ('first', 'second', 'coord', '__weakref__')
     def __init__(self, first, second, coord=None):

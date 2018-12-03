@@ -8,8 +8,8 @@ class EidosGenerator():
     '''
     '''
     def __init__(self):
-        # no scoping version, only one curSymTable
         self.curSymTable = {}
+        self.stack = []
         # self.ifBreak = False
         self.visit = singledispatch(self.visit)
         self.visit.register(ast.If, self.visit_if)
@@ -29,11 +29,34 @@ class EidosGenerator():
         self.visit.register(ast.LogicalOR, self.visit_logical_or)
         self.visit.register(ast.LogicalAND, self.visit_logical_and)
         # self.visit.register(ast.Break, self.visit_break)
+        self.visit.register(ast.Function, self.visit_function)
+        self.visit.register(ast.CompoundStmt, self.visit_compound)
 
-    def getcurSymTable(self):
+    def getCurSymTable(self):
         return self.curSymTable
 
+    def lookupSymTables(self, s):
+        if s in self.curSymTable:
+            return self.curSymTable[s]
+        for i in range(1, len(self.stack)+1):
+            if s in self.stack[-i]:
+                return self.stack[-i][s]
+        raise Exception("name {} is not defined".format(s))
+
+    def setValueInStack(self, s, v):
+        if s in self.curSymTable:
+            self.curSymTable[s] = v
+            return True
+        for i in range(1, len(self.stack)+1):
+            if s in self.stack[-i]:
+                self.stack[-i][s] = v
+                return True
+        self.curSymTable[s] = v
+        return True
+
     def visit(self, node: ast.InterpreterBlock):
+        # if isinstance(node, str):
+        #     print(node)
         for name, child in node.children():
             self.visit(child)
 
@@ -104,10 +127,10 @@ class EidosGenerator():
         try:
             nodel = self.visit(left)
             noder = self.visit(right)
-            if nodel in self.curSymTable:
-                nodel = self.curSymTable[nodel]
-            if noder in self.curSymTable:
-                noder = self.curSymTable[noder]
+            if isinstance(nodel, ast.ID):
+                nodel = self.lookupSymTables(nodel.getName())
+            if isinstance(noder, ast.ID):
+                noder = self.lookupSymTables(noder.getName())
             if op == "==":
                 return (nodel == noder)
             elif op == "!=":
@@ -166,7 +189,8 @@ class EidosGenerator():
                 id_name = child
         try:
             if id_name:
-                return id_name
+                # return id_name
+                return node
         except Exception as e:
             raise Exception(e)
 
@@ -189,10 +213,9 @@ class EidosGenerator():
         try:
             left = self.visit(lvalue)
             right = self.visit(rvalue)
-            # no connecting
-            if right in self.curSymTable:
-                right = self.curSymTable[right]
-            self.curSymTable[left] = right
+            if isinstance(right, ast.ID):
+                right = self.lookupSymTables(right.getName())
+            self.setValueInStack(left.getName(), right)
             return left,right
         except TypeError as e:
             raise Exception("TypeError: Cannot set rvalue of type {}".type(rvalue))
@@ -272,10 +295,10 @@ class EidosGenerator():
             # values of left and right
             leftV = self.visit(left)
             rightV = self.visit(right)
-            if leftV in self.curSymTable:
-                leftV = self.curSymTable[leftV]
-            if rightV in self.curSymTable:
-                rightV = self.curSymTable[rightV]
+            if isinstance(leftV, ast.ID):
+                leftV = self.lookupSymTables(leftV.getName())
+            if isinstance(rightV, ast.ID):
+                rightV = self.lookupSymTables(rightV.getName())
             if operator == "+":
                 return leftV + rightV
             elif operator == "-":
@@ -292,7 +315,7 @@ class EidosGenerator():
                 raise Exception("ZeroDivisionError: rvalue has a value of 0!")
             elif operator == "%":
                 raise Exception("ZeroModuleError: rvalue has a value of 0!")
-        
+
         except TypeError as e: # If lvalue and rvalue have incompatible types
             raise Exception("TypeError: Cannot perform {} between lvalue {} and rvalue {}".format(operator,type(leftV),type(rightV)))
 
@@ -308,8 +331,22 @@ class EidosGenerator():
             elif name == "stmt":
                 stmt = child
         try:
+            compound = False
+            # if it's compound statement
+            if isinstance(stmt, ast.CompoundStmt):
+                compound = True
+                statement = None
+                for name, child in stmt.children():
+                    if name == 'statement':
+                        stmt = child
+                self.stack.append(self.curSymTable)
+                self.curSymTable = {}
+
             while(self.visit(cond)):
                 self.visit(stmt)
+            if compound:
+                self.curSymTable = self.stack.pop()
+
         except Exception as e:
             raise Exception(e)
 
@@ -361,10 +398,10 @@ class EidosGenerator():
             elif type(e) is float and e != round(e):
                 raise TypeError("Cannot safely convert END value of {} to int without loss of precision".format(e))
 
-            if b in self.curSymTable:
-                b = self.curSymTable[b]
-            if e in self.curSymTable:
-                e = self.curSymTable[e]
+            if isinstance(b, ast.ID):
+                b = self.lookupSymTables(b.getName())
+            if isinstance(e, ast.ID):
+                e = self.lookupSymTables(e.getName())
             # returns python range, not eidos range
             return range(b,e+1)
 
@@ -387,7 +424,7 @@ class EidosGenerator():
         try:
             ran = self.visit(cond)
             for i in ran:
-                x = self.visit(ID)
+                x = self.visit(ID).getName()
                 self.curSymTable[x] = i
                 r = self.visit(stmt)
                 # print(r)
@@ -434,6 +471,25 @@ class EidosGenerator():
         except Exception as e:
             raise Exception(e)
 
+    def visit_compound(self, node):
+        statement = None
+        for name, child in node.children():
+            if name == 'statement':
+                statement = child
+        self.stack.append(self.curSymTable)
+        self.curSymTable = {}
+        try:
+            r = self.visit(statement)
+        except Exception as e:
+            self.curSymTable = self.stack.pop()
+            raise Exception(e)
+        self.curSymTable = self.stack.pop()
+        return r
+
+    def visit_function(self, node):
+        pass;
+
+
 def run(prog,dbg=False):
     '''
     Runs an Eidos program that is passed in as a string
@@ -444,14 +500,14 @@ def run(prog,dbg=False):
     gen = EidosGenerator()
     r = gen.visit(result)
     #print(r)
-    print(gen.getcurSymTable())
+    print(gen.getCurSymTable())
 
 def main():
     result = parser.tree()
     gen = EidosGenerator()
     r = gen.visit(result)
     print(r)
-    print(gen.getcurSymTable())
+    print(gen.getCurSymTable())
 
 if __name__ == '__main__':
     main()

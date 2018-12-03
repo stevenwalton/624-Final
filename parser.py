@@ -66,7 +66,7 @@ def p_compound_statement(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = p[2]
+        p[0] = ast.CompoundStmt(p[2])
 
 def p_multiple_statement(p):
     '''
@@ -1019,8 +1019,10 @@ def tree():
     # prog = 'x = 3; if (x%2 != 0) x = x + 1;'
     #prog = '3==4 | 4==4;'
     # prog = 'function (int) foo (void) { return 1;}'
-    prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
-    # prog = 'x = 0; y = 0;'
+    # prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
+    # prog = 'x = 0; for (i in 1 : 5) {y = x + i; x = x + 1;}'
+    # prog = 'x = 0; y = 0; while (x != 5) {x = x + 1; i = x;}'
+    prog = 'x = 0; y = 0; do {x = x + 1; i = x;} while (x != 5);'
 
 
     parser = yacc.yacc()
