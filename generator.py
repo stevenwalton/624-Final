@@ -1,6 +1,8 @@
 import ast
 import parser
 from functools import singledispatch
+import traceback
+import sys
 
 class EidosGenerator():
     '''
@@ -79,7 +81,7 @@ class EidosGenerator():
                 return self.visit(iffalse)
             return c
         except TypeError as e:
-            raise Exception("TypeError: Cannot compare these types")
+            raise Exception("TypeError: Cannot compare these types\n{}".format(e))
         except Exception as e:
             raise Exception(e)
 
@@ -112,10 +114,8 @@ class EidosGenerator():
                 return (nodel != noder)
             else:
                 print("error in visiting equality node")
-        except TypeError:
-            lt = type(left)
-            rt = type(right)
-            raise Exception("Cannot compare types",lt,"and",rt)
+        except TypeError as e:
+            raise Exception("TypeError: Cannot compare types {} and {}".format(type(left),type(right)))
         except Exception as e:
             raise Exception(e)
 
@@ -194,9 +194,8 @@ class EidosGenerator():
                 right = self.symbolTable[right]
             self.symbolTable[left] = right
             return left,right
-        except TypeError:
-            rt = type(rvalue)
-            raise Exception("Cannot set rvalue of type",rt)
+        except TypeError as e:
+            raise Exception("TypeError: Cannot set rvalue of type {}".type(rvalue))
         except Exception as e:
             raise Exception(e)
 
@@ -285,26 +284,14 @@ class EidosGenerator():
             elif operator == "%":
                 return leftV % rightV
 
-        except ZeroDivisionError: # For /0 or %0
+        except ZeroDivisionError as e: # For /0 or %0
             if operator == "/":
-                raise Exception("ERROR: Division by Zero!")
+                raise Exception("ZeroDivisionError: rvalue has a value of 0!")
             elif operator == "%":
-                raise Exception("ERROR: Module by Zero!")
+                raise Exception("ZeroModuleError: rvalue has a value of 0!")
         
-        except TypeError: # If lvalue and rvalue have incompatible types
-            if operator == "+":
-                op = "ADDITION"
-            elif operator == "-":
-                op = "SUBTRACTION"
-            elif operator == "*":
-                op = "MULTIPLICATION"
-            elif operator == "/":
-                op = "DIVISION"
-            elif operator == "%":
-                op = "MODULE"
-            else:
-                op = "UNKNOWN OPERATON"
-            raise Exception("Cannot perform",op,"between lvalue",type(leftV),"and rvalue",type(rightV))
+        except TypeError as e: # If lvalue and rvalue have incompatible types
+            raise Exception("TypeError: Cannot perform {} between lvalue {} and rvalue {}".format(operator,type(leftV),type(rightV)))
 
         except Exception as e:
             raise Exception(e)
@@ -348,31 +335,28 @@ class EidosGenerator():
 
             # Check if b or e is a float and if so downcast to int
             if type(b) is not int and type(b) is not float and type(e) is not int and type(e) is not float:
-                raise TypeError("Cannot convert EITHER values to int. Sequence contains types",type(b),type(e))
+                raise TypeError("TypeError: Cannot convert EITHER values to int. Sequence contains types",type(b),type(e))
             elif type(b) is int and type(e) is int:
                 pass
             elif type(b) is float and type(e) is float and b == round(b) and e == round(e):
                 print("WARNING: Downcasting",b,"and",e,"to integers")
-                #return range(round(b),round(e)+1)
                 b = round(b)
                 e = round(e)
 
             elif type(b) is float and type(e) is int and b == round(b):
                 print("WARNING: Downcasting", b, "to integer")
-                #return range(round(b),e+1)
                 b = round(b)
 
             elif type(b) is int and type(e) is float and e == round(e):
                 print("WARNING: Downcasting",e,"to integer")
-                #return range(b,round(e)+1)
                 e = round(e)
 
             elif type(b) is float and type(e) is float and b != round(b) and e != round(e):
-                raise TypeError("Cannot safely convert EITHER value from float to int without loss of precision")
+                raise TypeError("Cannot safely convert EITHER value from float to int without loss of precision. Values {}:{}".format(b,e))
             elif type(b) is float and b != round(b):
-                raise TypeError("Cannot safely convert BEGINNING value to int without loss of precision")
+                raise TypeError("Cannot safely convert BEGINNING value of {} to int without loss of precision".format(b))
             elif type(e) is float and e != round(e):
-                raise TypeError("Cannot safely convert END value to int without loss of precision")
+                raise TypeError("Cannot safely convert END value of {} to int without loss of precision".format(e))
 
             if b in self.symbolTable:
                 b = self.symbolTable[b]
@@ -382,7 +366,7 @@ class EidosGenerator():
             return range(b,e+1)
 
         except TypeError as e: # beginning or end cannot safely be converted to ints
-            raise Exception(e)
+            raise Exception("TypeError: {}".format(e))
         except Exception as e:
             raise Exception(e)
 
