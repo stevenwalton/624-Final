@@ -21,7 +21,6 @@ def p_interpreter_block(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 3:
-        #p[0] = ast.InterpreterBlock(None,p[1])
         p[0] = p[1]
 
 def p_interpreter_multiple_block1(p):
@@ -36,7 +35,6 @@ def p_interpreter_multiple_block1(p):
     if len(p) == 3:
         p[0] = ast.InterpreterMultipleBlock(p[1], None, p[2])
     else:
-        # p[0] = ast.InterpreterMultipleBlock(p[1], None, None)
         p[0] = p[1]
 
 def p_interpreter_multiple_block2(p):
@@ -93,63 +91,12 @@ def p_statement(p):
               | while_statement
               | jump_statement
     '''
-    #          | open_statement
-    #          | closed_statement
-    #'''
     if DEBUG:
         print("\nstatement: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     p[0] = p[1]
 
-######
-# Commented for debugging
-######
-#   def p_open_statement(p):
-#       '''
-#       open_statement : IF LPAREN expr RPAREN statement
-#                      | IF LPAREN expr RPAREN closed_statement ELSE open_statement
-#       '''
-#       if DEBUG:
-#           print("\nopen stmt: ",end="")
-#           for i in range(len(p)):
-#               print(i," ",p[i], " ",end="")
-#       # This one needs to be checked
-#       # if len(p) > 5:
-#       #     if p[3]:
-#       #         p[0] = p[5]
-#       #     else:
-#       #         p[0] = p[7]
-#       # else:
-#       #     if p[3]:
-#       #         p[0] = p[5]
-#       if len(p) == 6:
-#           p[0] = (p[1], p[3], p[5])
-#       elif len(p) == 8:
-#           p[0] = ("IF_ELSE", p[3], p[5], p[7])
-#   #
-#   # FIX
-#   def p_closed_statement(p):
-#       '''
-#       closed_statement : statement
-#                        | IF LPAREN expr RPAREN closed_statement ELSE closed_statement
-#                        | IF LPAREN expr RPAREN closed_statement
-#       '''
-#       if DEBUG:
-#           print("\nclosed stmt: ",end="")
-#           for i in range(len(p)):
-#               print(i," ",p[i], " ",end="")
-#       if len(p) == 2:
-#           p[0] = p[1]
-#       elif len(p) == 8:
-#           p[0] = ("If_ELSE", p[3],p[5],p[7])
-#       else:
-#           p[0] = (p[1],p[3],p[5])
-#       #if p[3]:
-#       #    p[0] = p[5]
-#       #else:
-#       #    if len(p) > 5:
-#       #        p[0] = p[7]
 
 def p_expr_statement(p):
     '''
@@ -165,12 +112,6 @@ def p_expr_statement(p):
 
 
 def p_selection_statement(p):
-    #'''
-    #selection_statement : IF LPAREN expr RPAREN statement
-    #                    | IF LPAREN expr RPAREN open_statement ELSE open_statement
-    #                    | IF LPAREN expr RPAREN closed_statement ELSE open_statement
-    #                    | IF LPAREN expr RPAREN closed_statement
-    #'''
     '''
     selection_statement : IF LPAREN expr RPAREN statement
                         | IF LPAREN expr RPAREN statement ELSE statement
@@ -180,16 +121,10 @@ def p_selection_statement(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 6:
-        #p[0] = ast.If(p[1],p[3],p[5])
         p[0] = ast.If(p[3],p[5],None)
     else:
-        #p[0] = ast.If("IF_ELSE",p[3],p[5],p[7])
         p[0] = ast.If(p[3],p[5],p[7])
-    #if p[3]:
-    #    p[0] = p[5]
-    #else:
-    #    if len(p) > 5:
-    #        p[0] = p[7]
+
 
 
 def p_for_statement(p):
@@ -232,10 +167,7 @@ def p_jump_statement_0(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     p[0] = ast.Next()
-    #if len(p) == 4:
-    #    p[0] = (p[1],p[2])
-    #else:
-    #    p[0] = p[1]
+
 
 def p_jump_statement_1(p):
     '''
@@ -314,7 +246,6 @@ def p_conditional_else_expr(p):
         #p[0] = ("?", p[1], p[3],p[5])
         #### NEED TO FIX
         p[0] = ast.Conditional(p[1],p[3],p[5])
-        #p[0] = ("IF_ELSE", p[1], p[3],p[5])
 
 def p_logical_or_expr(p):
     '''
@@ -328,92 +259,43 @@ def p_logical_or_expr(p):
     # only w/ constant
     l = len(p)
     if l == 4:
-        #p[0] = (p[2],p[1], p[3])
         p[0] = ast.LogicalOR(p[1],p[3])
     else:
-        #p[0] = ast.LogicalOR(p[1],None)
         p[0] = p[1]
-    #if l == 2:
-    #    p[0] = p[1]
-    #elif l == 3:
-    #    p[0] = (p[1],p[2])
-    #elif l == 4:
-    #    p[0] = (p[2],p[1],p[3])
+
 
 def p_or_multiple(p):
     '''
     or_multiple : logical_and_expr
                 | logical_and_expr OR or_multiple
     '''
-        #or_multiple : or_multiple OR logical_and_expr
     if DEBUG:
         print("\nor mult expr: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     l = len(p)
     if l == 4:
-        #p[0] = (p[2],p[1],p[3])
         p[0] = ast.LogicalOR(p[1],p[3])
     else:
         p[0] = p[1]
-        #p[0] = ast.LogicalOR(p[1], None)
-    #if l == 4:
-    #    p[0] = (p[2],p[1],p[3])
-    #else:
-    #    p[0] = (p[1],p[2])
+
 
 def p_logical_and_expr(p):
     '''
     logical_and_expr : equality_expr
                      | equality_expr AND and_multiple
     '''
-    #   and_multiple : and_multiple AND equality_expr
-    #                | AND equality_expr
-    #'''
+
     if DEBUG:
         print("\nand expr: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     l = len(p)
     if l == 4:
-        #p[0] = (p[2],p[1],p[3])
         p[0] = ast.LogicalAND(p[1],p[3])
     else:
         p[0] = p[1]
-        #p[0] = ast.LogicalAND(p[1], None)
-    #if l == 2:
-    #    p[0] = p[1]
-    #elif l == 3:
-    #    p[0] = (p[1],p[2])
-    #elif l == 4:
-    #    p[0] = (p[2],p[1],p[3])
-    ## Hacky way. Should break things up
-    #try:
-    #    if p[1] == '&':
-    #        p[0] = p[2]
-    #    else:
-    #        # Check p[1]
-    #        if p[1] == 'T':
-    #            p[1] = True
-    #        elif p[1] == 'F':
-    #            p[1] = False
-    #        else:
-    #            pass
 
-    #        # Check p[2]
-    #        if p[2] == 'T':
-    #            p[2] = True
-    #        elif p[2] == 'F':
-    #            p[2] = False
-    #        else:
-    #            pass
-
-    #        if p[1] and p[2]:
-    #            p[0] = t_TRUE
-    #        else:
-    #            p[0] = t_FALSE
-    #except:
-    #    p[0] = p[1]
 def p_and_multiple(p):
     '''
        and_multiple : equality_expr
@@ -443,11 +325,9 @@ def p_equality_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        #p[0] = (p[2],p[1],p[3])
         p[0] = ast.Equality(p[2],p[1],p[3])
     else:
         p[0] = p[1]
-        #p[0] = ast.Equality(None,p[1],None)
 
 def p_equality_multiple(p):
     '''
@@ -460,11 +340,9 @@ def p_equality_multiple(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        #p[0] = (p[2],p[1],p[3])
         p[0] = ast.Equality(p[2],p[1],p[3])
     else:
         p[0] = p[1]
-        #p[0] = ast.Equality(None,p[1],None)
 
 
 def p_relational_expr(p):
@@ -480,7 +358,6 @@ def p_relational_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        #p[0] = (p[1],p[2])
         p[0] = ast.Relational(p[2],p[1],p[3])
     else:
         p[0] = p[1]
@@ -498,14 +375,9 @@ def p_relational_multiple(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        #p[0] = (p[2],p[1],p[3])
         p[0] = ast.Relational(p[2],p[1],p[3])
     else:
         p[0] = p[1]
-    #if len(p) == 4:
-    #    p[0] = (p[2],p[1],p[3])
-    #else:
-    #    p[0] = (p[1],p[2])
 
 
 def p_add_expr(p):
@@ -519,14 +391,10 @@ def p_add_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        #p[0] = (p[2],p[1],p[3])
         p[0] = ast.BasicOperators(p[2],p[1],p[3])
     else:
         p[0] = p[1]
-    #if len(p) < 3:
-    #  p[0] = p[1]
-    #else:
-    #  p[0] = (p[2], p[1], p[3])
+
 
 def p_mult_expr(p):
     '''
@@ -540,20 +408,9 @@ def p_mult_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-      #p[0] = (p[2], p[1], p[3])
       p[0] = ast.BasicOperators(p[2],p[1],p[3])
     else:
       p[0] = p[1]
-    # if len(p) <= 3 :
-    #     p[0] = p[1]
-    # elif p[2] == '*':
-    #     p[0] = p[1] * p[3]
-    # elif p[2] == '/':
-    #     p[0] = p[1] / p[3]
-    # elif p[2] == '%':
-    #     p[0] = p[1] % p[3]
-    # else:
-    #     print("ERROR!!! Don't know symbol: ",p[2])
 
 def p_seq_expr(p):
     '''
@@ -565,7 +422,6 @@ def p_seq_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        #p[0] = (p[2],p[1],p[3])
         p[0] = ast.Sequence(p[1],p[3])
     else:
         p[0] = p[1]
@@ -580,7 +436,6 @@ def p_exp_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        #p[0] = (p[2],p[1],p[3])
         p[0] = ast.Exp(p[1],p[3], None)
     else:
         p[0] = p[1]
@@ -606,7 +461,6 @@ def p_postfix_expr(p):
     '''
     postfix_expr : primary_expr
                  | primary_expr expr_array
-                 | primary_expr argument_array
                  | primary_expr object_call
     '''
     if DEBUG:
@@ -614,9 +468,21 @@ def p_postfix_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 3:
-        p[0] = (p[1],p[2])
+        # need modification for array and object call
+        # p[0] = ast.Postfix(p[1], p[2])
+        p[0] = (p[1], p[2])
     else:
         p[0] = p[1]
+
+def p_postfix_expr2(p):
+    '''
+    postfix_expr : primary_expr argument_array
+    '''
+    if DEBUG:
+        print("\npostfix expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = ast.FunctionCall(p[1], p[2])
 
 # We left out leading comma case (,exp,exp) and (,) because they are dumb
 #   and should result in errors
@@ -632,16 +498,12 @@ def p_expr_array(p):
     if DEBUG:
         print("\nexpr_array: ",end="")
     if len(p) == 6: # LBRACKET expr COMMA expr RBRACKET
-        #p[0] = (p[3],p[2],p[4])
         p[0] = ast.Array(p[2],p[4])
     elif len(p) == 5 and p[2] == ',': # LBRACKET COMMA multi_expr RBRACKET
-        #p[0] = (p[2],p[3])
         p[0] = ast.Array(p[3],None) # Do we want to force this ordering?
     elif len(p) == 5 and p[3] == ',': # LBRACKET expr COMMA RBRACKET
-        #p[0] = (p[3],p[2])
         p[0] = ast.Array(p[3],None)
     elif len(p) == 4: # LBRACKET expr RBRACKET
-        #p[0] = p[3]
         p[0] = ast.Array(p[3],None)
     else:
         pass
@@ -658,13 +520,10 @@ def p_multi_expr(p):
             print(i," ",p[i], " ",end="")
     l = len(p)
     if l == 4:
-        #p[0] = (p[2],p[1],p[3])
         p[0] = ast.Array(p[1],p[3])
     elif l == 3:
-        #p[0] = (p[2],p[1])
         p[0] = ast.Array(p[1],None)
     else:
-        #p[0] = p[1]
         p[0] = ast.Array(p[1],None)
 
 def p_argument_array(p):
@@ -689,7 +548,6 @@ def p_object_call(p):
         print("\nobject call: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    #p[0] = (p[1],p[2])
     p[0] = ast.ObjectCall(ast.ID(p[2]))
 
 def p_primary_expr(p):
@@ -727,9 +585,9 @@ def p_argument_expr_list(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2],p[1],p[3])
+        p[0] = [p[1],p[3]]
     else:
-        p[0] = p[1]
+        p[0] = [p[1]]
 
 def p_argument_expr(p):
     '''
@@ -749,12 +607,6 @@ def p_constant_0(p):
     '''
     constant : INTEGER
     '''
-    #         | FLOAT
-    #         | STRING
-    #         | CHARACTER
-    #         | TRUE
-    #         | FALSE
-    #'''
     if DEBUG:
         print("\nconst: ",end="")
         for i in range(len(p)):
@@ -817,8 +669,6 @@ def p_function_decl(p):
         print("\nfun decl: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
-    # Don't think this is right
-    #p[0] = (p[1], p[2], p[3], p[4], p[5])
     p[0] = ast.FunctionDecl(p[2], ast.ID(p[3]), p[4], p[5])
 
 def p_return_type_spec(p):
@@ -885,27 +735,12 @@ def p_param_list(p):
     '''
     param_list : LPAREN param_option RPAREN
     '''
-    #param_option : TYPEVOID
-    #             | param_spec
-    #             | param_spec param_spec_multiple
-    #param_spec_multiple : COMMA param_spec
-    #                    | param_spec_multiple COMMA param_spec
-    #'''
     if DEBUG:
         print("\nparam list: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     p[0] = p[2]
-    #for i in range(len(p)):
-    #    print(i," ",p[i], " ",end="")
-    #if p[1] == '(' and p[3] == ')':
-    #    p[0] = p[2]
-    #elif p[1] == ',':
-    #    p[0] = p[2]
-    #elif p[2] == ',':
-    #    p[0] = (p[1],p[3])
-    #else:
-    #    p[0] = p[1]
+
 
 def p_param_option(p):
     '''
@@ -918,11 +753,11 @@ def p_param_option(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 3:
-        #p[0] = (p[1],p[2])
-        p[0] = ast.ParamOption(p[1],p[2])
+        # p[0] = ast.ParamOption(p[1],p[2])
+        p[0] = [p[1], p[2]]
     else:
-        #p[0] = p[1]
-        p[0] = ast.ParamOption(p[1],None)
+        # p[0] = ast.ParamOption(p[1],None)
+        p[0] = [p[1]]
 
 def p_param_spec_multiple(p):
     '''
@@ -934,11 +769,11 @@ def p_param_spec_multiple(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        #p[0] = (p[1],p[3])
-        p[0] = ast.ParamOption(p[1],p[3])
+        p[0] = [p[1], p[3]]
+        # p[0] = ast.ParamOption(p[1],p[3])
     else:
-        #p[0] = p[2]
-        p[0] = ast.ParamOption(p[2],None) # Should reverse?
+        # p[0] = ast.ParamOption(p[2],None) # Should reverse?
+        p[0] = [p[2]]
 
 
 #####################
@@ -956,10 +791,8 @@ def p_param_spec(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 7:
-        #p[0] = (p[4],p[2],p[3],p[5])
         p[0] = ast.ParamSpec(p[2],ast.ID(p[3]),p[5])
     else:
-        #p[0] = (p[1],p[2])
         p[0] = ast.ParamSpec(p[1],ast.ID(p[2]),None)
 
 def p_value_option(p):
@@ -989,41 +822,40 @@ def p_eof(p):
     pass
     #return p[0]
 
-# prog = input("input here:\n",end="")
-
-#prog = 'c(1,2,3);'
-#prog = 'if (if(F)); break;'
-# This works, but not else if
-#prog = 'if (if(F));something; else; break;'
-#prog = 'if (F) x=12;'
-#prog = 'if (F) x=12; else x=5;'
-#prog = 'cmColors(0);'
-#prog = 'integerDiv(6, y=3);'
-#prog = 'T==F;'
-#prog = 'T | F;'
-#prog = 'T & F;'
-#prog = "for (myvar in 1:10) x=5;"
-
-
-#prog = 'while(x<5) break;'
-#prog = 'do x=x+2; while (x<5);'
-#prog = 'for (i in 1:20) return;'
-#prog = 'a = ( x==y ? f1() else f2());' # Treats lvalue
-#prog = 'if (F){ if(F) break; }else x=42;'
-
 def tree():
+    # prog = input("input here:\n",end="")
+
+    #prog = 'c(1,2,3);'
+    #prog = 'if (if(F)); break;'
+    # This works, but not else if
+    #prog = 'if (if(F));something; else; break;'
+    #prog = 'if (F) x=12;'
+    #prog = 'if (F) x=12; else x=5;'
+    #prog = 'cmColors(0);'
+    #prog = 'integerDiv(6, y=3);'
+    #prog = 'T==F;'
+    #prog = 'T | F;'
+    #prog = 'T & F;'
+    #prog = "for (myvar in 1:10) x=5;"
+
+
+    #prog = 'while(x<5) break;'
+    #prog = 'do x=x+2; while (x<5);'
+    #prog = 'for (i in 1:20) return;'
+    #prog = 'a = ( x==y ? f1() else f2());' # Treats lvalue
+    #prog = 'if (F){ if(F) break; }else x=42;'
     # prog = 'x = 5; if (x == 5) y = 6;'
     # prog = 'x = 1; while (x != 5) x = x + 1;'
     # prog = 'x = 1; do x = x + 1; while (x != 5);'
     # prog = 'x = 0; z = 0; for (i in 1 : 5) {y = x; if (i == 3) x = 0; else x = x + 1; z = z + 1;}'
     # prog = 'x = 3; if (x%2 != 0) x = x + 1;'
     #prog = '3==4 | 4==4;'
-    # prog = 'function (int) foo (void) { return 1;}'
+    prog = 'function (int) foo (int x, int y) { return x;} x = foo(1, 2);'
     # prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
     # prog = 'x = 0; for (i in 1 : 5) {y = x + i; x = x + 1;}'
     # prog = 'x = 0; y = 0; while (x != 5) {x = x + 1; i = x;}'
     # prog = 'x = 0; y = 0; do {x = x + 1; i = x;} while (x != 5);'
-    prog = 'x = 5; y = 0; if (x != y) {x = x + 1; y = x * 2; i = x;}'
+    # prog = 'x = 5; y = 0; if (x != y) {x = x + 1; y = x * 2; i = x;}'
 
 
     parser = yacc.yacc()

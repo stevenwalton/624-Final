@@ -33,9 +33,13 @@ class EidosGenerator():
         # self.visit.register(ast.Break, self.visit_break)
         self.visit.register(ast.FunctionDecl, self.visit_function_decl)
         self.visit.register(ast.CompoundStmt, self.visit_compound)
+        self.visit.register(ast.FunctionCall, self.visit_function_call)
 
     def getCurSymTable(self):
         return self.curSymTable
+
+    def getFuncTable(self):
+        return self.funcTable
 
     def lookupSymTables(self, s):
         if s in self.curSymTable:
@@ -493,8 +497,56 @@ class EidosGenerator():
         for name, child in node.children():
             if name == "fId":
                 fId = child
-        self.funcTable[fId] = node
+        self.funcTable[fId.getName()] = node
 
+    def visit_function_call(self, node):
+        name_expr = None
+        arguments = None
+        for name, child in node.children():
+            if name == 'name_expr':
+                name_expr = child
+            elif name == 'arguments':
+                arguments = child
+        try:
+            # print(self.funcTable)
+            # print(node)
+            # print(name_expr)
+            func = self.funcTable[name_expr.getName()]
+            returnType = None;
+            paramLst = None;
+            stmt = None;
+            for name, child in func.children():
+                if name == 'returnType':
+                    returnType = child;
+                elif name == 'paramLst':
+                    paramLst = child;
+                elif name == 'stmt':
+                    stmt = child;
+            print(len(self.listExtract(paramLst)))
+            # self.stack.append(self.curSymTable)
+            # self.curSymTable = {}
+
+        except Exception as e:
+            raise Exception(e)
+
+    # def visit_param_option(self, node):
+    #     one = None;
+    #     second = None;
+    #     for name, child in node.children():
+    #         if name == "one":
+    #             one = child
+    #         elif name == "second":
+    #             second = child
+    #     try:
+    #         if one == 'void'
+    #     except Exception as e:
+    #         raise
+
+
+    def listExtract(self, ls):
+        if len(ls) == 1:
+            return ls
+        return ls[:1] + listExtract(ls[1])
 
 def run(prog,dbg=False):
     '''

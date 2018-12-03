@@ -860,3 +860,43 @@ class ArgumentExprList(Node):
             yield self.multi_arg
 
     attr_names = ("ArgumentExprList",)
+
+class PostfixExpr(Node):
+    __slots__ = ('primary', 'second', 'coord', '__weakref__')
+    def __init__(self, primary, second, coord=None):
+        self.primary = primary
+        self.second = second
+
+    def children(self):
+        nodelist = []
+        if self.primary is not None: nodelist.append(("primary", self.primary))
+        if self.second is not None: nodelist.append(("second", self.second))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.primary is not None:
+            yield self.primary
+        if self.second is not None:
+            yield self.second
+
+    attr_names = ("Postfix")
+
+class FunctionCall(Node):
+    __slots__ = ('name_expr', 'arguments', 'coord', '__weakref__')
+    def __init__(self, name_expr, arguments, coord=None):
+        self.name_expr = name_expr
+        self.arguments = arguments
+
+    def children(self):
+        nodelist = []
+        if self.name_expr is not None: nodelist.append(("name_expr", self.name_expr))
+        if self.arguments is not None: nodelist.append(("arguments", self.arguments))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.name_expr is not None:
+            yield self.name_expr
+        if self.arguments is not None:
+            yield self.arguments
+
+    attr_names = ("FunctionCall")
