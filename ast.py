@@ -338,6 +338,9 @@ class ID(Node):
         return
         yield
 
+    def getName(self):
+        return self.name
+
     attr_names = ('name', )
 
 class Conditional(Node):

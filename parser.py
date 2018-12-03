@@ -877,7 +877,7 @@ def p_object_class_spec(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     #p[0] = p[2]
-    p[0] = ast.ObjectClassSpec(p[2])
+    p[0] = ast.ObjectClassSpec(ast.ID(p[2]))
 
 
 # Split into 3
@@ -957,10 +957,10 @@ def p_param_spec(p):
             print(i," ",p[i], " ",end="")
     if len(p) == 7:
         #p[0] = (p[4],p[2],p[3],p[5])
-        p[0] = ast.ParamSpec(p[2],p[3],p[5])
+        p[0] = ast.ParamSpec(p[2],ast.ID(p[3]),p[5])
     else:
         #p[0] = (p[1],p[2])
-        p[0] = ast.ParamSpec(p[1],p[2],None)
+        p[0] = ast.ParamSpec(p[1],ast.ID(p[2]),None)
 
 def p_value_option(p):
     '''
@@ -1015,21 +1015,23 @@ def tree():
     # prog = 'x = 5; if (x == 5) y = 6;'
     # prog = 'x = 1; while (x != 5) x = x + 1;'
     # prog = 'x = 1; do x = x + 1; while (x != 5);'
-    # prog = 'x = 0; z = 0; for (i in 1 : 5) {x = x + 1; y = x; if (i == 3) x = 0; z = z + 1;}'
+    # prog = 'x = 0; z = 0; for (i in 1 : 5) {y = x; if (i == 3) x = 0; else x = x + 1; z = z + 1;}'
     # prog = 'x = 3; if (x%2 != 0) x = x + 1;'
     #prog = '3==4 | 4==4;'
-    prog = 'function (int) foo (void) { return 1;}'
+    # prog = 'function (int) foo (void) { return 1;}'
+    prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
+    # prog = 'x = 0; y = 0;'
 
 
     parser = yacc.yacc()
     result = parser.parse(prog, debug=False)
-    if DEBUG:
-        print("\n=====\nDONE\n=====")
-        print("Parsed: ", end="")
-        print(prog)
-        print("Result: ",result)
-    else:
-        print(result)
+    # if DEBUG:
+    #     print("\n=====\nDONE\n=====")
+    #     print("Parsed: ", end="")
+    #     print(prog)
+    #     print("Result: ",result)
+    # else:
+    #     print(result)
     return result
 
 def runProgram(prog,dbg=False):
