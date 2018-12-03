@@ -1,10 +1,8 @@
 # EIDOS interpreter
 -------------------
-Edit program in parser.py (future: allow for input programs)
-Run
-```
-python3 generator.py
-```
+624 assignment to write an interpreter for Eidos programming language.
+Not fully functional, but basic programs work. And we can do line by line
+interpreting!
 
 ## Using the Interpreter
 -----------------------
