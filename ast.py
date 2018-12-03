@@ -743,7 +743,7 @@ class ParamList(Node):
 
 class ParamOption(Node):
     __slots__ = ('one', 'second', 'coord', '__weakref__')
-    def __init__(self, operator, one, second, coord=None):
+    def __init__(self, one, second, coord=None):
         self.one = one
         self.second = second
 

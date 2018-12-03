@@ -1015,21 +1015,21 @@ def tree():
     # prog = 'x = 5; if (x == 5) y = 6;'
     # prog = 'x = 1; while (x != 5) x = x + 1;'
     # prog = 'x = 1; do x = x + 1; while (x != 5);'
-    prog = 'x = 0; z = 0; for (i in 1 : 5) {x = x + 1; y = x; if (i == 3) x = 0; z = z + 1;}'
+    # prog = 'x = 0; z = 0; for (i in 1 : 5) {x = x + 1; y = x; if (i == 3) x = 0; z = z + 1;}'
     # prog = 'x = 3; if (x%2 != 0) x = x + 1;'
     #prog = '3==4 | 4==4;'
-
+    prog = 'function (int) foo (void) { return 1;}'
 
 
     parser = yacc.yacc()
     result = parser.parse(prog, debug=False)
-    # if DEBUG:
-    #     print("\n=====\nDONE\n=====")
-    #     print("Parsed: ", end="")
-    #     print(prog)
-    #     print("Result: ",result)
-    # else:
-    #     print(result)
+    if DEBUG:
+        print("\n=====\nDONE\n=====")
+        print("Parsed: ", end="")
+        print(prog)
+        print("Result: ",result)
+    else:
+        print(result)
     return result
 
 def runProgram(prog,dbg=False):
@@ -1040,3 +1040,6 @@ def runProgram(prog,dbg=False):
     parser = yacc.yacc()
     result = parser.parse(prog, debug=dbg)
     return result
+
+if __name__ == '__main__':
+    tree()
