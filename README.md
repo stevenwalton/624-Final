@@ -1,8 +1,8 @@
 # EIDOS interpreter
 -------------------
-624 assignment to write an interpreter for Eidos programming language.
-Not fully functional, but basic programs work. And we can do line by line
-interpreting!
+624 (Programming Languages) assignment to write an interpreter for Eidos 
+programming language. Not fully functional, but basic programs work. And 
+we can do line by line interpreting!
 
 ## Using the Interpreter
 -----------------------
@@ -60,6 +60,14 @@ the number of failed programs out of the total number of programs that were run.
 Note: The pass rate that is shown only shows programs that do not error out. 
 It does not show that the programs have the correct output.
 
+## Slides
+---------
+[624 Class presentation](https://docs.google.com/presentation/d/1a-Nna-p7qqNWKXLpfevQEJw2se58ehDeAAy23adKIW4/edit?usp=sharing)
+
 ## Authors
 ---------
-Project by Steven Walton, He He (贺赫), and Priya Kudva. Team: Thunder Hamsters
+Project by Steven Walton, He He (贺赫), and Priya Kudva. 
+
+Team: Thunder Hamsters
+
+University of Oregon
