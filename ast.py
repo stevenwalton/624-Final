@@ -697,10 +697,9 @@ class ObjectCall(Node):
 
     attr_names = ("ObjectCall",)
 
-class Function(Node):
-    __slots__ = ('function', 'returnType', 'fId', 'paramLst', 'stmt', 'coord', '__weakref__')
-    def __init__(self, function, returnType, fId, paramLst, stmt, coord=None):
-        self.function = function
+class FunctionDecl(Node):
+    __slots__ = ('returnType', 'fId', 'paramLst', 'stmt', 'coord', '__weakref__')
+    def __init__(self,returnType, fId, paramLst, stmt, coord=None):
         self.returnType = returnType
         self.fId = fId
         self.paramLst = paramLst
@@ -708,7 +707,6 @@ class Function(Node):
 
     def children(self):
         nodelist = []
-        if self.function is not None: nodelist.append(('function', self.function))
         if self.returnType is not None: nodelist.append(('returnType', self.returnType))
         if self.fId is not None: nodelist.append(('fId', self.fId))
         if self.paramLst is not None: nodelist.append(('paramLst', self.paramLst))
@@ -716,8 +714,6 @@ class Function(Node):
         return tuple(nodelist)
 
     def __iter__(self):
-        if self.function is not None:
-            yield self.function
         if self.returnType is not None:
             yield self.returnType
         if self.fId is not None:
@@ -727,7 +723,7 @@ class Function(Node):
         if self.stmt is not None:
             yield self.stmt
 
-    attr_names = ("Function", )
+    attr_names = ("FunctionDecl", )
 
 class ObjectClassSpec(Node):
     __slots__ = ('identifier', 'coord', '__weakref__')

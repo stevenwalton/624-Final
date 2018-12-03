@@ -10,6 +10,8 @@ class EidosGenerator():
     def __init__(self):
         self.curSymTable = {}
         self.stack = []
+        # a dict of function name mapping to a function node
+        self.funcTable = {}
         # self.ifBreak = False
         self.visit = singledispatch(self.visit)
         self.visit.register(ast.If, self.visit_if)
@@ -29,7 +31,7 @@ class EidosGenerator():
         self.visit.register(ast.LogicalOR, self.visit_logical_or)
         self.visit.register(ast.LogicalAND, self.visit_logical_and)
         # self.visit.register(ast.Break, self.visit_break)
-        self.visit.register(ast.Function, self.visit_function)
+        self.visit.register(ast.FunctionDecl, self.visit_function_decl)
         self.visit.register(ast.CompoundStmt, self.visit_compound)
 
     def getCurSymTable(self):
@@ -486,8 +488,12 @@ class EidosGenerator():
         self.curSymTable = self.stack.pop()
         return r
 
-    def visit_function(self, node):
-        pass;
+    def visit_function_decl(self, node):
+        fId = ""
+        for name, child in node.children():
+            if name == "fId":
+                fId = child
+        self.funcTable[fId] = node
 
 
 def run(prog,dbg=False):

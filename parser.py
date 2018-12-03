@@ -819,7 +819,7 @@ def p_function_decl(p):
             print(i," ",p[i], " ",end="")
     # Don't think this is right
     #p[0] = (p[1], p[2], p[3], p[4], p[5])
-    p[0] = ast.Function(p[1], p[2], ast.ID(p[3]), p[4], p[5])
+    p[0] = ast.FunctionDecl(p[2], ast.ID(p[3]), p[4], p[5])
 
 def p_return_type_spec(p):
     '''
@@ -1022,7 +1022,8 @@ def tree():
     # prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
     # prog = 'x = 0; for (i in 1 : 5) {y = x + i; x = x + 1;}'
     # prog = 'x = 0; y = 0; while (x != 5) {x = x + 1; i = x;}'
-    prog = 'x = 0; y = 0; do {x = x + 1; i = x;} while (x != 5);'
+    # prog = 'x = 0; y = 0; do {x = x + 1; i = x;} while (x != 5);'
+    prog = 'x = 5; y = 0; if (x != y) {x = x + 1; y = x * 2; i = x;}'
 
 
     parser = yacc.yacc()
