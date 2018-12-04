@@ -30,7 +30,7 @@ class EidosGenerator():
         self.visit.register(ast.For, self.visit_for)
         self.visit.register(ast.LogicalOR, self.visit_logical_or)
         self.visit.register(ast.LogicalAND, self.visit_logical_and)
-        # self.visit.register(ast.Break, self.visit_break)
+        self.visit.register(ast.Break, self.visit_break)
         self.visit.register(ast.FunctionDecl, self.visit_function_decl)
         self.visit.register(ast.CompoundStmt, self.visit_compound)
         self.visit.register(ast.FunctionCall, self.visit_function_call)
@@ -96,7 +96,8 @@ class EidosGenerator():
             if self.visit(cond) == True:
                 return self.visit(iftrue)
             else:
-                return self.visit(iffalse)
+                if iffalse:
+                    return self.visit(iffalse)
         except Exception as e:
             raise Exception(e)
 
@@ -202,17 +203,7 @@ class EidosGenerator():
             raise Exception(e)
 
     def visit_id(self, node: ast.ID):
-        # print("visiting id")
-        id_name = None
-        for name, child in node.children():
-            if name == "name":
-                id_name = child
-        try:
-            if id_name:
-                # return id_name
-                return node
-        except Exception as e:
-            raise Exception(e)
+        return node
 
     def visit_assignment(self, node: ast.Assignment):
         '''
@@ -233,6 +224,11 @@ class EidosGenerator():
         try:
             left = self.visit(lvalue)
             right = self.visit(rvalue)
+            print(left)
+            print(right)
+            print("-" * 30)
+            if isinstance(right, ast.Return):
+                right = right.getExpr()
             if isinstance(right, ast.ID):
                 right = self.lookupSymTables(right.getName())
             self.setValueInStack(left.getName(), right)
@@ -243,7 +239,7 @@ class EidosGenerator():
             raise Exception(e)
 
     def visit_interpreter_multiple_block(self, node):
-        # print("visiting interp mult")
+        print("visiting interp mult")
         statement = None
         function_decl = None
         block = None
@@ -260,11 +256,14 @@ class EidosGenerator():
             b = None;
             if statement:
                 s = self.visit(statement)
+                return s
             if function_decl:
                 f = self.visit(function_decl)
             if block:
                 b = self.visit(block)
-            return (s, f, b)
+                print('='*20)
+                print(b)
+                return b
         except Exception as e:
             raise Exception(e)
 
@@ -283,14 +282,19 @@ class EidosGenerator():
         try:
             if statement:
                 s = self.visit(statement)
+                # print(s)
+                if isinstance(s, ast.Break) or isinstance(s, ast.Return):
+                    return s
             if multi_stmt:
                 m = self.visit(multi_stmt)
+                if isinstance(m, ast.Break) or isinstance(m, ast.Return):
+                    return m
             # if not isinstance(s, tuple):
             #     s = (s,)
             # if not isinstance(m, tuple):
             #     m = (m,)
             # return s+m
-            return s,m
+            return m
         except Exception as e:
             raise Exception(e)
 
@@ -363,7 +367,15 @@ class EidosGenerator():
                 self.curSymTable = {}
 
             while(self.visit(cond)):
-                self.visit(stmt)
+                r = self.visit(stmt)
+                # if isinstance(r, ast.Return):
+                #     r = self.visit(r.getExpr())
+                #     if isinstance(r, ast.ID):
+                #         r = self.lookupSymTables(r.getName())
+                #     print(r)
+                #     break;
+                if isinstance(r, ast.Break) or isinstance(r, ast.Return):
+                    break
             if compound:
                 try:
                     self.curSymTable = self.stack.pop()
@@ -457,6 +469,8 @@ class EidosGenerator():
                 #     self.ifBreak = false
                 #     break;
                 # print(isinstance(r, ast.Break))
+                if isinstance(r, ast.Break) or isinstance(r, ast.Return):
+                    break
         except Exception as e:
             raise Exception(e)
 
@@ -509,22 +523,6 @@ class EidosGenerator():
             return r
         except Exception as e:
             raise Exception(e)
-        # except Exception as e:
-        #     try:
-        #         self.curSymTable = self.stack.pop()
-        #     except IndexError:
-        #         pass
-        #     except Exception as e:
-        #         raise Exception(e)
-        # # Is this a finally, else, or what?
-        # try:
-        #     self.curSymTable = self.stack.pop()
-        # except IndexError:
-        #     pass
-        # except Exception as e:
-        #     raise Exception(e)
-        # finally:    # Happens no matter what. Is this what we want?
-            # return r
 
     def visit_function_decl(self, node):
         fId = ""
@@ -569,6 +567,8 @@ class EidosGenerator():
                 if name == 'statement':
                     stmt = child
             result = self.visit(stmt)
+            if isinstance(result, ast.Return):
+                result = result.getExpr()
             if isinstance(result, ast.ID):
                 result = self.lookupSymTables(result.getName())
             self.curSymTable = self.stack.pop()
@@ -576,22 +576,6 @@ class EidosGenerator():
         except Exception as e:
             raise Exception(e)
 
-            # try:
-            #     self.curSymTable = self.stack.pop()
-            # except IndexError:
-            #     pass
-            # except Exception as e:
-            #     raise Exception(e)
-            # finally: # Happens no matter what (is this what we want?)
-            #     return result
-
-        except Exception as e:
-            try:
-                self.curSymTable = self.stack.pop()
-            except IndexError:
-                pass
-            except Exception as e:
-                raise Exception(e)
 
     def visit_param_spec(self, node):
         tspec = None;
@@ -607,14 +591,20 @@ class EidosGenerator():
         return (tspec, paramID, valueOption)
 
     def visit_return(self, node):
+        print(self.curSymTable)
+        print(self.stack)
         expr = None
         for name, child in node.children():
             if name == "expr":
                 expr = child
         try:
-            return self.visit(expr)
+            r =  self.visit(expr)
+            return ast.Return(r)
         except Exception as e:
             raise Exception(e)
+
+    def visit_break(self, node):
+        return node
 
 def runReturn(prog,dbg=False):
         '''
