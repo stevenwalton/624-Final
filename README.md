@@ -13,21 +13,29 @@ symbol table and allow
 
 
 ### Interpreter mode:
+Should work on nix systems. eidos file calls `/usr/bin/env bash` which calls
+`python3 eidosInterpreter.py`. So if that fails you can call `python3 eidosInterpreter.py`
+and you will get the same result as below.
 ```
 $ ./eidos
 Version: 0.1
-NOTE: Currently only single line programs run in interpreter mode.
-      We cannot handle multi-line functions.
+NOT:  We cannot handle functions that take multiple lines.
       We can keep a history of values, but not delete them.
       Functions that take longer than 60 seconds will error out.
       Please type 'exit' or 'quit' to exit
->>> x=5;
-{'x': 5}
->>> x=x+2;
-{'x': 7}
->>> z = x*2;
-{'z': 14, 'x': 7}
->>> exit
+eidos > x=1;
+{'x': 1}
+eidos > x=x+1;
+{'x': 2}
+eidos > x;
+{'x': 2}
+eidos > z=x+1;
+{'z': 3}
+eidos > z;
+{'z': 3}
+eidos > x;
+{'x': 2}
+eidos > exit
 ```
 
 ### Running an Eidos file:

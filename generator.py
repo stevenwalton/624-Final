@@ -612,12 +612,12 @@ def runReturn(prog,dbg=False):
         Runs an Eidos program that is passed in as a string
         Calls yacc from parser.py
         dbg will call the debug option in yacc
+        Returns the full symbol table. The interpreter will use
+        this to update. 
         '''
         result = parser.runProgram(prog,dbg=False)
         gen = EidosGenerator()
         r = gen.visit(result)
-        #print(r)
-        print(gen.getCurSymTable())
         return(gen.getCurSymTable())
 
 def run(prog,dbg=False):
