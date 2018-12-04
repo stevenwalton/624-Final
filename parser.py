@@ -851,12 +851,18 @@ def tree():
     # prog = 'x = 0; z = 0; for (i in 1 : 5) {y = x; if (i == 3) x = 0; else x = x + 1; z = z + 1;}'
     # prog = 'x = 3; if (x%2 != 0) x = x + 1;'
     #prog = '3==4 | 4==4;'
-    prog = 'x = 0; y = 0;function (int) foo (int x, int y, int z) { return x + y + z;} function (int) bar (int x, int y) { if (x != y) return x * y; else return x;} x = bar(5, 5); y = bar(2,3);'
+    prog = 'x = 0; y = 0; function (int) foo (int x, int y, int z) { return x + y + z;} function (int) bar (int x, int y) { if (x != y) return x * y; else return x;} x = bar(5, 5); y = bar(2,3);'
     # prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
     # prog = 'x = 0; for (i in 1 : 5) {y = x + i; x = x + 1;}'
     # prog = 'x = 0; y = 0; while (x != 5) {x = x + 1; i = x;}'
     # prog = 'x = 0; y = 0; do {x = x + 1; i = x;} while (x != 5);'
     # prog = 'x = 5; y = 0; if (x != y) {x = x + 1; y = x * 2; i = x;}'
+    # prog = 'z = 10; function (int) bar (int x, int y) { if (x != y) return x * y; z = 100; return 1000;} w = bar(4, 5);'
+    # prog = 'x = 1; while (x != 10) {x = x + 1; if (x == 3) {x = 100; break;}}'
+    # prog = 'x = 1; while (x != 10) break;'
+    # prog = 'x = 5; for (i in 1 : 20) {x = x + 1; if (i == 10) break;}'
+    # prog = 'x = 0; z = 0; for (i in 1 : 5) {y = x; if (i == 3) x = 0; else x = x + 1; z = z + 1;}'
+    # prog = 'function (int) factorial (int x) { if (x == 0) return 1; y = x-1; return y;} x = factorial(1);'
 
 
     parser = yacc.yacc()

@@ -285,6 +285,9 @@ class Return(Node):
         if self.expr is not None:
             yield self.expr
 
+    def getExpr(self):
+        return self.expr
+
     attr_names = ()
 
 class Next(Node):
