@@ -99,8 +99,14 @@ def eidos(valTable,i=";"):
         signal.alarm(0) # Reset signal to infinite time
         if len(i) == 2: # Hacky print function (eg: x; returns x)
             print("{{'{}': {}}}".format(i[:-1],oldSym[i[:-1]]))
-        return r
-    except Exception as e:
+        if r == None:
+            return oldSym
+        else:
+            return r
+    except KeyError:        # Handles undefined variables
+        print("That variable isn't defined")
+        return oldSym
+    except Exception as e:  # General Exceptions
         raise Exception(e)
 
 def SymDiff(oSym,nSym):
@@ -110,15 +116,18 @@ def SymDiff(oSym,nSym):
     global oldSym
     diff = {}
     # Need to make cleaner but whatever for now
-    if oSym.keys() != nSym.keys():
+    try:
+        if oSym.keys() != nSym.keys():
+            for key in nSym:
+                if key not in oSym:
+                    diff[key] = nSym[key]
         for key in nSym:
-            if key not in oSym:
+            if (key in oSym) and (oSym[key] != nSym[key]):
                 diff[key] = nSym[key]
-    for key in nSym:
-        if (key in oSym) and (oSym[key] != nSym[key]):
-            diff[key] = nSym[key]
-    oldSym = nSym
-    if diff != {}: print(diff)
+        oldSym = nSym
+        if diff != {}: print(diff)
+    except:
+        pass
 
 
 def addTable(valTable):
