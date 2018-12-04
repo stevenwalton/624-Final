@@ -617,8 +617,12 @@ def runReturn(prog,dbg=False):
         '''
         result = parser.runProgram(prog,dbg=False)
         gen = EidosGenerator()
-        r = gen.visit(result)
-        return(gen.getCurSymTable())
+        try:
+            r = gen.visit(result)
+            return(gen.getCurSymTable())
+        except:
+            print("ERROR when parsing input")
+            pass
 
 def run(prog,dbg=False):
     '''
