@@ -365,7 +365,12 @@ class EidosGenerator():
             while(self.visit(cond)):
                 self.visit(stmt)
             if compound:
-                self.curSymTable = self.stack.pop()
+                try:
+                    self.curSymTable = self.stack.pop()
+                except IndexError:
+                    pass
+                except Exception as e:
+                    raise Exception(e)
 
         except Exception as e:
             raise Exception(e)
@@ -501,10 +506,21 @@ class EidosGenerator():
         try:
             r = self.visit(statement)
         except Exception as e:
+            try:
+                self.curSymTable = self.stack.pop()
+            except IndexError:
+                pass
+            except Exception as e:
+                raise Exception(e)
+        # Is this a finally, else, or what?
+        try:
             self.curSymTable = self.stack.pop()
+        except IndexError:
+            pass
+        except Exception as e:
             raise Exception(e)
-        self.curSymTable = self.stack.pop()
-        return r
+        finally:    # Happens no matter what. Is this what we want?
+            return r
 
     def visit_function_decl(self, node):
         fId = ""
@@ -551,12 +567,22 @@ class EidosGenerator():
             result = self.visit(stmt)
             if isinstance(result, ast.ID):
                 result = self.lookupSymTables(result.getName())
-            self.curSymTable = self.stack.pop()
-            return result
+            try:
+                self.curSymTable = self.stack.pop()
+            except IndexError:
+                pass
+            except Exception as e:
+                raise Exception(e)
+            finally: # Happens no matter what (is this what we want?)
+                return result
 
         except Exception as e:
-            self.curSymTable = self.stack.pop()
-            raise Exception(e)
+            try:
+                self.curSymTable = self.stack.pop()
+            except IndexError:
+                pass
+            except Exception as e:
+                raise Exception(e)
 
     def visit_param_spec(self, node):
         tspec = None;
@@ -586,12 +612,12 @@ def runReturn(prog,dbg=False):
         Runs an Eidos program that is passed in as a string
         Calls yacc from parser.py
         dbg will call the debug option in yacc
+        Returns the full symbol table. The interpreter will use
+        this to update. 
         '''
         result = parser.runProgram(prog,dbg=False)
         gen = EidosGenerator()
         r = gen.visit(result)
-        #print(r)
-        print(gen.getCurSymTable())
         return(gen.getCurSymTable())
 
 def run(prog,dbg=False):
