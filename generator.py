@@ -505,22 +505,26 @@ class EidosGenerator():
         self.curSymTable = {}
         try:
             r = self.visit(statement)
-        except Exception as e:
-            try:
-                self.curSymTable = self.stack.pop()
-            except IndexError:
-                pass
-            except Exception as e:
-                raise Exception(e)
-        # Is this a finally, else, or what?
-        try:
             self.curSymTable = self.stack.pop()
-        except IndexError:
-            pass
+            return r
         except Exception as e:
             raise Exception(e)
-        finally:    # Happens no matter what. Is this what we want?
-            return r
+        # except Exception as e:
+        #     try:
+        #         self.curSymTable = self.stack.pop()
+        #     except IndexError:
+        #         pass
+        #     except Exception as e:
+        #         raise Exception(e)
+        # # Is this a finally, else, or what?
+        # try:
+        #     self.curSymTable = self.stack.pop()
+        # except IndexError:
+        #     pass
+        # except Exception as e:
+        #     raise Exception(e)
+        # finally:    # Happens no matter what. Is this what we want?
+            # return r
 
     def visit_function_decl(self, node):
         fId = ""
@@ -538,9 +542,6 @@ class EidosGenerator():
             elif name == 'arguments':
                 arguments = child
         try:
-            # print(self.funcTable)
-            # print(node)
-            # print(name_expr)
             func = self.funcTable[name_expr.getName()]
             returnType = None;
             paramLst = None;
@@ -564,17 +565,25 @@ class EidosGenerator():
                 value = self.visit(arguments[i])
                 self.curSymTable[paramID.getName()] = value
 
+            for name, child in stmt.children():
+                if name == 'statement':
+                    stmt = child
             result = self.visit(stmt)
             if isinstance(result, ast.ID):
                 result = self.lookupSymTables(result.getName())
-            try:
-                self.curSymTable = self.stack.pop()
-            except IndexError:
-                pass
-            except Exception as e:
-                raise Exception(e)
-            finally: # Happens no matter what (is this what we want?)
-                return result
+            self.curSymTable = self.stack.pop()
+            return result
+        except Exception as e:
+            raise Exception(e)
+
+            # try:
+            #     self.curSymTable = self.stack.pop()
+            # except IndexError:
+            #     pass
+            # except Exception as e:
+            #     raise Exception(e)
+            # finally: # Happens no matter what (is this what we want?)
+            #     return result
 
         except Exception as e:
             try:
@@ -613,7 +622,7 @@ def runReturn(prog,dbg=False):
         Calls yacc from parser.py
         dbg will call the debug option in yacc
         Returns the full symbol table. The interpreter will use
-        this to update. 
+        this to update.
         '''
         result = parser.runProgram(prog,dbg=False)
         gen = EidosGenerator()

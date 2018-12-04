@@ -851,7 +851,7 @@ def tree():
     # prog = 'x = 0; z = 0; for (i in 1 : 5) {y = x; if (i == 3) x = 0; else x = x + 1; z = z + 1;}'
     # prog = 'x = 3; if (x%2 != 0) x = x + 1;'
     #prog = '3==4 | 4==4;'
-    prog = 'x = 20; function (int) foo (int x, int y, int z) { return x + y + z;} function (int) bar (int x, int y) { if (x != y) return x * y; else return x;} x = bar(5, 5);'
+    prog = 'x = 0; y = 0;function (int) foo (int x, int y, int z) { return x + y + z;} function (int) bar (int x, int y) { if (x != y) return x * y; else return x;} x = bar(5, 5); y = bar(2,3);'
     # prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
     # prog = 'x = 0; for (i in 1 : 5) {y = x + i; x = x + 1;}'
     # prog = 'x = 0; y = 0; while (x != 5) {x = x + 1; i = x;}'
