@@ -44,7 +44,8 @@ tokens = [
     'IF', 'ELSE', 'FOR', 'IN', 'DO', 'WHILE', 'NEXT', 'BREAK', 'THEN', 'CONTINUE',
     'RETURN', 'FUNCTION',
     'TYPEVOID', 'TYPENULL', 'TYPELOGICAL', 'TYPEINTEGER', 'TYPEFLOAT', 'TYPESTRING', 'TYPECHARACTER', 'TYPEBOOL',
-    'TYPEOBJECT', 'TYPENUMERIC', 'DOLLAR'
+    'TYPEOBJECT', 'TYPENUMERIC', 'DOLLAR',
+    'SQRT'
 ]
 
 # Keywords that are specifically reserved: ones which do special lookups
@@ -72,7 +73,14 @@ reserved = {
         "numeric"  : "TYPENUMERIC",
         "T"        : "TRUE",
         "F"        : "FALSE",
-        "bool"     : "TYPEBOOL"
+        "bool"     : "TYPEBOOL",
+        # "sqrt"     : "SQRT"
+        "matrix" : "MATRIX"
+        # "integerDiv" : "INTDIV",
+        # "abs"      : "ABSOLUTE",
+        # "sum"      : "SUM",
+        # "sqrt"     : "SQRT",
+        # "c"        : "CONST"
         }
 
 tokens += list(reserved.values())
