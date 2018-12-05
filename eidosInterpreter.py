@@ -115,6 +115,9 @@ def eidos(valTable,i=";"):
     except KeyError:        # Handles undefined variables
         print("That variable isn't defined")
         return oldSym
+    except TypeError:
+        print("I'm sorry Dave. I can't do that. Please type a valid input")
+        return oldSym
     except Exception as e:  # General Exceptions
         raise Exception(e)
 
