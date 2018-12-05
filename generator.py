@@ -4,7 +4,6 @@ from functools import singledispatch
 import traceback
 import sys
 import numpy as np
-import math
 
 class EidosGenerator():
     '''
@@ -231,6 +230,12 @@ class EidosGenerator():
         try:
             e = self.visit(expr)
             if op is not None:
+                if isinstance(e, ast.ID):
+                    e = self.lookupSymTables(e.getName())
+                if e == 'F':
+                    e = False
+                elif e == 'T':
+                    e = True
                 if op == '!':
                     return (not e)
                 elif op == '+':
@@ -291,6 +296,10 @@ class EidosGenerator():
                 right = right.getExpr()
             if isinstance(right, ast.ID):
                 right = self.lookupSymTables(right.getName())
+            if right == True:
+                right = 'T'
+            elif right == False:
+                right = 'F'
             self.setValueInStack(left.getName(), right)
             return left,right
         except TypeError as e:
@@ -583,7 +592,7 @@ class EidosGenerator():
         n = self.visit(arguments[0])
         if isinstance(n, ast.ID):
             n = self.lookupSymTables(n.getName())
-        return math.sqrt(n)
+        return np.sqrt(n)
 
     def visit_abs(self, node):
         # print("visiting abs")
