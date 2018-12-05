@@ -75,11 +75,11 @@ reserved = {
         "F"        : "FALSE",
         "bool"     : "TYPEBOOL",
         # "sqrt"     : "SQRT"
-        "matrix" : "MATRIX"
+        "matrix" : "MATRIX",
         # "integerDiv" : "INTDIV",
-        # "abs"      : "ABSOLUTE",
+        "abs"      : "ABSOLUTE",
         # "sum"      : "SUM",
-        # "sqrt"     : "SQRT",
+        "sqrt"     : "SQRT"
         # "c"        : "CONST"
         }
 

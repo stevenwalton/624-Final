@@ -444,7 +444,7 @@ def p_exp_expr(p):
 def p_unary_expr(p):
     '''
     unary_expr : postfix_expr
-               | NOT unary_expr
+               | LNOT unary_expr
                | PLUS unary_expr
                | MINUS unary_expr
     '''
@@ -478,12 +478,24 @@ def p_postfix_expr(p):
 def p_postfix_expr2(p):
     '''
     postfix_expr : primary_expr argument_array
+                 | SQRT argument_array
+                 | ABSOLUTE argument_array
     '''
     if DEBUG:
         print("\npostfix expr: ",end="")
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     p[0] = ast.FunctionCall(p[1], p[2])
+
+def p_postfix_expr3(p):
+    '''
+    postfix_expr : MATRIX argument_array
+    '''
+    if DEBUG:
+        print("\npostfix expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = ast.CreateMatrix(p[2])
 
 # We left out leading comma case (,exp,exp) and (,) because they are dumb
 #   and should result in errors
@@ -600,7 +612,7 @@ def p_argument_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2], ast.ID(p[1]), p[3])
+        p[0] = (ast.ID(p[1]), p[3])
     else:
         p[0] = p[1]
 
@@ -854,7 +866,8 @@ def tree():
     #prog = '3==4 | 4==4;'
     #prog = 'x = 0; y = 0; function (int) foo (int x, int y, int z) { return x + y + z;} function (int) bar (int x, int y) { if (x != y) return x * y; else return x;} x = bar(5, 5); y = bar(2,3);'
     #prog = 'function(int) foo(int x) {return x+1;}'
-    prog = 'function(int) foo(int x) {return x+1;} foo(1);'
+
+    # prog = 'function(int) foo(int x) {return x+1;} foo(1);'
     #prog = 'f = function(int) foo(int x, int y) {x=x+1;y=x+1;z=x+y; return z;}; foo(1,2); f;'
 
     # prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
@@ -862,12 +875,16 @@ def tree():
     # prog = 'x = 0; y = 0; while (x != 5) {x = x + 1; i = x;}'
     # prog = 'x = 0; y = 0; do {x = x + 1; i = x;} while (x != 5);'
     # prog = 'x = 5; y = 0; if (x != y) {x = x + 1; y = x * 2; i = x;}'
-    # prog = 'z = 10; function (int) bar (int x, int y) { if (x != y) return x * y; z = 100; return 1000;} w = bar(4, 5);'
+    # prog = 'z = 10; function (int) bar (int x, int y) { if (x != y) return x*y; z = 100; return 1000;} w = bar(4, 5);'
     # prog = 'x = 1; while (x != 10) {x = x + 1; if (x == 3) {x = 100; break;}}'
     # prog = 'x = 1; while (x != 10) break;'
     # prog = 'x = 5; for (i in 1 : 20) {x = x + 1; if (i == 10) break;}'
     # prog = 'x = 0; z = 0; for (i in 1 : 5) {y = x; if (i == 3) x = 0; else x = x + 1; z = z + 1;}'
-    # prog = 'function (int) factorial (int x) { if (x == 0) return 1; y = x-1; return y;} x = factorial(1);'
+    # prog = 'function (int) factorial (int x) { if (x == 0) return 1; y = factorial(x-1); return y * x;} x = factorial(5); y = factorial(3);'
+    prog = 'y = 0; n = 100000; function (float) foo(int n) {epsilon = 0.001; x = 1; r = sqrt(n); while (abs(x - r) > epsilon) x = 0.5 * (x + n/x); return x;} y = foo(25);'
+    # prog = 'n = 5; x = 1; r = sqrt(n); while (abs(x - r) > 0.001) x = 0.5 * (x + n/x);'
+    # prog = 'x = 1; r = 3.55; while (r - x > 0) x = x + 1;'
+    # prog = 'x = T; if (x) y = abs(-3.2);'
 
 
     parser = yacc.yacc()
