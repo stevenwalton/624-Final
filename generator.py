@@ -66,21 +66,25 @@ class EidosGenerator():
         return result
 
     def lookupSymTables(self, s):
-        if s in self.curSymTable:
-            v = self.curSymTable[s]
-            if v == 'T':
-                v = True
-            elif v == 'F':
-                v = False
-            return v
-        for i in range(1, len(self.stack)+1):
-            if s in self.stack[-i]:
-                v = self.stack[-i][s]
+        #print("Stack {}\nsym table {}".format(self.stack,self.curSymTable))
+        #print("s: {}".format(s))
+        try:
+            if s in self.curSymTable:
+                v = self.curSymTable[s]
                 if v == 'T':
                     v = True
                 elif v == 'F':
                     v = False
-        raise Exception("name {} is not defined".format(s))
+                return v
+            for i in range(1, len(self.stack)+1):
+                if s in self.stack[-i]:
+                    v = self.stack[-i][s]
+                    if v == 'T':
+                        v = True
+                    elif v == 'F':
+                        v = False
+        except Exception as e:
+            raise Exception("name {} is not defined".format(s))
 
     def setValueInStack(self, s, v):
         if s in self.curSymTable:
