@@ -4,7 +4,6 @@ from functools import singledispatch
 import traceback
 import sys
 import numpy as np
-import math
 
 class EidosGenerator():
     '''
@@ -583,7 +582,7 @@ class EidosGenerator():
         n = self.visit(arguments[0])
         if isinstance(n, ast.ID):
             n = self.lookupSymTables(n.getName())
-        return math.sqrt(n)
+        return np.sqrt(n)
 
     def visit_abs(self, node):
         # print("visiting abs")
