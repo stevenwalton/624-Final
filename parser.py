@@ -864,9 +864,9 @@ def tree():
     #prog = '3==4 | 4==4;'
     #prog = 'x = 0; y = 0; function (int) foo (int x, int y, int z) { return x + y + z;} function (int) bar (int x, int y) { if (x != y) return x * y; else return x;} x = bar(5, 5); y = bar(2,3);'
     #prog = 'function(int) foo(int x) {return x+1;}'
-    #prog = 'function(int) foo(int x) {return x+1;} foo(1);'
-    #prog = 'function(int) foo(int x, int y) {x=x+1;y=x+1;z=x+y; return z;} foo(1,2);'
-    prog = 'matrix(1:6, nrow = 2);'
+
+    prog = 'function(int) foo(int x) {return x+1;} foo(1);'
+    #prog = 'f = function(int) foo(int x, int y) {x=x+1;y=x+1;z=x+y; return z;}; foo(1,2); f;'
 
     # prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
     # prog = 'x = 0; for (i in 1 : 5) {y = x + i; x = x + 1;}'

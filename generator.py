@@ -44,6 +44,12 @@ class EidosGenerator():
 
     def getFuncTable(self):
         return self.funcTable
+    def updateFuncTable(self,f):
+        '''
+        updates the function table
+        Used in the interpreter
+        '''
+        self.funcTable = f
 
     def listExtract(self, ls):
         # if len(ls) == 1:
@@ -275,6 +281,7 @@ class EidosGenerator():
                 f = self.visit(function_decl)
             if block:
                 b = self.visit(block)
+                #return(b)
             return(s,f,b)
                 #print('='*20)
                 #print(b)
@@ -545,6 +552,7 @@ class EidosGenerator():
             if name == "fId":
                 fId = child
         #print("Function node: {}".format(node))
+        #print(type(node))
         self.funcTable[fId.getName()] = node
 
     def visit_function_call(self, node):
@@ -679,37 +687,10 @@ class EidosGenerator():
                         i += 1
                 return initmatrix
 
-
-            # print(initmatrix)
-
-            # for name, child in arguments.children():
-            #     print(name,child)
-            # paramLst = self.listExtract(paramLst)
-            # arguments = self.listExtract(arguments)
-
-            # # setting up symbol table
-            # # not doing parameter list type and size checking
-            # self.stack.append(self.curSymTable)
-            # self.curSymTable = {}
-            # for i in range(len(paramLst)):
-            #     tspec, paramID, valueOption = self.visit(paramLst[i])
-            #     value = self.visit(arguments[i])
-            #     self.curSymTable[paramID.getName()] = value
-
-            # for name, child in stmt.children():
-            #     if name == 'statement':
-            #         stmt = child
-            # result = self.visit(stmt)
-            # if isinstance(result, ast.Return):
-            #     result = result.getExpr()
-            # if isinstance(result, ast.ID):
-            #     result = self.lookupSymTables(result.getName())
-            # self.curSymTable = self.stack.pop()
-            # return result
         except Exception as e:
             raise Exception(e)
 
-def runReturn(prog,dbg=False):
+def runReturn(prog,oldFunctionTable,dbg=False):
         '''
         Runs an Eidos program that is passed in as a string
         Calls yacc from parser.py
@@ -720,9 +701,19 @@ def runReturn(prog,dbg=False):
         result = parser.runProgram(prog,dbg=False)
         gen = EidosGenerator()
         try:
+            gen.updateFuncTable(oldFunctionTable)
             r = gen.visit(result)
             #print("Function Sym Table: {}".format(gen.getFuncTable()))
-            return(gen.getCurSymTable())
+            #print("return: {}".format(r))
+            #print("With type: {}".format(type(r)))
+            #for val in r:
+            #    if type(val) is int or type(val) is float:
+            #        print("returned: {}".format(val))
+            #    else:
+            #        print("Don't return: {}".format(val))
+
+            #print("from gen {}".format(r))
+            return(r,gen.getCurSymTable(),gen.getFuncTable())
         except:
             print("ERROR when parsing input")
             pass
@@ -744,7 +735,7 @@ def main():
     gen = EidosGenerator()
     r = gen.visit(result)
     print(r)
-    print("Current Symbol table: {}".format(gen.getCurSymTable()))
+    #print("Current Symbol table: {}".format(gen.getCurSymTable()))
     #print("Function Sym Table: {}".format(gen.getFuncTable()))
 
 if __name__ == '__main__':
