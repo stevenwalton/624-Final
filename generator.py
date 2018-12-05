@@ -264,18 +264,7 @@ class EidosGenerator():
 
     def visit_id(self, node: ast.ID):
         #print("Visit id")
-        # Placed back in. Do need?
-        id_name = None
-        for name, child in node.children():
-            if name == "name":
-                id_name = child
-        try:
-            if id_name:
-                return node
-        except Exception as e:
-            raise Exception(e)
-
-        #return node
+        return node
 
     def visit_assignment(self, node: ast.Assignment):
         '''
@@ -704,16 +693,6 @@ def runReturn(prog,oldFunctionTable,dbg=False):
         try:
             gen.updateFuncTable(oldFunctionTable)
             r = gen.visit(result)
-            #print("Function Sym Table: {}".format(gen.getFuncTable()))
-            #print("return: {}".format(r))
-            #print("With type: {}".format(type(r)))
-            #for val in r:
-            #    if type(val) is int or type(val) is float:
-            #        print("returned: {}".format(val))
-            #    else:
-            #        print("Don't return: {}".format(val))
-
-            #print("from gen {}".format(r))
             return(r,gen.getCurSymTable(),gen.getFuncTable())
         except:
             print("ERROR when parsing input")
@@ -736,7 +715,7 @@ def main():
     gen = EidosGenerator()
     r = gen.visit(result)
     print(r)
-    #print("Current Symbol table: {}".format(gen.getCurSymTable()))
+    print("Current Symbol table: {}".format(gen.getCurSymTable()))
     #print("Function Sym Table: {}".format(gen.getFuncTable()))
 
 if __name__ == '__main__':
