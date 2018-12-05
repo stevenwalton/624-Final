@@ -881,10 +881,11 @@ def tree():
     # prog = 'x = 5; for (i in 1 : 20) {x = x + 1; if (i == 10) break;}'
     # prog = 'x = 0; z = 0; for (i in 1 : 5) {y = x; if (i == 3) x = 0; else x = x + 1; z = z + 1;}'
     # prog = 'function (int) factorial (int x) { if (x == 0) return 1; y = factorial(x-1); return y * x;} x = factorial(5); y = factorial(3);'
-    prog = 'y = 0; n = 100000; function (float) foo(int n) {epsilon = 0.001; x = 1; r = sqrt(n); while (abs(x - r) > epsilon) x = 0.5 * (x + n/x); return x;} y = foo(25);'
+    # prog = 'y = 0; n = 100000; function (float) foo(int n) {epsilon = 0.001; x = 1; r = sqrt(n); while (abs(x - r) > epsilon) x = 0.5 * (x + n/x); return x;} y = foo(25);'
     # prog = 'n = 5; x = 1; r = sqrt(n); while (abs(x - r) > 0.001) x = 0.5 * (x + n/x);'
     # prog = 'x = 1; r = 3.55; while (r - x > 0) x = x + 1;'
     # prog = 'x = T; if (x) y = abs(-3.2);'
+    prog = 'x = "yes"; y = "no"; z = x + y;'
 
 
     parser = yacc.yacc()

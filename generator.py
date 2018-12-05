@@ -264,7 +264,7 @@ class EidosGenerator():
             elif ctype == "float":
                 return float(value)
             elif ctype == "string":
-                return value
+                return value[1:-1]
             elif ctype == "character":
                 return value
             elif ctype == 'bool':
