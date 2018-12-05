@@ -2,6 +2,8 @@ import sys, getopt
 import generator as gen
 import time
 import signal # For timeouts
+import re
+
 '''
 EIDOS interpreter program
 Program has two available options: either interpretive mode or you can pass
@@ -97,7 +99,9 @@ def eidos(valTable,i=";"):
         r = gen.runReturn(ip)
         SymDiff(oldSym,r)
         signal.alarm(0) # Reset signal to infinite time
-        if len(i) == 2: # Hacky print function (eg: x; returns x)
+        #if len(i) == 2: # Hacky print function (eg: x; returns x)
+        #if i[:-1].isalpha():
+        if re.match('^[a-zA-Z][a-zA-Z0-9]*;$',i):
             print("{{'{}': {}}}".format(i[:-1],oldSym[i[:-1]]))
         if r == None:
             return oldSym
@@ -139,6 +143,15 @@ def addTable(valTable):
         s += "{}={};".format(key,valTable[key])
     return s
 
+def display(valTable):
+    '''
+    displays all members of the value Table
+    '''
+    if valTable != {}:
+        print("Variables stored: {}".format(valTable))
+    else:
+        print("No values stored")
+
 
 def interpMain():
     '''
@@ -148,6 +161,7 @@ def interpMain():
     print("NOT:  We cannot handle functions that take multiple lines.")
     print("      We can keep a history of values, but not delete them.")
     print("      Functions that take longer than 60 seconds will error out.")
+    print("      Use the 'display' function to display all stored variables.")
     print("      Please type 'exit' or 'quit' to exit")
     i = ""
     valTable = {}
@@ -157,6 +171,8 @@ def interpMain():
             sys.exit(0)
         elif i is "":
             pass
+        elif i == "display":
+            display(oldSym)
         else:
             valTable = eidos(valTable,i)
 
