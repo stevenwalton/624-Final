@@ -203,7 +203,19 @@ class EidosGenerator():
             raise Exception(e)
 
     def visit_id(self, node: ast.ID):
-        return node
+        #print("Visit id")
+        # Placed back in. Do need?
+        id_name = None
+        for name, child in node.children():
+            if name == "name":
+                id_name = child
+        try:
+            if id_name:
+                return node
+        except Exception as e:
+            raise Exception(e)
+
+        #return node
 
     def visit_assignment(self, node: ast.Assignment):
         '''
@@ -224,9 +236,9 @@ class EidosGenerator():
         try:
             left = self.visit(lvalue)
             right = self.visit(rvalue)
-            print(left)
-            print(right)
-            print("-" * 30)
+            #print(left)
+            #print(right)
+            #print("-" * 30)
             if isinstance(right, ast.Return):
                 right = right.getExpr()
             if isinstance(right, ast.ID):
@@ -239,7 +251,7 @@ class EidosGenerator():
             raise Exception(e)
 
     def visit_interpreter_multiple_block(self, node):
-        print("visiting interp mult")
+        #print("visiting interp mult")
         statement = None
         function_decl = None
         block = None
@@ -256,14 +268,15 @@ class EidosGenerator():
             b = None;
             if statement:
                 s = self.visit(statement)
-                return s
+                #return s
             if function_decl:
                 f = self.visit(function_decl)
             if block:
                 b = self.visit(block)
-                print('='*20)
-                print(b)
-                return b
+            return(s,f,b)
+                #print('='*20)
+                #print(b)
+                #return b
         except Exception as e:
             raise Exception(e)
 
@@ -529,6 +542,7 @@ class EidosGenerator():
         for name, child in node.children():
             if name == "fId":
                 fId = child
+        #print("Function node: {}".format(node))
         self.funcTable[fId.getName()] = node
 
     def visit_function_call(self, node):
@@ -591,14 +605,18 @@ class EidosGenerator():
         return (tspec, paramID, valueOption)
 
     def visit_return(self, node):
-        print(self.curSymTable)
-        print(self.stack)
+        # Error handling. I think the return is fine. It is function that needs work
+        #print("Visit return")
+        #print("CurSymTable: {}".format(self.curSymTable))
+        #print("Stack: {}".format(self.stack))
+        #print("Node: {}".format(node))
         expr = None
         for name, child in node.children():
             if name == "expr":
                 expr = child
         try:
             r =  self.visit(expr)
+            #print("Will return: {}".format(r))
             return ast.Return(r)
         except Exception as e:
             raise Exception(e)
@@ -618,6 +636,7 @@ def runReturn(prog,dbg=False):
         gen = EidosGenerator()
         try:
             r = gen.visit(result)
+            #print("Function Sym Table: {}".format(gen.getFuncTable()))
             return(gen.getCurSymTable())
         except:
             print("ERROR when parsing input")
@@ -640,7 +659,8 @@ def main():
     gen = EidosGenerator()
     r = gen.visit(result)
     print(r)
-    print(gen.getCurSymTable())
+    print("Current Symbol table: {}".format(gen.getCurSymTable()))
+    #print("Function Sym Table: {}".format(gen.getFuncTable()))
 
 if __name__ == '__main__':
     main()
