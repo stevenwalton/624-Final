@@ -296,9 +296,9 @@ class EidosGenerator():
                 right = right.getExpr()
             if isinstance(right, ast.ID):
                 right = self.lookupSymTables(right.getName())
-            if right == True:
+            if isinstance(right, bool) and right == True:
                 right = 'T'
-            elif right == False:
+            elif isinstance(right, bool) and right == False:
                 right = 'F'
             self.setValueInStack(left.getName(), right)
             return left,right
