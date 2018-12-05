@@ -32,8 +32,9 @@ Maintainers: Steven Walton (swalton2@cs.uoregon.edu)
              Priya Kudva   (please add email)
 '''
 
-TIMEOUT=60 # We limit programs to be 60 seconds long
-global oldSym  # Global used to only display new values
+TIMEOUT=60       # We limit programs to be 60 seconds long
+global oldSym    # Global used to only display new values
+global funcTable # Global used to store function tables
 
 def timeoutHandler(signum, frame):
     raise Exception("WARNING: Program has timed out. Max program time set to {}".format(TIMEOUT))
@@ -96,17 +97,21 @@ def eidos(valTable,i=";"):
         signal.signal(signal.SIGALRM, timeoutHandler)
         signal.alarm(TIMEOUT)
         ip = addTable(valTable) + i
-        r = gen.runReturn(ip)
-        SymDiff(oldSym,r)
+        (r,s,f) = gen.runReturn(ip,funcTable)
+        #print("from int: {}".format(r))
+        SymDiff(oldSym,s)
         signal.alarm(0) # Reset signal to infinite time
         #if len(i) == 2: # Hacky print function (eg: x; returns x)
         #if i[:-1].isalpha():
+        if f is not {}:
+            updateFunctionTable(f)
+        #print("This is f {}".format(f))
         if re.match('^[a-zA-Z][a-zA-Z0-9]*;$',i):
             print("{{'{}': {}}}".format(i[:-1],oldSym[i[:-1]]))
-        if r == None:
+        if s == None:
             return oldSym
         else:
-            return r
+            return s
     except KeyError:        # Handles undefined variables
         print("That variable isn't defined")
         return oldSym
@@ -131,7 +136,27 @@ def SymDiff(oSym,nSym):
         oldSym = nSym
         if diff != {}: print(diff)
     except:
+        print("Error in SymDiff. Continuing")
         pass
+
+def updateFunctionTable(ftbl):
+    '''
+    update the function table
+    '''
+    global funcTable
+    try:
+        for key in ftbl:
+            if key not in funcTable.keys():
+                funcTable[key] = ftbl[key]
+            elif ftbl[key] != funcTable[key]:
+                funcTable[key] = ftbl[key]
+            else:
+                pass
+    except:
+        print("Error in updateFunctionTable. Continuing")
+        pass
+
+    
 
 
 def addTable(valTable):
@@ -180,6 +205,7 @@ def interpMain():
 if __name__ == "__main__":
     argc = len(sys.argv)
     oldSym = {}
+    funcTable = {}
     if argc == 1:
         interpMain()
     elif argc == 2:
