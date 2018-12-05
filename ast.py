@@ -438,6 +438,7 @@ class UnaryOp(Node):
 
     def children(self):
         nodelist = []
+        if self.op is not None: nodelist.append(('op', self.op))
         if self.expr is not None: nodelist.append(("expr", self.expr))
         return tuple(nodelist)
 
