@@ -3,6 +3,7 @@ import parser
 from functools import singledispatch
 import traceback
 import sys
+import numpy as np
 import math
 
 class EidosGenerator():
@@ -39,6 +40,7 @@ class EidosGenerator():
         self.visit.register(ast.ParamSpec, self.visit_param_spec)
         self.visit.register(ast.Return, self.visit_return)
         self.visit.register(ast.Relational, self.visit_relational)
+        self.visit.register(ast.CreateMatrix, self.visit_matrix)
 
     def getCurSymTable(self):
         return self.curSymTable
@@ -679,6 +681,62 @@ class EidosGenerator():
 
     def visit_break(self, node):
         return node
+
+    def visit_matrix(self, node):
+        arguments = None
+        for name, child in node.children():
+            if name == 'arguments':
+                arguments = child
+        try:
+            arguments = self.listExtract(arguments)
+            entries = self.visit(arguments[0])
+            if type(entries) is range:
+                start = entries.start
+                end = entries.stop
+            else:
+                raise Exception("The first argument must be a sequence.")
+
+            nrows = 1
+            ncols = 1
+            if len(arguments) == 1:
+                initmatrix = np.zeros(len(entries))
+                j=0
+                for i in entries:
+                    initmatrix[j] = i
+                    j += 1
+                return initmatrix
+
+            elif len(arguments) == 2:
+                name, value = arguments[1]
+
+                nID = self.visit(name)
+                var = None
+                for name, child in nID.children():
+                    var = child
+
+                nVal = self.visit(value)
+                if var == "nrow":
+                    nrows = nVal
+                elif var == "ncol":
+                    ncols = nVal
+
+                if nrows != 1:
+                    ncols = int(len(entries)/nrows)
+                    initmatrix = np.zeros((nrows, ncols))
+
+                if ncols != 1:
+                    nrows = int(len(entries)/ncols)
+                    initmatrix = np.zeros((nrows, ncols))
+
+                i = entries.start
+                for c in range(ncols):
+                    for r in range(nrows):
+                        initmatrix[r][c] = i
+                        i += 1
+                return initmatrix
+
+        except Exception as e:
+            raise Exception(e)
 
 def runReturn(prog,oldFunctionTable,dbg=False):
         '''
