@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python3 eidosInterpreter.py
+python3 eidosInterpreter.py $1
