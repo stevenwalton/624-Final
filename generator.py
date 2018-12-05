@@ -230,6 +230,12 @@ class EidosGenerator():
         try:
             e = self.visit(expr)
             if op is not None:
+                if isinstance(e, ast.ID):
+                    e = self.lookupSymTables(e.getName())
+                if e == 'F':
+                    e = False
+                elif e == 'T':
+                    e = True
                 if op == '!':
                     return (not e)
                 elif op == '+':
@@ -290,6 +296,10 @@ class EidosGenerator():
                 right = right.getExpr()
             if isinstance(right, ast.ID):
                 right = self.lookupSymTables(right.getName())
+            if right == True:
+                right = 'T'
+            elif right == False:
+                right = 'F'
             self.setValueInStack(left.getName(), right)
             return left,right
         except TypeError as e:
