@@ -264,7 +264,7 @@ class EidosGenerator():
             elif ctype == "float":
                 return float(value)
             elif ctype == "string":
-                return value[1:-1]
+                return value
             elif ctype == "character":
                 return value
             elif ctype == 'bool':
@@ -385,16 +385,23 @@ class EidosGenerator():
                 leftV = self.lookupSymTables(leftV.getName())
             if isinstance(rightV, ast.ID):
                 rightV = self.lookupSymTables(rightV.getName())
-            if operator == "+":
-                return leftV + rightV
-            elif operator == "-":
-                return leftV - rightV
-            elif operator == "*":
-                return leftV * rightV
-            elif operator == "/":
-                return leftV / rightV
-            elif operator == "%":
-                return leftV % rightV
+            if type(leftV) is not str and type(rightV) is not str:
+                if operator == "+":
+                    return leftV + rightV
+                elif operator == "-":
+                    return leftV - rightV
+                elif operator == "*":
+                    return leftV * rightV
+                elif operator == "/":
+                    return leftV / rightV
+                elif operator == "%":
+                    return leftV % rightV
+            elif type(leftV) and type(rightV) is str:
+                if operator == "+":
+                    return leftV[:-1] + rightV[1:]
+            else:
+                raise Exception("Cannot {} with types {} and {}".format(operator, type(leftV), type(rightV)))
+
 
         except ZeroDivisionError as e: # For /0 or %0
             if operator == "/":

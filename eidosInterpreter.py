@@ -97,17 +97,17 @@ def eidos(valTable,i=";"):
         signal.signal(signal.SIGALRM, timeoutHandler)
         signal.alarm(TIMEOUT)
         ip = addTable(valTable) + i
+        #ip = ip.replace("'",'"')
         (r,s,f) = gen.runReturn(ip,funcTable)
         #print("from int: {}".format(r))
         SymDiff(oldSym,s)
         signal.alarm(0) # Reset signal to infinite time
-        #if len(i) == 2: # Hacky print function (eg: x; returns x)
-        #if i[:-1].isalpha():
         if f is not {}:
             updateFunctionTable(f)
         #print("This is f {}".format(f))
         if re.match('^[a-zA-Z][a-zA-Z0-9]*;$',i):
             print("{{'{}': {}}}".format(i[:-1],oldSym[i[:-1]]))
+            return oldSym
         if s == None:
             return oldSym
         else:
@@ -131,6 +131,8 @@ def SymDiff(oSym,nSym):
     try:
         if oSym.keys() != nSym.keys():
             for key in nSym:
+                #if type(nSym[key]) is str:
+                #    nSym[key] = '"' + nSym[key][0:] + '"'
                 if key not in oSym:
                     diff[key] = nSym[key]
         for key in nSym:
@@ -158,8 +160,6 @@ def updateFunctionTable(ftbl):
     except:
         print("Error in updateFunctionTable. Continuing")
         pass
-
-    
 
 
 def addTable(valTable):
