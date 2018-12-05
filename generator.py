@@ -66,8 +66,6 @@ class EidosGenerator():
         return result
 
     def lookupSymTables(self, s):
-        #print("Stack {}\nsym table {}".format(self.stack,self.curSymTable))
-        #print("s: {}".format(s))
         try:
             if s in self.curSymTable:
                 v = self.curSymTable[s]
@@ -83,6 +81,7 @@ class EidosGenerator():
                         v = True
                     elif v == 'F':
                         v = False
+                    return v
         except Exception as e:
             raise Exception("name {} is not defined".format(s))
 
