@@ -68,7 +68,7 @@ def runAFile(f,dbg=False):
         print("Please provide an Eidos file, ending in '.e'")
         sys.exit(1)
     f_input = cat(f,dbg)
-    i = f_input.split(";")[:-1]
+    i = f_input.split("\n")#[:-1]
     valTable={}
     for entry in i:
         entry = entry+";"
