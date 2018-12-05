@@ -3,16 +3,18 @@ import parser
 from functools import singledispatch
 import traceback
 import sys
+import math
 
 class EidosGenerator():
     '''
     '''
     def __init__(self):
+        # the current symbol table: a dictionary of variable names and values
         self.curSymTable = {}
+        #
         self.stack = []
         # a dict of function name mapping to a function node
         self.funcTable = {}
-        # self.ifBreak = False
         self.visit = singledispatch(self.visit)
         self.visit.register(ast.If, self.visit_if)
         self.visit.register(ast.Conditional, self.visit_conditional)
@@ -36,6 +38,7 @@ class EidosGenerator():
         self.visit.register(ast.FunctionCall, self.visit_function_call)
         self.visit.register(ast.ParamSpec, self.visit_param_spec)
         self.visit.register(ast.Return, self.visit_return)
+        self.visit.register(ast.Relational, self.visit_relational)
 
     def getCurSymTable(self):
         return self.curSymTable
@@ -57,10 +60,19 @@ class EidosGenerator():
 
     def lookupSymTables(self, s):
         if s in self.curSymTable:
-            return self.curSymTable[s]
+            v = self.curSymTable[s]
+            if v == 'T':
+                v = True
+            elif v == 'F':
+                v = False
+            return v
         for i in range(1, len(self.stack)+1):
             if s in self.stack[-i]:
-                return self.stack[-i][s]
+                v = self.stack[-i][s]
+                if v == 'T':
+                    v = True
+                elif v == 'F':
+                    v = False
         raise Exception("name {} is not defined".format(s))
 
     def setValueInStack(self, s, v):
@@ -93,7 +105,10 @@ class EidosGenerator():
             elif name == "iffalse":
                 iffalse = child
         try:
-            if self.visit(cond) == True:
+            cond = self.visit(cond)
+            if isinstance(cond, ast.ID):
+                cond = self.lookupSymTables(cond.getName())
+            if cond == True:
                 return self.visit(iftrue)
             else:
                 if iffalse:
@@ -163,6 +178,39 @@ class EidosGenerator():
         except Exception as e:
             raise Exception(e)
 
+    def visit_relational(self, node):
+        op = None
+        left = None
+        right = None
+        for name, child in node.children():
+            if name == "operator":
+                op = child
+            elif name == "left":
+                left = child
+            elif name == "right":
+                right = child
+        try:
+            nodel = self.visit(left)
+            noder = self.visit(right)
+            if isinstance(nodel, ast.ID):
+                nodel = self.lookupSymTables(nodel.getName())
+            if isinstance(noder, ast.ID):
+                noder = self.lookupSymTables(noder.getName())
+            if op == "<":
+                return (nodel < noder)
+            elif op == "<=":
+                return (nodel <= noder)
+            elif op == ">":
+                return (nodel > noder)
+            elif op == ">=":
+                return (nodel >= noder)
+            else:
+                print("error in visiting relational node")
+        except TypeError as e:
+            raise Exception("TypeError: Cannot compare types {} and {}".format(type(left),type(right)))
+        except Exception as e:
+            raise Exception(e)
+
     def visit_unary(self, node: ast.UnaryOp):
         # print("visiting unary")
         op = None
@@ -173,11 +221,15 @@ class EidosGenerator():
             elif name == "expr":
                 expr = child
         try:
+            e = self.visit(expr)
             if op is not None:
-                pass
-            else:
-                # return print(self.visit(expr))
-                return self.visit(expr)
+                if op == '!':
+                    return (not e)
+                elif op == '+':
+                    return e
+                elif op == '-':
+                    return -e
+            return e
         except Exception as e:
             raise Exception(e)
 
@@ -198,6 +250,8 @@ class EidosGenerator():
             elif ctype == "string":
                 return value
             elif ctype == "character":
+                return value
+            elif ctype == 'bool':
                 return value
         except Exception as e:
             raise Exception(e)
@@ -236,9 +290,6 @@ class EidosGenerator():
         try:
             left = self.visit(lvalue)
             right = self.visit(rvalue)
-            #print(left)
-            #print(right)
-            #print("-" * 30)
             if isinstance(right, ast.Return):
                 right = right.getExpr()
             if isinstance(right, ast.ID):
@@ -274,17 +325,10 @@ class EidosGenerator():
             if block:
                 b = self.visit(block)
             return(s,f,b)
-                #print('='*20)
-                #print(b)
-                #return b
         except Exception as e:
             raise Exception(e)
 
     def visit_multiple_statement(self, node):
-        # if self.ifBreak:
-        #     print("!")
-        #     self.ifBreak = False
-        #     return
         statement = None
         multi_stmt = None
         for name, child in node.children():
@@ -302,11 +346,6 @@ class EidosGenerator():
                 m = self.visit(multi_stmt)
                 if isinstance(m, ast.Break) or isinstance(m, ast.Return):
                     return m
-            # if not isinstance(s, tuple):
-            #     s = (s,)
-            # if not isinstance(m, tuple):
-            #     m = (m,)
-            # return s+m
             return m
         except Exception as e:
             raise Exception(e)
@@ -339,7 +378,7 @@ class EidosGenerator():
             if operator == "+":
                 return leftV + rightV
             elif operator == "-":
-                return leftV + rightV
+                return leftV - rightV
             elif operator == "*":
                 return leftV * rightV
             elif operator == "/":
@@ -381,12 +420,6 @@ class EidosGenerator():
 
             while(self.visit(cond)):
                 r = self.visit(stmt)
-                # if isinstance(r, ast.Return):
-                #     r = self.visit(r.getExpr())
-                #     if isinstance(r, ast.ID):
-                #         r = self.lookupSymTables(r.getName())
-                #     print(r)
-                #     break;
                 if isinstance(r, ast.Break) or isinstance(r, ast.Return):
                     break
             if compound:
@@ -477,11 +510,6 @@ class EidosGenerator():
                 x = self.visit(ID).getName()
                 self.curSymTable[x] = i
                 r = self.visit(stmt)
-                # print(r)
-                # if "break" in r:
-                #     self.ifBreak = false
-                #     break;
-                # print(isinstance(r, ast.Break))
                 if isinstance(r, ast.Break) or isinstance(r, ast.Return):
                     break
         except Exception as e:
@@ -545,6 +573,32 @@ class EidosGenerator():
         #print("Function node: {}".format(node))
         self.funcTable[fId.getName()] = node
 
+    def visit_sqrt(self, node):
+        # print("visiting sqrt")
+        for name, child in node.children():
+            if name == 'arguments':
+                arguments = child
+        arguments = self.listExtract(arguments)
+        if len(arguments) > 1:
+            raise Exception("sqrt function takes exactly one argument")
+        n = self.visit(arguments[0])
+        if isinstance(n, ast.ID):
+            n = self.lookupSymTables(n.getName())
+        return math.sqrt(n)
+
+    def visit_abs(self, node):
+        # print("visiting abs")
+        for name, child in node.children():
+            if name == 'arguments':
+                arguments = child
+        arguments = self.listExtract(arguments)
+        if len(arguments) > 1:
+            raise Exception("sqrt function takes exactly one argument")
+        n = self.visit(arguments[0])
+        if isinstance(n, ast.ID):
+            n = self.lookupSymTables(n.getName())
+        return abs(n)
+
     def visit_function_call(self, node):
         name_expr = None
         arguments = None
@@ -554,6 +608,11 @@ class EidosGenerator():
             elif name == 'arguments':
                 arguments = child
         try:
+            if name_expr == "sqrt":
+                return self.visit_sqrt(node)
+            elif name_expr == "abs":
+                return self.visit_abs(node)
+
             func = self.funcTable[name_expr.getName()]
             returnType = None;
             paramLst = None;
