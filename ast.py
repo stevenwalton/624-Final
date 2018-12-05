@@ -903,3 +903,19 @@ class FunctionCall(Node):
             yield self.arguments
 
     attr_names = ("FunctionCall")
+
+class CreateMatrix(Node):
+    __slots__ = ('arguments', 'coord', '__weakref__')
+    def __init__(self, arguments, coord=None):
+        self.arguments = arguments
+
+    def children(self):
+        nodelist = []
+        if self.arguments is not None: nodelist.append(("arguments", self.arguments))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.arguments is not None:
+            yield self.arguments
+
+    attr_names = ("CreateMatrix")
