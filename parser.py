@@ -485,6 +485,16 @@ def p_postfix_expr2(p):
             print(i," ",p[i], " ",end="")
     p[0] = ast.FunctionCall(p[1], p[2])
 
+def p_postfix_expr3(p):
+    '''
+    postfix_expr : MATRIX argument_array
+    '''
+    if DEBUG:
+        print("\npostfix expr: ",end="")
+        for i in range(len(p)):
+            print(i," ",p[i], " ",end="")
+    p[0] = ast.CreateMatrix(p[2])
+
 # We left out leading comma case (,exp,exp) and (,) because they are dumb
 #   and should result in errors
 def p_expr_array(p):
@@ -600,7 +610,7 @@ def p_argument_expr(p):
         for i in range(len(p)):
             print(i," ",p[i], " ",end="")
     if len(p) == 4:
-        p[0] = (p[2], ast.ID(p[1]), p[3])
+        p[0] = (ast.ID(p[1]), p[3])
     else:
         p[0] = p[1]
 
@@ -855,7 +865,8 @@ def tree():
     #prog = 'x = 0; y = 0; function (int) foo (int x, int y, int z) { return x + y + z;} function (int) bar (int x, int y) { if (x != y) return x * y; else return x;} x = bar(5, 5); y = bar(2,3);'
     #prog = 'function(int) foo(int x) {return x+1;}'
     #prog = 'function(int) foo(int x) {return x+1;} foo(1);'
-    prog = 'function(int) foo(int x, int y) {x=x+1;y=x+1;z=x+y; return z;} foo(1,2);'
+    #prog = 'function(int) foo(int x, int y) {x=x+1;y=x+1;z=x+y; return z;} foo(1,2);'
+    prog = 'matrix(1:6, nrow = 2);'
 
     # prog = 'x = 0; y = 0; if (x != y) x = x + 1; else y = y + 1; x = 5;'
     # prog = 'x = 0; for (i in 1 : 5) {y = x + i; x = x + 1;}'
